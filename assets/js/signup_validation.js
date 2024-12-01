@@ -1,4 +1,4 @@
-import { getDatabase, ref, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+// signup_validation.js
 
 // 중복 검사 상태를 저장하는 변수
 let isLoginIDChecked = false;
@@ -88,14 +88,12 @@ function toggleSignupButton() {
 document.getElementById('password').addEventListener('input', checkPasswordMatch);
 document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
 
-// Firebase 데이터베이스 참조 가져오기
-const database = getDatabase();
-
 // 아이디 중복 검사
 document.querySelector('.input-container button').addEventListener('click', async function () {
     const loginID = document.getElementById('loginID').value;
     if (loginID) {
         try {
+            const database = getDatabase();
             const userQuery = query(ref(database, 'UserData'), orderByChild('loginID'), equalTo(loginID));
             const snapshot = await get(userQuery);
             if (snapshot.exists()) {
@@ -119,6 +117,7 @@ document.querySelectorAll('.input-container button')[1].addEventListener('click'
     const nickName = document.getElementById('nickName').value;
     if (nickName) {
         try {
+            const database = getDatabase();
             const nickNameQuery = query(ref(database, 'UserData'), orderByChild('nickName'), equalTo(nickName));
             const snapshot = await get(nickNameQuery);
             if (snapshot.exists()) {
