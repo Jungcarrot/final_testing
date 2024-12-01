@@ -9,7 +9,7 @@ function changeLanguage(lang) {
         en: {
             logo: "Pawprint\nDetective",
             pageTitle: "MYPAGE",
-            labels: ["Username", "Nickname"],
+            labels: ["loginID", "NickName"],
             myPostsButton: "View My Posts",
         },
     };
