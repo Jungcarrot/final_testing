@@ -8,9 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // 로그인 상태 확인
-    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
-    console.log("로그인 상태 확인:", isLoggedIn);
+
 
     if (isLoggedIn) {
         loggedInUI.style.display = "block";
