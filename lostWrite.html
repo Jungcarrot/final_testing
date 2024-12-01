@@ -3,133 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>실종 게시물 작성</title>
+    <title>발견 게시물 작성</title>
+    <link rel="stylesheet" href="assets/css/postList.css">
     <link rel="stylesheet" href="assets/css/postWrite.css">
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database-compat.js"></script>
-    <script src="assets/js/DB.js"></script>
+    <link rel="stylesheet" href="assets/css/style_main.css">
+    <link rel="stylesheet" href="assets/css/postLanguage.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
+    <script src="assets/js/navigation.js" defer></script>
+    <script src="assets/js/login_status.js" defer></script>
+    <script src="assets/js/language_index.js" defer></script>
+    <script src="assets/js/postList.js" defer></script>
+    <script src="assets/js/lostWrite.js" defer></script>
+    <script src="assets/js/chat.js" defer></script>
 </head>
+
 <body>
-    <!-- 헤더 -->
     <header>
         <div class="logo">
-            <!-- 로고 클릭 시 메인 화면으로 이동 -->
             <a href="index.html">
                 <img src="assets/img/logo.png" alt="로고">
             </a>
         </div>
         <nav>
             <ul>
-                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> 실종</a></li>
-                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> 발견</a></li>
-                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> 임시보호</a></li>
-                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> 동물병원</a></li>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
             </ul>
         </nav>
-        <div class="auth">
-            <span class="logged-out">
-                <a href="login.html">로그인</a> | <a href="signup.html">회원가입</a>
-            </span>
-            <span class="logged-in" style="display: none;">
-                <a href="logout.html">로그아웃</a> | <a href="mypage.html">마이페이지</a>
-            </span>
-        </div>
     </header>
-    
-    <div class="form-container">
-        <!-- 제목 입력 섹션 -->
-        <div class="section title-section">
-            <input type="text" id="post-title" placeholder="제목을 입력해 주세요.">
-        </div>
-    
-        <!-- 사진 첨부 및 상세 내용 섹션 -->
-        <div class="content-wrapper">
-            <!-- 사진 첨부 섹션 -->
-            <div class="section photo-section">
-                <label for="photo-upload">사진 첨부</label>
-                <input type="file" id="photo-upload" accept="image/*">
-            </div>
-    
-            <!-- 상세 내용 섹션 -->
-            <div class="section detail-section">
-                <textarea id="post-details" placeholder="실종된 동물의 이름, 특징, 성별, 종, 실종 위치, 실종 시간 등을 상세하게 적어 주세요."></textarea>
-            </div>
-        </div>
-    
-        <!-- 작성 완료 버튼 -->
-        <div class="submit-section">
-            <button id="submit-button">작성 완료</button>
-        </div>
-    </div>    
 
-    <!-- 채팅 섹션 -->
-    <aside class="chat-section">
-        <h2>채팅</h2>
-        <div id="chat-messages">
-            <!-- 채팅 메시지가 동적으로 추가되는 영역 -->
+    <main>
+        <h1 data-translate="page-title">실종 게시물 작성</h1>
+        <div class="form-container">
+            <div class="section title-section">
+                <input type="text" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
+            </div>
+
+            <div class="content-wrapper">
+                <div class="section photo-section">
+                    <label for="photo-upload" data-translate="photoLabel">사진 첨부</label>
+                    <input type="file" id="photo-upload" accept="image/*">
+                </div>
+
+                <div class="section detail-section">
+                    <textarea placeholder="실종된 동물의 이름, 특징, 성별, 종, 실종 위치, 실종 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button id="submit-button" data-translate="submitButton">작성 완료</button>
+            </div>
+        </div> 
+    </main>
+
+    <aside class="right-section">
+        <div id="logged-out-ui">
+            <div class="auth-text">
+                <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
+            </div>
+            <div class="manual">
+                <h2>MANUAL</h2>
+                <ul>
+                    <li>매뉴얼 내용</li>
+                    <li>-</li>
+                    <li>-</li>
+                </ul>
+            </div>
         </div>
-        <p id="no-chat-message">채팅 내역이 없습니다.</p>
+        <div id="logged-in-ui" style="display: none;">
+            <div class="auth-text">
+                <a href="mypage.html" data-translate="mypage">마이페이지</a> | <a href="#" id="logout" data-translate="logout">로그아웃</a>
+            </div>
+            <div class="chat-container">
+                <aside class="chat-sidebar">
+                    <h2 data-translate="chat-list-title">채팅 목록</h2>
+                    <ul>
+                        <li onclick="openChatPopup('user1')">사용자 1</li>
+                        <li onclick="openChatPopup('user2')">사용자 2</li>
+                        <li onclick="openChatPopup('user3')">사용자 3</li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="chat-popup hidden" id="chat-popup">
+                <div class="chat-header">
+                    <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
+                    <button onclick="closeChatPopup()">X</button>
+                </div>
+                <div id="popup-messages" class="messages"></div>
+                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
+            </div>
+        </div>
     </aside>
-    
-    <!-- 푸터 -->
+
     <footer>
-        <div class="language-switch">
-            <button id="btn-ko" class="lang-btn active">한국어</button>
-            <button id="btn-en" class="lang-btn">ENGLISH</button>
+        <div class="post-language-selector">
+            <button onclick="changeLanguage('ko')" id="lang-ko" class="active">한국어</button>
+            <button onclick="changeLanguage('en')" id="lang-en">ENGLISH</button>
         </div>
-        <p>© 2024 발자국 탐정</p>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 로그인 여부를 확인하는 변수
-            const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
-    
-            const loggedInElement = document.querySelector('.logged-in');
-            const loggedOutElement = document.querySelector('.logged-out');
-    
-            if (isLoggedIn) {
-                loggedInElement.style.display = 'inline';
-                loggedOutElement.style.display = 'none';
-            } else {
-                loggedInElement.style.display = 'none';
-                loggedOutElement.style.display = 'inline';
-                alert('게시글 작성은 로그인 후 이용 가능합니다.');
-                window.location.href = 'login.html'; // 로그인 페이지로 리다이렉트
-            }
-        });
-
-        // Firebase에 게시글 저장
-        document.getElementById('submit-button').addEventListener('click', () => {
-            const title = document.getElementById('post-title').value.trim();
-            const details = document.getElementById('post-details').value.trim();
-            const fileInput = document.getElementById('photo-upload');
-            const postId = Date.now();
-    
-            if (title === "" || details === "") {
-                alert('제목과 상세 내용을 입력해 주세요.');
-                return;
-            }
-    
-            const postData = {
-                pid: postId,
-                title: title,
-                details: details,
-                category: "실종",
-                postStatus: "활성",
-                image: fileInput.files.length > 0 ? fileInput.files[0].name : ""
-            };
-    
-            database.ref('Post/' + postId).set(postData)
-                .then(() => {
-                    alert('게시글이 등록되었습니다.');
-                    window.location.href = 'lostList.html';
-                })
-                .catch((error) => {
-                    console.error("게시글 작성 중 오류 발생:", error);
-                });
-        });
-    </script>
-    <script src="assets/js/lostWrite.js"></script>
 </body>
 </html>
