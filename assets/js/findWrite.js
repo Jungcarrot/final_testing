@@ -1,12 +1,14 @@
 import { database } from "./DB.js";
-import { ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 게시물 작성 버튼 클릭 이벤트
+    const storage = getStorage(); // Firebase Storage 초기화
+
     document.getElementById('submit-button').addEventListener('click', async () => {
-        const title = document.querySelector('#post-title').value; // Post.title
-        const details = document.querySelector('#post-details').value; // Post.details
-        const photo = document.querySelector('.photo-section input[type="file"]').files[0]; // 첨부 이미지
+        const title = document.getElementById('post-title').value; // Post.title
+        const details = document.getElementById('post-details').value; // Post.details
+        const photo = document.getElementById('photo-upload').files[0]; // 첨부 이미지
         const authorId = localStorage.getItem('uid'); // UserData.uid로 사용자 ID 가져오기
         const date = new Date().toLocaleString(); // 작성일
 
@@ -25,24 +27,33 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        let imageUrl = "";
+
+        // Firebase Storage에 사진 업로드
+        if (photo) {
+            try {
+                const photoRef = storageRef(storage, `images/${Date.now()}_${photo.name}`);
+                await uploadBytes(photoRef, photo);
+                imageUrl = await getDownloadURL(photoRef);
+            } catch (error) {
+                console.error("이미지를 업로드하는 중 오류가 발생했습니다:", error);
+                alert('이미지를 업로드하는 중 오류가 발생했습니다.');
+                return;
+            }
+        }
+
         // 작성자 닉네임 가져오기
         const userRef = ref(database, `UserData/${authorId}`); // UserData 테이블 참조
-        try {
-            const userSnapshot = await get(userRef);
+        get(userRef).then((userSnapshot) => {
             if (userSnapshot.exists()) {
                 const { nickName } = userSnapshot.val(); // UserData.nickName 사용
 
-                // 게시물 고유 pid 생성 (Firebase 자동 생성 키 사용)
-                const newPostRef = push(ref(database, 'Post'));
-                const pid = newPostRef.key;
-
                 // 게시물 데이터 객체 생성
                 const postData = {
-                    pid, // 고유 게시물 ID
                     title, // Post.title
                     category: "발견", // 카테고리 설정 (발견 게시물)
                     postStatus: "active", // 상태 설정 (임시로 "active" 설정)
-                    image: photo ? photo.name : "", // 첨부된 파일 이름, 없으면 빈 문자열
+                    image: imageUrl, // Firebase Storage에 저장된 이미지의 URL
                     details, // Post.details
                     authorId, // 작성자 ID (UserData.uid)
                     authorNickname: nickName, // 작성자 닉네임 (UserData.nickName)
@@ -50,20 +61,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 // 게시물 데이터 저장
-                await set(newPostRef, postData);
-
-                alert('게시물이 저장되었습니다!');
-                window.location.href = 'findList.html'; // 게시물 목록으로 이동
+                const newPostRef = push(ref(database, 'Post')); // Post 테이블에 데이터 추가
+                set(newPostRef, postData).then(() => {
+                    alert('게시물이 저장되었습니다!');
+                    window.location.href = 'findList.html'; // 게시물 목록으로 이동
+                }).catch((error) => {
+                    console.error("게시물을 저장하는 중 오류가 발생했습니다:", error);
+                    alert('게시물을 저장하는 중 오류가 발생했습니다.');
+                });
             } else {
                 alert('사용자 정보를 찾을 수 없습니다.');
             }
-        } catch (error) {
-            console.error("사용자 정보를 불러오거나 게시물을 저장하는 중 오류가 발생했습니다:", error);
-            alert('게시물을 저장하는 중 오류가 발생했습니다.');
-        }
+        }).catch((error) => {
+            console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
+            alert('사용자 정보를 불러오는 중 오류가 발생했습니다.');
+        });
     });
 
-    // 번역 데이터
+    // 번역 데이터 (기존 코드 유지)
     const translations = {
         ko: {
             'page-title': '발견 게시물 작성',
@@ -89,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 언어 변경 함수
+    // 언어 변경 함수 (기존 코드 유지)
     function updateLanguage(lang) {
         document.querySelectorAll('[data-translate]').forEach(element => {
             const key = element.getAttribute('data-translate');
@@ -98,17 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 페이지 제목 번역
         document.querySelector('title').textContent = translations[lang]['page-title'];
-
-        // 입력 필드와 버튼 번역
-        document.querySelector('.title-section input').placeholder = translations[lang]['titlePlaceholder'];
+        document.getElementById('post-title').placeholder = translations[lang]['titlePlaceholder'];
         document.querySelector('.photo-section label').textContent = translations[lang]['photoLabel'];
-        document.querySelector('.detail-section textarea').placeholder = translations[lang]['detailPlaceholder'];
+        document.getElementById('post-details').placeholder = translations[lang]['detailPlaceholder'];
         document.getElementById('submit-button').textContent = translations[lang]['submitButton'];
     }
 
-    // 언어 버튼 이벤트
     document.getElementById('lang-ko').addEventListener('click', () => {
         updateLanguage('ko');
         document.getElementById('lang-ko').classList.add('active');
@@ -121,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('lang-ko').classList.remove('active');
     });
 
-    // 초기 언어 설정
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
