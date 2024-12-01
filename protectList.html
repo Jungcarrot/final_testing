@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="assets/css/postList.css">
     <link rel="stylesheet" href="assets/css/style_main.css">
     <link rel="stylesheet" href="assets/css/postLanguage.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
     <script src="assets/js/postList.js" defer></script>
     <script src="assets/js/protectList.js" defer></script>
-    <link rel="stylesheet" href="assets/css/chat.css">
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
@@ -49,8 +49,8 @@
 
         <!-- 게시물 검색 영역 -->
         <div class="search-bar">
-            <input type="text" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
-            <button><img src="assets/img/search-icon.png" alt="돋보기" data-translate="search-icon-alt"></button>
+            <input type="text" id="search-input" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
+            <button id="search-button"><img src="assets/img/search-icon.png" alt="돋보기" data-translate="search-icon-alt"></button>
         </div>
 
         <!-- 게시물 테이블 헤더 -->
@@ -59,12 +59,12 @@
                 <thead>
                     <tr>
                         <th data-translate="table-header-number">번호</th>
-                        <th data-translate="table-header-title">제목</th>
-                        <th data-translate="table-header-author">작성자</th>
-                        <th data-translate="table-header-date">작성일</th>
+                        <th data-db-field="title" data-translate="table-header-title">제목</th>
+                        <th data-db-field="nickName" data-translate="table-header-author">작성자</th>
+                        <th data-db-field="timeStamp" data-translate="table-header-date">작성일</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="post-list">
                     <!-- 게시물이 생성되면 여기에 추가됩니다 -->
                 </tbody>
             </table>
@@ -121,7 +121,7 @@
                 <div id="popup-messages" class="messages">
                     <!-- 채팅 메시지가 여기에 추가됩니다 -->
                 </div>
-                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
