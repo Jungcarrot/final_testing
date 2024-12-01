@@ -31,11 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userSnapshot.exists()) {
                 const { nickName } = userSnapshot.val(); // UserData.nickName 사용
 
-                // postData에서 'author'를 'nickName'으로 수정
+                // 게시물 데이터 설정
                 const postData = {
                     title, // Post.title
                     details, // Post.details
-                    photo: photo?.name || '', // 첨부된 파일 이름
+                    photoUrl: photo ? URL.createObjectURL(photo) : '', // 첨부된 파일 URL (로컬 URL 사용)
                     authorId, // 작성자 ID 저장 (UserData.uid)
                     authorNickname: nickName, // UserData.nickName
                     date // 작성일 저장
