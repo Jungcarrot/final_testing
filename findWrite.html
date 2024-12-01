@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>발견 게시물 작성</title>
+    <title data-translate="page-title">발견 게시물 작성</title>
     <link rel="stylesheet" href="assets/css/postList.css">
     <link rel="stylesheet" href="assets/css/postWrite.css">
     <link rel="stylesheet" href="assets/css/style_main.css">
@@ -39,13 +39,10 @@
 
     <main>
         <h1 data-translate="page-title">발견 게시물 작성</h1>
-        <div id="post-create" class="post-create" style="display: none;"> <!-- 게시물 작성 버튼 추가 -->
-            <button id="post-create-button" data-translate="post-create-button">게시글 작성</button>
-        </div>
-
         <div class="form-container">
             <div class="section title-section">
-                <input type="text" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
+                <!-- title input의 ID 수정 -->
+                <input type="text" id="post-title" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
             </div>
 
             <div class="content-wrapper">
@@ -55,7 +52,8 @@
                 </div>
 
                 <div class="section detail-section">
-                    <textarea name="details" placeholder="발견한 동물의 이름, 특징, 성별, 종, 발견 위치, 발견 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
+                    <!-- details textarea의 ID 수정 -->
+                    <textarea id="post-details" name="details" placeholder="발견한 동물의 이름, 특징, 성별, 종, 발견 위치, 발견 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
                 </div>
             </div>
 
@@ -71,9 +69,9 @@
                 <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
             </div>
             <div class="manual">
-                <h2>MANUAL</h2>
+                <h2 data-translate="manual-title">MANUAL</h2>
                 <ul>
-                    <li>매뉴얼 내용</li>
+                    <li data-translate="manual-item1">매뉴얼 내용</li>
                     <li>-</li>
                     <li>-</li>
                 </ul>
