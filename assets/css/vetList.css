@@ -1,0 +1,69 @@
+/* 구/군 선택 영역 */
+#location-selector {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    margin-left: 50px;
+    margin-bottom: 40px; /* 간격을 더 넓힘 */
+}
+
+.post-table {
+    margin-left: 50px;
+    width: 75%;
+    background-color: #fef0d7;
+    border-radius: 8px;
+    height: 80vh;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 650px;
+    border: 1px solid #ddd;
+}
+
+/* 병원 테이블 */
+.post-table {
+    margin-left: 50px; /* 왼쪽 여백 조정 */
+    width: 90%; /* 채팅 섹션과 겹치지 않도록 너비 축소 */
+    background-color: #fef0d7;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 650px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    height: 35rem;
+}
+
+.post-table table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.post-table th, .post-table td {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    word-wrap: break-word; /* 텍스트 줄바꿈 */
+}
+
+.post-table th {
+    background-color: #f0a865;
+    color: white;
+    font-weight: bold;
+}
+
+/* 병원 테이블 열 너비 설정 */
+.post-table th:nth-child(1), .post-table td:nth-child(1) {
+    width: 10%; /* 번호 */
+}
+
+.post-table th:nth-child(2), .post-table td:nth-child(2) {
+    width: 30%; /* 병원 이름 */
+}
+
+.post-table th:nth-child(4), .post-table td:nth-child(4) {
+    width: 40%; /* 주소 */
+}
