@@ -12,8 +12,7 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script src="assets/js/postList.js" defer></script>
-    <script type="module src="assets/js/findPost.js" defer></script>
+    <script type="module" src="assets/js/findPost.js" defer></script> <!-- 수정된 부분 -->
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
@@ -45,6 +44,8 @@
             <div class="post-content">
                 <img id="post-image" name="image" alt="등록된 사진">
                 <div id="post-details" name="details"></div>
+                <div id="post-author" name="author"></div> <!-- 작성자 정보 추가 -->
+                <div id="post-date" name="date"></div> <!-- 작성일 정보 추가 -->
             </div>
         
             <!-- 댓글 섹션 -->
@@ -53,7 +54,7 @@
                 <div id="comments">
                     <!-- 댓글 리스트가 동적으로 추가됩니다 -->
                 </div>
-                <textarea id="comment-input" name="comment" placeholder="댓글을 작성하세요..."></textarea>
+                <textarea id="comment-input" name="comment" placeholder="댓글을 작성하세요..." data-translate="comment-placeholder"></textarea>
                 <button id="add-comment" data-translate="add-comment-button">댓글 작성 완료</button>
             </div>
         
