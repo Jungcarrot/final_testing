@@ -4,9 +4,9 @@ import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/f
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 작성 버튼 클릭 이벤트
     document.getElementById('submit-button').addEventListener('click', () => {
-        const title = document.querySelector('.title-section input').value; // Post.title
-        const details = document.querySelector('.detail-section textarea').value; // Post.details
-        const photo = document.querySelector('.photo-section input[type="file"]').files[0];
+        const title = document.querySelector('#post-title').value; // Post.title
+        const details = document.querySelector('#post-details').value; // Post.details
+        const photo = document.querySelector('.photo-section input[type="file"]').files[0]; // 첨부 이미지
         const authorId = localStorage.getItem('uid'); // UserData.uid로 사용자 ID 가져오기
         const date = new Date().toLocaleString(); // 작성일
 
@@ -31,13 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userSnapshot.exists()) {
                 const { nickName } = userSnapshot.val(); // UserData.nickName 사용
 
-                // 게시물 데이터 설정
+                // 게시물 데이터 객체 생성
                 const postData = {
                     title, // Post.title
+                    category: "발견", // 카테고리 설정 (발견 게시물)
+                    postStatus: "active", // 상태 설정 (임시로 "active" 설정)
+                    image: photo ? photo.name : "", // 첨부된 파일 이름, 없으면 빈 문자열
                     details, // Post.details
-                    photoUrl: photo ? URL.createObjectURL(photo) : '', // 첨부된 파일 URL (로컬 URL 사용)
-                    authorId, // 작성자 ID 저장 (UserData.uid)
-                    authorNickname: nickName, // UserData.nickName
+                    authorId, // 작성자 ID (UserData.uid)
+                    authorNickname: nickName, // 작성자 닉네임 (UserData.nickName)
                     date // 작성일 저장
                 };
 
@@ -71,13 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'photoLabel': '사진 첨부',
             'detailPlaceholder': '발견한 동물의 이름, 특징, 성별, 종, 발견 위치, 발견 시간 등을 상세하게 적어 주세요.',
             'submitButton': '작성 완료',
-            'login': '로그인',
-            'signup': '회원가입',
-            'mypage': '마이페이지',
-            'logout': '로그아웃',
-            'chat-list-title': '채팅 목록',
-            'chat-room-title': '채팅방',
-            'chat-send-button': '전송',
         },
         en: {
             'page-title': 'Write Found Post',
@@ -89,13 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'photoLabel': 'Attach Photo',
             'detailPlaceholder': 'Please write detailed information about the found animal (e.g., name, characteristics, gender, species, location, time found, etc.)',
             'submitButton': 'Submit',
-            'login': 'Login',
-            'signup': 'Sign Up',
-            'mypage': 'My Page',
-            'logout': 'Logout',
-            'chat-list-title': 'Chat List',
-            'chat-room-title': 'Chat Room',
-            'chat-send-button': 'Send',
         }
     };
 
