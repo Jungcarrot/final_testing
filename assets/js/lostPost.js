@@ -1,135 +1,139 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const translations = {
-        ko: {
-            'header-lost': '실종',
-            'header-find': '발견',
-            'header-protect': '임시보호',
-            'header-vet': '동물병원',
-            'login': '로그인',
-            'signup': '회원가입',
-            'logout': '로그아웃',
-            'mypage': '마이페이지',
-            'page-title': '실종 게시물 보기',
-            'commentPlaceholder': '댓글을 작성하세요...',
-            'addComment': '댓글 작성 완료',
-            'report': '신고하기', // 신고하기 번역 추가
-        },
-        en: {
-            'header-lost': 'Lost',
-            'header-find': 'Found',
-            'header-protect': 'Temporary Protection',
-            'header-vet': 'Veterinary Clinic',
-            'login': 'Login',
-            'signup': 'Sign Up',
-            'logout': 'Logout',
-            'mypage': 'My Page',
-            'page-title': 'View Lost Post',
-            'commentPlaceholder': 'Write a comment...',
-            'addComment': 'Submit Comment',
-            'report': 'Report', // 신고하기 번역 추가
-        }
-    };
-
-    function updateLanguage(lang) {
-        // 일반 텍스트 번역
-        document.querySelectorAll('[data-translate]').forEach(element => {
-            const key = element.getAttribute('data-translate');
-            if (translations[lang][key]) {
-                element.textContent = translations[lang][key];
-            }
-        });
-
-        // 댓글 입력 및 버튼 번역
-        document.querySelector('#comment-input').placeholder = translations[lang]['commentPlaceholder'];
-        document.querySelector('#add-comment').textContent = translations[lang]['addComment'];
-
-        // 신고 버튼 번역
-        document.querySelectorAll('.comment-report-btn').forEach(button => {
-            button.textContent = translations[lang]['report'];
-        });
-    }
-
-    const langBtns = document.querySelectorAll('.lang-btn');
-
-    langBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const lang = btn.id === 'btn-ko' ? 'ko' : 'en';
-            langBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateLanguage(lang);
-        });
-    });
-
-    // 초기 언어 설정
-    const defaultLang = 'ko'; // 기본 언어 설정
-    updateLanguage(defaultLang);
-    document.getElementById('btn-ko').classList.add('active');
-
-    // 댓글 섹션 렌더링 로직
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = parseInt(urlParams.get('id'), 10) || 0;
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
+    const postId = parseInt(urlParams.get('id'), 10);
+    const posts = JSON.parse(localStorage.getItem('lostPosts')) || [];
     const post = posts[postId];
 
     if (!post) {
-        alert('게시물이 존재하지 않습니다.');
+        alert('게시물을 찾을 수 없습니다.');
         window.location.href = 'lostList.html';
         return;
     }
 
-    // 게시물 제목 표시
-    const postTitleElement = document.getElementById('post-title');
-    if (post.title) {
-        postTitleElement.textContent = post.title;
-    } else {
-        postTitleElement.textContent = '제목 없음'; // 제목이 없는 경우 기본값 설정
+    // 번역 데이터
+    const translations = {
+        ko: {
+            'page-title': '실종 게시물 보기',
+            'header-lost': '실종',
+            'header-find': '발견',
+            'header-protect': '임시보호',
+            'header-vet': '동물병원',
+            'comment-section-title': '댓글',
+            'add-comment-button': '댓글 작성 완료',
+            'edit-post-button': '수정',
+            'delete-post-button': '삭제',
+            'report-button': '신고하기',
+            'login': '로그인',
+            'signup': '회원가입',
+            'manual-title': '매뉴얼',
+            'manual-item-1': '매뉴얼 내용',
+            'mypage': '마이페이지',
+            'logout': '로그아웃',
+            'chat-list-title': '채팅 목록',
+            'chat-room-title': '채팅방',
+            'chat-send-button': '전송',
+            'manual-title': '매뉴얼',
+            'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
+            'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
+            'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
+            'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
+        },
+
+        en: {
+            'page-title': 'View Lost Post',
+            'header-lost': 'Lost',
+            'header-find': 'Found',
+            'header-protect': 'Temporary Protection',
+            'header-vet': 'Vet',
+            'comment-section-title': 'Comments',
+            'add-comment-button': 'Add Comment',
+            'edit-post-button': 'Edit',
+            'delete-post-button': 'Delete',
+            'report-button': 'Report',
+            'login': 'Login',
+            'signup': 'Sign Up',
+            'manual-title': 'Manual',
+            'manual-item-1': 'Manual Content',
+            'mypage': 'My Page',
+            'logout': 'Logout',
+            'chat-list-title': 'Chat List',
+            'chat-room-title': 'Chat Room',
+            'chat-send-button': 'Send',
+            'manual-title': 'MANUAL',
+            'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
+            'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
+            'manual-item3': 'The site is composed of four main boards: Lost, Found, Vet, and Temporary Shelter.',
+            'manual-item4': 'Feel free to write posts about your questions regarding Footprint and share information with other users!'
+        }
+    };
+
+    // 언어 변경 함수
+    function changeLanguage(lang) {
+        const elements = document.querySelectorAll('[data-translate]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-translate');
+            el.textContent = translations[lang][key] || el.textContent;
+        });
+
+        // 신고하기 버튼 번역
+        document.querySelectorAll('.report-button').forEach(button => {
+            button.textContent = translations[lang]['report-button'];
+        });
+
+        // 버튼 상태 업데이트
+        document.getElementById('lang-ko').classList.toggle('active', lang === 'ko');
+        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
     }
-    
-    // 게시물 내용 설정
-    const postDetailsElement = document.getElementById('post-details');
-    if (post.details) {
-        postDetailsElement.textContent = post.details;
-    } else {
-        postDetailsElement.textContent = '내용이 없습니다.'; // 내용이 없는 경우 기본값 설정
-    }
-    
-    // 댓글 표시
+
+    // 언어 버튼 이벤트 리스너 추가
+    document.getElementById('lang-ko').addEventListener('click', () => changeLanguage('ko'));
+    document.getElementById('lang-en').addEventListener('click', () => changeLanguage('en'));
+
+    // 초기화
+    changeLanguage('ko'); // 기본 언어 설정
+
+    // 게시물 데이터 로드
+    document.getElementById('post-title').textContent = post.title || '제목이 없습니다.';
+    document.getElementById('post-image').src = post.image || 'assets/img/default-image.png';
+    document.getElementById('post-details').textContent = post.details || '상세 내용이 없습니다.';
+
+    // 댓글 섹션 처리
     const comments = post.comments || [];
     const commentContainer = document.getElementById('comments');
+    const commentInput = document.getElementById('comment-input');
 
-    const renderComments = () => {
+    function renderComments() {
         commentContainer.innerHTML = '';
-        comments.forEach((commentObj, index) => {
-            const { nickname, comment } = commentObj;
-
-            const commentElement = document.createElement('div');
-            commentElement.style.display = "flex";
-            commentElement.style.alignItems = "center";
-
-            // 닉네임과 댓글 내용
-            const commentText = document.createElement('span');
-            commentText.textContent = `${index + 1}. [${nickname}] ${comment}`;
-            commentText.style.flexGrow = "1";
-
-            // 신고하기 버튼
-            const reportButton = document.createElement('button');
-            reportButton.textContent = translations[defaultLang]['report']; // 초기 텍스트 설정
-            reportButton.className = 'comment-report-btn'; // 번역용 클래스 추가
-            reportButton.style.marginLeft = '10px';
-            reportButton.style.backgroundColor = '#ffa500';
-            reportButton.style.color = 'white';
-            reportButton.style.border = 'none';
-            reportButton.style.borderRadius = '4px';
-            reportButton.style.cursor = 'pointer';
-
-            reportButton.addEventListener('click', () => showReportPopup(nickname));
-
-            // 댓글과 버튼 추가
-            commentElement.appendChild(commentText);
-            commentElement.appendChild(reportButton);
-            commentContainer.appendChild(commentElement);
+        comments.forEach((comment, index) => {
+            const commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment-item');
+            commentDiv.innerHTML = `
+                <strong>${comment.author}</strong>: ${comment.text}
+                <button class="report-button" data-index="${index}" data-translate="report-button">${translations['ko']['report-button']}</button>
+            `;
+            commentContainer.appendChild(commentDiv);
         });
-    };
+
+        // 신고하기 버튼 이벤트 추가
+        document.querySelectorAll('.report-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const commentIndex = event.target.dataset.index;
+                alert(`댓글 "${comments[commentIndex].text}"을(를) 신고했습니다.`);
+            });
+        });
+    }
+
+    document.getElementById('add-comment').addEventListener('click', () => {
+        const commentText = commentInput.value.trim();
+        const currentUser = localStorage.getItem('loggedInUser') || '익명'; // 로그인된 사용자 이름 가져오기
+        if (commentText) {
+            comments.push({ text: commentText, author: currentUser });
+            post.comments = comments; // 게시물에 댓글 저장
+            localStorage.setItem('lostPosts', JSON.stringify(posts)); // 로컬 스토리지 업데이트
+            renderComments();
+            commentInput.value = '';
+        }
+    });
 
     renderComments();
 });
