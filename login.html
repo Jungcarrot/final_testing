@@ -73,7 +73,8 @@
     </div>
 
     <script type="module">
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+        import { ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+        import { database } from "./assets/js/DB.js"; // Firebase 설정을 가져오는 경로 수정
 
         async function validateLogin(event) {
             event.preventDefault(); // 폼 제출 막기
@@ -87,7 +88,6 @@
             }
 
             try {
-                const database = getDatabase();
                 const userRef = ref(database, 'UserData/' + loginID);
                 const snapshot = await get(userRef);
 
