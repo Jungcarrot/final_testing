@@ -2,26 +2,26 @@
 function filterHospitals(district, subDistrict) {
     const hospitalData = [
         {
-            name: { ko: "동물병원1", en: "Animal Hospital 1" },
-            address: { ko: "대구광역시 동구 신암1동", en: "Dong-gu, Daegu, Sinam 1-dong" },
-            is24: false,
+            Vetname: { ko: "동물병원1", en: "Animal Hospital 1" },
+            Vetaddress: { ko: "대구광역시 동구 신암1동", en: "Dong-gu, Daegu, Sinam 1-dong" },
+            Vetopen24Hours: false,
         },
         {
-            name: { ko: "동물병원2", en: "Animal Hospital 2" },
-            address: { ko: "대구광역시 동구 신암2동", en: "Dong-gu, Daegu, Sinam 2-dong" },
-            is24: true,
+            Vetname: { ko: "동물병원2", en: "Animal Hospital 2" },
+            Vetaddress: { ko: "대구광역시 동구 신암2동", en: "Dong-gu, Daegu, Sinam 2-dong" },
+            Vetopen24Hours: true,
         },
     ];    
 
     const filtered = hospitalData.filter(hospital => {
-        return hospital.address.includes(district) && hospital.address.includes(subDistrict);
+        return hospital.Vetaddress.ko.includes(district) && hospital.Vetaddress.ko.includes(subDistrict);
     });
 
     const resultSection = document.getElementById('hospital-results');
     resultSection.innerHTML = filtered.map(hospital => `
         <tr>
-            <td>${hospital.name}</td>
-            <td>${hospital.address}</td>
+            <td>${hospital.Vetname.ko}</td>
+            <td>${hospital.Vetaddress.ko}</td>
         </tr>
     `).join('');
 }
