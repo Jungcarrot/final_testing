@@ -25,8 +25,6 @@ onValue(connectedRef, (snapshot) => {
     } else {
         console.log('Firebase 연결이 끊어졌습니다.');
     }
-
-    export { database };  // 데이터베이스 객체를 export
 });
 
-
+    export { database };  // 데이터베이스 객체를 export
