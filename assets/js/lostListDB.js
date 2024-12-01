@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const post = childSnapshot.val();
             if (post.category === '실종') { // 특정 카테고리 필터링 (실종)
                 posts.push(post);
-                userPromises.push(get(ref(db, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
+                userPromises.push(get(ref(db, `UserData/${post.uid}`))); // 작성자 정보 가져오기
             }
         });
 
@@ -24,12 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
             tableBody.innerHTML = ''; // 기존 내용 초기화
             posts.forEach((post, index) => {
                 const userSnapshot = userSnapshots[index];
-                const authorNickname = userSnapshot.exists() ? userSnapshot.val().nickName : 'Unknown';
+                const nickName = userSnapshot.exists() ? userSnapshot.val().nickName : '알 수 없음';
                 const row = `
                     <tr>
                         <td>${index + 1}</td> <!-- 번호 -->
                         <td><a href="lostPost.html">${post.title}</a></td> <!-- 제목 -->
-                        <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
+                        <td>${nickName}</td> <!-- 작성자 닉네임 -->
                         <td>${post.date}</td> <!-- 작성일 -->
                     </tr>
                 `;
@@ -37,3 +37,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+});
