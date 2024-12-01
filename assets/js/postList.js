@@ -1,4 +1,4 @@
-import { getPosts } from "./DB.js";
+import { getPosts } from "assets/js/DB.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const postListContainer = document.getElementById("postList"); // 게시글 목록 컨테이너
