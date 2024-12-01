@@ -1,4 +1,4 @@
-import { ref, push, set, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 import { database } from "./DB.js"; // Firebase 설정을 가져오는 경로 수정 (assets/js 폴더 기준)
 
 // 중복 검사 상태를 저장하는 변수
@@ -62,14 +62,19 @@ async function validateSignup(event) {
         return false;
     }
 
-    // 고유한 uid 생성 및 데이터 저장
+    // 중복 검사와 유효성 검사가 완료되었으므로 회원가입 함수 호출
+    signupUser(loginID, nickName, password);
+}
+
+// 회원가입 처리 함수
+async function signupUser(loginID, nickName, password) {
     try {
         const userRef = ref(database, 'UserData');
         const newUserRef = push(userRef); // 고유한 uid가 생성됨
         const uid = newUserRef.key;
 
         await set(newUserRef, {
-            uid: uid,  // 고유한 uid 저장
+            uid: uid,
             loginID: loginID,
             nickName: nickName,
             password: password
@@ -82,8 +87,6 @@ async function validateSignup(event) {
         console.error("회원가입 중 오류 발생:", error);
         alert("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
-
-    return true;
 }
 
 // 회원가입 버튼 활성화 함수
@@ -152,4 +155,6 @@ document.querySelectorAll('.input-container button')[1].addEventListener('click'
         alert("닉네임을 입력해주세요.");
     }
 });
+
+document.getElementById("signup-form").addEventListener("submit", validateSignup);
 
