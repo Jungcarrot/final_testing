@@ -9,8 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 로그인 상태 확인
-    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
-
+    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
     console.log("로그인 상태 확인:", isLoggedIn);
 
     if (isLoggedIn) {
@@ -26,7 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutButton) {
         logoutButton.addEventListener("click", () => {
             console.log("로그아웃 버튼 클릭됨");
-            localStorage.removeItem("loggedIn"); // 로그인 상태 제거
+            localStorage.removeItem("userLoggedIn"); // 로그인 상태 제거
+            localStorage.removeItem("loginID"); // 로그인된 사용자 ID 제거
+            localStorage.removeItem("nickName"); // 닉네임 제거
             window.location.href = "index.html"; // index.html로 리다이렉트
         });
     } else {
