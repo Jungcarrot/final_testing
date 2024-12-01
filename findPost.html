@@ -39,12 +39,12 @@
     <main>
         <div class="post-container">
             <!-- 제목 -->
-            <h1 id="post-title"></h1>
+            <h1 id="post-title" name="title"></h1>
         
             <!-- 사진 및 상세 내용 -->
             <div class="post-content">
-                <img id="post-image" alt="등록된 사진">
-                <div id="post-details"></div>
+                <img id="post-image" name="image" alt="등록된 사진">
+                <div id="post-details" name="details"></div>
             </div>
         
             <!-- 댓글 섹션 -->
@@ -53,7 +53,7 @@
                 <div id="comments">
                     <!-- 댓글 리스트가 동적으로 추가됩니다 -->
                 </div>
-                <textarea id="comment-input" placeholder="댓글을 작성하세요..."></textarea>
+                <textarea id="comment-input" name="comment" placeholder="댓글을 작성하세요..."></textarea>
                 <button id="add-comment" data-translate="add-comment-button">댓글 작성 완료</button>
             </div>
         
@@ -108,7 +108,7 @@
                 <div id="popup-messages" class="messages">
                     <!-- 채팅 메시지가 여기에 추가됩니다 -->
                 </div>
-                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" name="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
