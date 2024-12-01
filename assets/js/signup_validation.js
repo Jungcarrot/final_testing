@@ -1,4 +1,6 @@
-// signup_validation.js
+import { ref, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { database } from "./DB.js"; // Firebase 설정을 가져오는 경로 수정 (assets/js 폴더 기준)
+
 
 // 중복 검사 상태를 저장하는 변수
 let isLoginIDChecked = false;
@@ -93,7 +95,6 @@ document.querySelector('.input-container button').addEventListener('click', asyn
     const loginID = document.getElementById('loginID').value;
     if (loginID) {
         try {
-            const database = getDatabase();
             const userQuery = query(ref(database, 'UserData'), orderByChild('loginID'), equalTo(loginID));
             const snapshot = await get(userQuery);
             if (snapshot.exists()) {
@@ -117,7 +118,6 @@ document.querySelectorAll('.input-container button')[1].addEventListener('click'
     const nickName = document.getElementById('nickName').value;
     if (nickName) {
         try {
-            const database = getDatabase();
             const nickNameQuery = query(ref(database, 'UserData'), orderByChild('nickName'), equalTo(nickName));
             const snapshot = await get(nickNameQuery);
             if (snapshot.exists()) {
@@ -135,3 +135,4 @@ document.querySelectorAll('.input-container button')[1].addEventListener('click'
         alert("닉네임을 입력해주세요.");
     }
 });
+
