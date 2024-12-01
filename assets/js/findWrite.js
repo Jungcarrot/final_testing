@@ -1,9 +1,9 @@
 import { database } from "./DB.js";
-import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 작성 버튼 클릭 이벤트
-    document.getElementById('submit-button').addEventListener('click', () => {
+    document.getElementById('submit-button').addEventListener('click', async () => {
         const title = document.querySelector('#post-title').value; // Post.title
         const details = document.querySelector('#post-details').value; // Post.details
         const photo = document.querySelector('.photo-section input[type="file"]').files[0]; // 첨부 이미지
@@ -27,12 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 작성자 닉네임 가져오기
         const userRef = ref(database, `UserData/${authorId}`); // UserData 테이블 참조
-        get(userRef).then((userSnapshot) => {
+        try {
+            const userSnapshot = await get(userRef);
             if (userSnapshot.exists()) {
                 const { nickName } = userSnapshot.val(); // UserData.nickName 사용
 
+                // 게시물 고유 pid 생성 (Firebase 자동 생성 키 사용)
+                const newPostRef = push(ref(database, 'Post'));
+                const pid = newPostRef.key;
+
                 // 게시물 데이터 객체 생성
                 const postData = {
+                    pid, // 고유 게시물 ID
                     title, // Post.title
                     category: "발견", // 카테고리 설정 (발견 게시물)
                     postStatus: "active", // 상태 설정 (임시로 "active" 설정)
@@ -44,21 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 // 게시물 데이터 저장
-                const newPostRef = push(ref(database, 'Post')); // Post 테이블에 데이터 추가
-                set(newPostRef, postData).then(() => {
-                    alert('게시물이 저장되었습니다!');
-                    window.location.href = 'findList.html'; // 게시물 목록으로 이동
-                }).catch((error) => {
-                    console.error("게시물을 저장하는 중 오류가 발생했습니다:", error);
-                    alert('게시물을 저장하는 중 오류가 발생했습니다.');
-                });
+                await set(newPostRef, postData);
+
+                alert('게시물이 저장되었습니다!');
+                window.location.href = 'findList.html'; // 게시물 목록으로 이동
             } else {
                 alert('사용자 정보를 찾을 수 없습니다.');
             }
-        }).catch((error) => {
-            console.error("사용자 정보를 불러오는 중 오류가 발생했습니다:", error);
-            alert('사용자 정보를 불러오는 중 오류가 발생했습니다.');
-        });
+        } catch (error) {
+            console.error("사용자 정보를 불러오거나 게시물을 저장하는 중 오류가 발생했습니다:", error);
+            alert('게시물을 저장하는 중 오류가 발생했습니다.');
+        }
     });
 
     // 번역 데이터
