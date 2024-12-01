@@ -25,8 +25,9 @@ async function validateLogin() {
                 // 비밀번호 확인
                 if (user.password === password) {
                     // 로그인 상태 저장
-                    localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("nickName", user.nickName);
+                    localStorage.setItem("userLoggedIn", "true");
+                    localStorage.setItem("loginID", loginID); // 로그인된 사용자 ID 저장
+                    localStorage.setItem("nickName", user.nickName); // 닉네임 저장
 
                     // 데이터 저장 확인 및 페이지 리다이렉트
                     alert("로그인 성공!");
