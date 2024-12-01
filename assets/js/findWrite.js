@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = document.querySelector('.title-section input').value;
         const details = document.querySelector('.detail-section textarea').value;
         const photo = document.querySelector('.photo-section input[type="file"]').files[0];
-        const author = "익명"; // 기본 작성자
+        const nickName = localStorage.getItem('nickName') || "익명"; // 사용자 설정 닉네임 가져오기 (없으면 익명)
         const date = new Date().toLocaleString(); // 작성일
 
         if (!title) {
