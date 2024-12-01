@@ -23,8 +23,8 @@ function changeLanguage(language) {
         document.getElementById('languageKo').classList.remove('active');
         document.querySelector('.logo h1').innerText = "Pawprint\nDetective";
         document.querySelector('h2').innerText = "SIGNUP";
-        document.querySelectorAll('.formGroup label')[0].innerText = "Username";
-        document.querySelectorAll('.formGroup label')[1].innerText = "Nickname";
+        document.querySelectorAll('.formGroup label')[0].innerText = "loginID";
+        document.querySelectorAll('.formGroup label')[1].innerText = "NickName";
         document.querySelectorAll('.formGroup label')[2].innerText = "Password";
         document.querySelectorAll('.formGroup label')[3].innerText = "Confirm Password";
         document.getElementById('signupButton').innerText = "Complete Sign Up";
