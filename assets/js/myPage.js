@@ -1,4 +1,4 @@
-import { database } from "./DB.js";
+import { database } from "assets/js/DB.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 ID 가져오기 (예시용)
