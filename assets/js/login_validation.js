@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("form");
 
     loginForm.addEventListener("submit", (event) => {
-        const loginID = document.getElementById("login-username").value.trim(); // 'username'을 'loginID'로 변경하여 근본과 맞춤
+        const loginID = document.getElementById("login-loginID").value.trim(); // 'username'을 'loginID'로 변경하여 근본과 맞춤
         const password = document.getElementById("login-password").value.trim();
 
         if (!loginID || !password) {
