@@ -1,5 +1,5 @@
 function navigateToPage(page) {
-    console.log(Navigating to: ${page});
+    console.log(`Navigating to: ${page}`);
     window.location.href = page; // 지정된 페이지로 이동
 }
 
