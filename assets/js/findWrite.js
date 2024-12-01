@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const postData = { title, details, photo: photo?.name || '', author, date };
+        // postData에서 'author'를 'nickName'으로 수정
+        const postData = { title, details, photo: photo?.name || '', author: nickName, date };
         const posts = JSON.parse(localStorage.getItem('findPosts')) || [];
         posts.push(postData);
         localStorage.setItem('findPosts', JSON.stringify(posts)); // 로컬 스토리지에 저장
