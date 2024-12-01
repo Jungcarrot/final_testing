@@ -6,10 +6,11 @@ const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UI
 
 // Firebase에서 사용자 닉네임 가져오기
 document.addEventListener("DOMContentLoaded", async () => {
+    console.log("로그인된 사용자 UID:", uid); // uid가 제대로 로드되는지 확인
     if (localStorage.getItem("userLoggedIn") === "true" && uid) {
         try {
             const userRef = ref(database, `UserData/${uid}`); // Firebase 경로 참조
-            console.log("Firebase 참조 경로:", userRef);
+            console.log("Firebase 참조 경로:", userRef); // 참조 경로 확인
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
