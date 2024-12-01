@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('submit-button').addEventListener('click', () => {
         const title = document.querySelector('.title-section input').value;
         const details = document.querySelector('.detail-section textarea').value;
-        const photo = document.querySelector('.photo-section input[type="file"]').files[0];
-        const author = "익명"; // 기본 작성자
+        const image = document.querySelector('.photo-section input[type="file"]').files[0];
+        const nickName = "익명"; // 기본 작성자
         const date = new Date().toLocaleString(); // 작성일
 
         if (!title) {
@@ -17,10 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const postData = { title, details, photo: photo?.name || '', author, date };
-        const posts = JSON.parse(localStorage.getItem('protectPosts')) || [];
-        posts.push(postData);
-        localStorage.setItem('protectPosts', JSON.stringify(posts)); // 로컬 스토리지에 저장
+        const postData = { title, details, image: image?.name || '', nickName, date };
+        const protectPosts = JSON.parse(localStorage.getItem('protectPosts')) || [];
+        protectPosts.push(postData);
+        localStorage.setItem('protectPosts', JSON.stringify(protectPosts)); // 로컬 스토리지에 저장
 
         alert('게시물이 저장되었습니다!');
         window.location.href = 'protectList.html'; // 게시물 목록으로 이동
