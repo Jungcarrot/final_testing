@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const userPromises = [];
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
-            if (post.category === '임시보호') { // 특정 카테고리 필터링 (실종)
+            if (post.category === '임시보호') { // 특정 카테고리 필터링 (임시보호)
                 posts.push(post);
                 userPromises.push(get(ref(db, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
@@ -37,3 +37,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+});
