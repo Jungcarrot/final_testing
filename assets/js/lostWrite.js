@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('submit-button').addEventListener('click', () => {
         const title = document.querySelector('.title-section input').value;
         const details = document.querySelector('.detail-section textarea').value;
-        const photo = document.querySelector('.photo-section input[type="file"]').files[0];
-        const author = "익명"; // 기본 작성자
+        const image = document.querySelector('.photo-section input[type="file"]').files[0];
+        const nickName = "익명"; // 기본 작성자
         const date = new Date().toLocaleString(); // 작성일
 
         if (!title) {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const postData = { title, details, photo: photo?.name || '', author, date };
+        const postData = { title, details, image: image?.name || '', nickName, date };
         const posts = JSON.parse(localStorage.getItem('lostPosts')) || [];
         posts.push(postData);
         localStorage.setItem('lostPosts', JSON.stringify(posts)); // 로컬 스토리지에 저장
