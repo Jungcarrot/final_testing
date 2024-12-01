@@ -64,7 +64,7 @@
                         <th data-translate="table-header-date">작성일</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="post-list">
                     <!-- 게시물이 생성되면 여기에 추가됩니다 -->
                 </tbody>
             </table>
@@ -134,5 +134,37 @@
             <button id="lang-en">ENGLISH</button>
         </div>
     </footer>
+
+    <script>
+        // Firebase 데이터 가져오기
+        import { database } from './DB.js';
+        import { ref, get } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js';
+
+        const postList = document.getElementById("post-list");
+
+        // Firebase에서 데이터 가져오기
+        const postsRef = ref(database, 'posts'); // Firebase에 있는 'posts' 경로로 참조
+        get(postsRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const posts = snapshot.val(); // 게시물 데이터
+                let postIndex = 1;
+                Object.values(posts).forEach(post => {
+                    const postRow = `
+                        <tr>
+                            <td>${postIndex++}</td>
+                            <td><a href="findPost.html?id=${post.id}">${post.title}</a></td>
+                            <td>${post.author}</td>
+                            <td>${post.date}</td>
+                        </tr>
+                    `;
+                    postList.innerHTML += postRow; // 게시물 목록에 추가
+                });
+            } else {
+                document.querySelector('.no-posts').style.display = 'block';
+            }
+        }).catch((error) => {
+            console.error('Error fetching posts:', error);
+        });
+    </script>
 </body>
 </html>
