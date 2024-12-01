@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
-            const newCommentRef = ref(database, 'Comment');
+            const newCommentRef = push(ref(database, 'Comment'));
             const newComment = {
                 postID: postId,
                 commenter: commenterId,
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 time: new Date().toLocaleString(),
             };
 
-            await set(push(newCommentRef), newComment);
+            await set(newCommentRef, newComment);
             commentInput.value = ''; // 입력 필드 초기화
             alert('댓글이 작성되었습니다.');
             await fetchComments(postId); // 댓글 목록 업데이트
@@ -188,4 +188,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
-
