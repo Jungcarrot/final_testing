@@ -5,15 +5,18 @@ import { database } from "./DB.js"; // Firebase 설정을 가져오는 경로 (a
 async function validateLogin() {
     const loginID = document.getElementById('login-loginID').value;
     const password = document.getElementById('login-password').value;
+
     // 간단한 유효성 검사
     if (!loginID || !password) {
         alert("아이디와 비밀번호를 모두 입력해주세요.");
         return false;
     }
+
     try {
         // Firebase Realtime Database에서 loginID를 검색
         const userRef = ref(database, 'UserData');
         const snapshot = await get(userRef);
+
         if (snapshot.exists()) {
             const users = snapshot.val();
             const user = Object.values(users).find(user => user.loginID === loginID);
@@ -25,9 +28,14 @@ async function validateLogin() {
                     localStorage.setItem("userLoggedIn", "true");
                     localStorage.setItem("nickName", user.nickName);
 
-                    // index.html로 리다이렉트
+                    // 데이터 저장 확인 및 페이지 리다이렉트
                     alert("로그인 성공!");
-                    window.location.href = "index.html";
+
+                    // 리다이렉트를 지연시켜 localStorage가 제대로 저장될 시간을 줌
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 500); // 500ms 지연 후 리다이렉트
+
                     return false;
                 } else {
                     alert("비밀번호가 잘못되었습니다.");
