@@ -7,10 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     onValue(postsRef, async (snapshot) => {
         const posts = [];
         const userPromises = [];
+        const postKeys = [];
+
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
+            const postId = childSnapshot.key;
             if (post.category === '임시보호') { // 특정 카테고리 필터링 (임시보호)
-                posts.push(post);
+                posts.push({ ...post, postId });
                 userPromises.push(get(ref(db, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
         });
@@ -28,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const row = `
                     <tr>
                         <td>${index + 1}</td> <!-- 번호 -->
-                        <td><a href="protectPost.html">${post.title}</a></td> <!-- 제목 -->
+                        <td><a href="protectPost.html?pid=${post.postId}">${post.title}</a></td> <!-- 제목, 게시물 ID 추가 -->
                         <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
                         <td>${post.date || 'N/A'}</td> <!-- 작성일 -->
                     </tr>
