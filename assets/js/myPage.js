@@ -1,12 +1,12 @@
 import { database } from "./DB.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-// 현재 로그인한 사용자의 ID 가져오기 (예시용)
-const loginID = "abcd1234"; // 실제 로그인된 사용자 ID로 변경해야 함
+// 현재 로그인한 사용자의 ID 가져오기 (localStorage에서 가져옴)
+const loginID = localStorage.getItem("loginID"); // 로그인 시 저장된 사용자 ID 가져오기
 
 // Firebase에서 사용자 닉네임 가져오기
 document.addEventListener("DOMContentLoaded", async () => {
-    if (loginID) {
+    if (localStorage.getItem("userLoggedIn") === "true" && loginID) {
         try {
             const userRef = ref(database, `UserData/${loginID}`); // Firebase 경로 참조
             const snapshot = await get(userRef);
@@ -43,15 +43,19 @@ function saveNickname() {
     }
 
     // Firebase의 데이터베이스에 닉네임 저장
-    const userRef = ref(database, `UserData/${loginID}`);
+    if (loginID) {
+        const userRef = ref(database, `UserData/${loginID}`);
 
-    update(userRef, {
-        nickName: newNickname
-    }).then(() => {
-        alert("닉네임이 성공적으로 변경되었습니다!");
-        document.getElementById("mypage-nickName").value = newNickname; // 마이페이지에 변경된 닉네임 반영
-    }).catch((error) => {
-        console.error("닉네임 저장 오류:", error);
-        alert("닉네임 변경에 실패했습니다.");
-    });
+        update(userRef, {
+            nickName: newNickname
+        }).then(() => {
+            alert("닉네임이 성공적으로 변경되었습니다!");
+            document.getElementById("mypage-nickName").value = newNickname; // 마이페이지에 변경된 닉네임 반영
+        }).catch((error) => {
+            console.error("닉네임 저장 오류:", error);
+            alert("닉네임 변경에 실패했습니다.");
+        });
+    } else {
+        console.error("로그인된 사용자 ID가 필요합니다.");
+    }
 }
