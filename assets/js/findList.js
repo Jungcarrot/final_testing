@@ -1,17 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const posts = JSON.parse(localStorage.getItem('findPosts')) || [];
-    const tableBody = document.querySelector('.post-table tbody');
-    const noPostsMessage = document.querySelector('.no-posts');
-    const searchInput = document.querySelector('.search-bar input');
-    const searchButton = document.querySelector('.search-bar button');
-    const manualContent = document.querySelector('.manual p');
+    // posts 배열과 관련된 부분은 그대로 두고, 필요한 변수만 수정
+    const posts = JSON.parse(localStorage.getItem('findPosts')) || []; // localStorage에서 데이터를 가져옴
+    const tableBody = document.querySelector('.post-table tbody'); // 게시물 테이블 tbody 요소
+    const noPostsMessage = document.querySelector('.no-posts'); // 게시물이 없을 경우 보여주는 메시지
+    const searchInput = document.querySelector('.search-bar input'); // 검색창의 input 요소
+    const searchButton = document.querySelector('.search-bar button'); // 검색 버튼 요소
+    const manualContent = document.querySelector('.manual p'); // 매뉴얼 내용을 포함한 p 태그
 
     function renderPosts(filteredPosts) {
         tableBody.innerHTML = ''; // 기존 목록 초기화
         if (filteredPosts.length === 0) {
-            noPostsMessage.style.display = 'block';
+            noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
         } else {
-            noPostsMessage.style.display = 'none';
+            noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
             filteredPosts.forEach((post, index) => {
                 const row = `
                     <tr>
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${post.date}</td>
                     </tr>
                 `;
-                tableBody.innerHTML += row;
+                tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
             });
         }
     }
@@ -31,17 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 검색 이벤트
     function filterPosts() {
-        const query = searchInput.value.trim().toLowerCase();
+        const query = searchInput.value.trim().toLowerCase(); // 검색어를 소문자로 변환하여 비교
         const filteredPosts = posts.filter(post =>
-            post.title.toLowerCase().includes(query)
+            post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
         );
-        renderPosts(filteredPosts);
+        renderPosts(filteredPosts); // 필터링된 게시물 렌더링
     }
 
-    searchButton.addEventListener('click', filterPosts);
+    searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
     searchInput.addEventListener('keyup', (event) => {
         if (event.key === 'Enter') {
-            filterPosts();
+            filterPosts(); // Enter 키 입력 시 필터링
         }
     });
 
@@ -107,9 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = element.getAttribute('data-translate');
             if (translations[lang][key]) {
                 if (element.placeholder !== undefined) {
-                    element.placeholder = translations[lang][key];
+                    element.placeholder = translations[lang][key]; // 입력 필드의 placeholder 업데이트
                 } else {
-                    element.textContent = translations[lang][key];
+                    element.textContent = translations[lang][key]; // 텍스트 콘텐츠 업데이트
                 }
             }
         });
@@ -117,12 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.post-language-selector button').forEach(button => {
         button.addEventListener('click', () => {
-            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
+            const lang = button.id === 'lang-ko' ? 'ko' : 'en'; // 언어 선택
             updateLanguage(lang);
             document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
         });
     });
 
-    updateLanguage('ko');
+    updateLanguage('ko'); // 초기 언어 설정
 });
