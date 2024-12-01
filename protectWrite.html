@@ -3,88 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
-    <script type="module" src="assets/js/DB.js"></script>
-    
-    <title>회원가입 - 발자국 탐정</title>
+    <title>발견 게시물 작성</title>
+    <link rel="stylesheet" href="assets/css/postList.css">
+    <link rel="stylesheet" href="assets/css/postWrite.css">
     <link rel="stylesheet" href="assets/css/style_main.css">
-    <link rel="stylesheet" href="assets/css/style_2nd.css">
-    <link rel="stylesheet" href="assets/css/signup.css">
+    <link rel="stylesheet" href="assets/css/postLanguage.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
     <script src="assets/js/navigation.js" defer></script>
-    <script src="assets/js/language_signup.js" defer></script>
-    <script src="assets/js/signup_validation.js" defer></script>
-    <script src="assets/js/authentication.js" defer></script>
+    <script src="assets/js/login_status.js" defer></script>
+    <script src="assets/js/language_index.js" defer></script>
+    <script src="assets/js/postList.js" defer></script>
+    <script src="assets/js/protectWrite.js" defer></script>
+    <script src="assets/js/chat.js" defer></script>
 </head>
-<body>
-    <div class="container">
-        <!-- 좌측 사이드바 -->
-        <aside class="login-left-section">
-            <div class="logo" onclick="navigateToHome()">
-                <h1>발자국<br>탐정</h1>
-            </div>
-            <nav class="category-nav">
-                <ul>
-                    <li onclick="navigateToPage('lostList.html')">
-                        <img src="assets/img/lost.png" alt="실종">
-                    </li>
-                    <li onclick="navigateToPage('findList.html')">
-                        <img src="assets/img/find.png" alt="발견">
-                    </li>
-                    <li onclick="navigateToPage('vetList.html')">
-                        <img src="assets/img/vet.png" alt="동물병원">
-                    </li>
-                    <li onclick="navigateToPage('protectList.html')">
-                        <img src="assets/img/protect.png" alt="임시보호">
-                    </li>
-                </ul>
-            </nav>
-        </aside>
 
-        <!-- 회원가입 메인 컨텐츠 -->
-        <main class="login-main">
-            <section class="login-signup-section">
-                <h2>회원가입</h2>
-                <!-- 수정된 폼 -->
-                <form onsubmit="return validateSignup(event)">
-                    <div class="form-group">
-                        <label for="loginID">아이디</label>
-                        <div class="input-container">
-                            <input type="text" id="loginID" name="loginID" placeholder="아이디를 입력하세요">
-                            <button type="button" class="duplicate-check">중복 검사</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="nickName">닉네임</label>
-                        <div class="input-container">
-                            <input type="text" id="nickName" name="nickName" placeholder="닉네임을 입력하세요">
-                            <button type="button" class="duplicate-check">중복 검사</button>
-                        </div>
-                    </div>                    
-                    <div class="form-group">
-                        <label for="password">비밀번호</label>
-                        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요">
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">비밀번호 재입력</label>
-                        <div class="input-container">
-                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
-                        </div>
-                        <small id="password-check-message" style="display: none; color: red;">비밀번호가 일치하지 않습니다.</small>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" id="signup-button" disabled>회원가입 완료</button>
-                    </div>                    
-                </form>
-            </section>
-        </main>
-        
-        <!-- 언어 선택 -->
-        <div class="language-selector">
-            <button id="lang-ko" onclick="changeLanguage('ko')" class="active">한국어</button>
-            <button id="lang-en" onclick="changeLanguage('en')">ENGLISH</button>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="assets/img/logo.png" alt="로고">
+            </a>
         </div>
-    </div>
+        <nav>
+            <ul>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1 data-translate="page-title">임시보호 게시물 작성</h1>
+        <div class="form-container">
+            <div class="section title-section">
+                <input type="text" id="title" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
+            </div>
+
+            <div class="content-wrapper">
+                <div class="section photo-section">
+                    <label for="photo-upload" data-translate="photoLabel">사진 첨부</label>
+                    <input type="file" id="photo-upload" name="image" accept="image/*">
+                </div>
+
+                <div class="section detail-section">
+                    <textarea id="details" name="details" placeholder="임시보호 중인 동물의 특징, 성별, 종 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button id="submit-button" data-translate="submitButton">작성 완료</button>
+            </div>
+        </div> 
+    </main>
+
+    <aside class="right-section">
+        <div id="logged-out-ui">
+            <div class="auth-text">
+                <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
+            </div>
+            <div class="manual">
+                <h2>MANUAL</h2>
+                <ul>
+                    <li>매뉴얼 내용</li>
+                    <li>-</li>
+                    <li>-</li>
+                </ul>
+            </div>
+        </div>
+        <div id="logged-in-ui" style="display: none;">
+            <div class="auth-text">
+                <a href="mypage.html" data-translate="mypage">마이페이지</a> | <a href="#" id="logout" data-translate="logout">로그아웃</a>
+            </div>
+            <div class="chat-container">
+                <aside class="chat-sidebar">
+                    <h2 data-translate="chat-list-title">채팅 목록</h2>
+                    <ul>
+                        <li onclick="openChatPopup('user1')">사용자 1</li>
+                        <li onclick="openChatPopup('user2')">사용자 2</li>
+                        <li onclick="openChatPopup('user3')">사용자 3</li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="chat-popup hidden" id="chat-popup">
+                <div class="chat-header">
+                    <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
+                    <button onclick="closeChatPopup()">X</button>
+                </div>
+                <div id="popup-messages" class="messages"></div>
+                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
+            </div>
+        </div>
+    </aside>
+
+    <footer>
+        <div class="post-language-selector">
+            <button onclick="changeLanguage('ko')" id="lang-ko" class="active">한국어</button>
+            <button onclick="changeLanguage('en')" id="lang-en">ENGLISH</button>
+        </div>
+    </footer>
 </body>
 </html>
-
