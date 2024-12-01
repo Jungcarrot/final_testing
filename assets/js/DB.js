@@ -27,3 +27,6 @@ onValue(connectedRef, (snapshot) => {
     }
 });
 
+export { database };  // 데이터베이스 객체를 export
+
+
