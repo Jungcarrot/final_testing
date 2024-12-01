@@ -84,20 +84,12 @@
     margin-top: -2rem;
 }
 
-/* 이미지 행 스타일 */
-.image-row {
-    display: flex;
-    gap: 20px; /* 이미지 간격 */
+.category-center img {
+    width: 400px;
+    height: 400px;
+    margin-bottom: -2rem;
+    transition: transform 0.3s ease;
 }
-
-/* 이미지 크기 조정 */
-.image-row img {
-    width: 80px; /* 이미지 너비 */
-    height: auto; /* 비율 유지 */
-    transition: transform 0.2s ease; /* 마우스 오버 효과 */
-}
-
-
 
 .category-center img:hover {
     transform: scale(1.1);
