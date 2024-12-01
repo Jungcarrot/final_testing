@@ -19,13 +19,17 @@ async function validateLogin() {
 
         if (snapshot.exists()) {
             const users = snapshot.val();
-            const user = Object.values(users).find(user => user.loginID === loginID);
+            // 사용자 정보 검색
+            const userEntry = Object.entries(users).find(([uid, user]) => user.loginID === loginID);
 
-            if (user) {
+            if (userEntry) {
+                const [uid, user] = userEntry;
+
                 // 비밀번호 확인
                 if (user.password === password) {
                     // 로그인 상태 저장
                     localStorage.setItem("userLoggedIn", "true");
+                    localStorage.setItem("uid", uid); // 사용자 고유 uid를 저장하여 추후 사용
                     localStorage.setItem("loginID", loginID);
                     localStorage.setItem("nickName", user.nickName);
 
