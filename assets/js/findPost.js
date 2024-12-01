@@ -164,4 +164,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     updateLanguage('ko');
+    document.getElementById('lang-ko').classList.add('active');
 });
+
