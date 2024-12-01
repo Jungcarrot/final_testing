@@ -13,8 +13,8 @@ function changeLanguage(lang) {
         document.querySelectorAll('.duplicate-check')[1].innerText = "중복 검사";
 
         // placeholder 변경
-        document.getElementById('signup-username').placeholder = "아이디를 입력하세요";
-        document.getElementById('signup-nickname').placeholder = "닉네임을 입력하세요";
+        document.getElementById('signup-loginID').placeholder = "아이디를 입력하세요";
+        document.getElementById('signup-nickName').placeholder = "닉네임을 입력하세요";
         document.getElementById('signup-password').placeholder = "비밀번호를 입력하세요";
         document.getElementById('signup-confirm-password').placeholder = "비밀번호를 다시 입력하세요";
     }
