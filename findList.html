@@ -10,8 +10,7 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script src="assets/js/postList.js" defer></script>
-    <script type="module src="assets/js/findList.js" defer></script>
+    <script src="assets/js/findList.js" defer></script> <!-- 수정된 부분 -->
     <link rel="stylesheet" href="assets/css/chat.css">
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
@@ -41,7 +40,7 @@
         <h1 data-translate="page-title">발견 게시물</h1>
 
         <!-- 게시글 작성 버튼 -->
-        <div class="post-create" id="post-create">
+        <div class="post-create" id="post-create" style="display: none;">
             <a href="findWrite.html">
                 <button id="post-create-button" data-translate="post-create-button">게시글 작성</button>
             </a>
@@ -134,5 +133,21 @@
             <button id="lang-en">ENGLISH</button>
         </div>
     </footer>
+
+    <script>
+        // 로그인 상태에 따라 UI 변경
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+            const postCreateButton = document.getElementById("post-create");
+
+            if (isLoggedIn) {
+                // 로그인 상태일 때 게시물 작성 버튼 보이기
+                postCreateButton.style.display = "block";
+            } else {
+                // 비로그인 상태일 때 게시물 작성 버튼 숨기기
+                postCreateButton.style.display = "none";
+            }
+        });
+    </script>
 </body>
 </html>
