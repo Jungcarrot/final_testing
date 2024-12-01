@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
             if (post.category === '발견') { // "발견" 카테고리의 게시물만 필터링
-                posts.push(post);
+                posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
                 userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
         });
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = `
                         <tr>
                             <td>${index + 1}</td> <!-- 번호 -->
-                            <td><a href="findPost.html?id=${post.pid}">${post.title}</a></td> <!-- 제목 -->
+                            <td><a href="findPost.html?id=${post.id}">${post.title}</a></td> <!-- 제목 -->
                             <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
                             <td>${post.date}</td> <!-- 작성일 -->
                         </tr>
@@ -125,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // 페이지 제목 업데이트
+        document.querySelector('title').textContent = translations[lang]['page-title'];
     }
 
     document.querySelectorAll('.post-language-selector button').forEach(button => {
@@ -137,4 +140,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     updateLanguage('ko'); // 초기 언어 설정
+    document.getElementById('lang-ko').classList.add('active');
 });
