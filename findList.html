@@ -143,11 +143,16 @@
             if (isLoggedIn) {
                 // 로그인 상태일 때 게시물 작성 버튼 보이기
                 postCreateButton.style.display = "block";
+                document.getElementById('logged-in-ui').style.display = 'block';
+                document.getElementById('logged-out-ui').style.display = 'none';
             } else {
                 // 비로그인 상태일 때 게시물 작성 버튼 숨기기
                 postCreateButton.style.display = "none";
+                document.getElementById('logged-in-ui').style.display = 'none';
+                document.getElementById('logged-out-ui').style.display = 'block';
             }
         });
     </script>
 </body>
 </html>
+
