@@ -3,15 +3,18 @@ import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/fire
 
 // 현재 로그인한 사용자의 ID 가져오기 (localStorage에서 가져옴)
 const loginID = localStorage.getItem("loginID"); // 로그인 시 저장된 사용자 ID 가져오기
+console.log("로그인된 사용자 ID:", loginID); // 확인용 로그 추가
 
 // Firebase에서 사용자 닉네임 가져오기
 document.addEventListener("DOMContentLoaded", async () => {
     if (localStorage.getItem("userLoggedIn") === "true" && loginID) {
         try {
             const userRef = ref(database, `UserData/${loginID}`); // Firebase 경로 참조
+            console.log("Firebase 참조 경로:", userRef); // 확인용 로그 추가
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
+                console.log("사용자 데이터:", userData); // 확인용 로그 추가
                 document.getElementById("mypage-loginID").value = userData.loginID || '';
                 document.getElementById("mypage-nickName").value = userData.nickName || '';
             } else {
