@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tr>
                         <td>${index + 1}</td>
                         <td><a href="lostPost.html?id=${posts.indexOf(post)}">${post.title}</a></td>
-                        <td>${post.author}</td>
+                        <td>${post.nickName}</td> <!-- 변수명 변경 -->
                         <td>${post.date}</td>
                     </tr>
                 `;
