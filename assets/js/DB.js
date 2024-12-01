@@ -27,8 +27,7 @@ onValue(connectedRef, (snapshot) => {
     }
 });
 
-export { database };  // 데이터베이스 객체를 export
-postList.js의 내용은
+export { database };  // 데이터베이스 객체를 export postList.js의 내용은
 document.addEventListener("DOMContentLoaded", () => {
     const postCreateButton = document.getElementById("post-create");
 
