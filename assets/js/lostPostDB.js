@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const post = snapshot.val();
         const authorSnapshot = await get(ref(db, `UserData/${post.authorId}`));
-        const authorNickname = authorSnapshot.exists() ? authorSnapshot.val().nickName : 'Unknown';
+        const authorNickName = authorSnapshot.exists() ? authorSnapshot.val().nickName : 'Unknown';
 
         // 댓글 가져오기
         const commentsRef = ref(db, `Comment`);
