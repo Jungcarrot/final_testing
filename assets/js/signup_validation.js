@@ -1,4 +1,4 @@
-import { ref, query, orderByChild, equalTo, get, push, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, push, set, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 import { database } from "./DB.js"; // Firebase 설정을 가져오는 경로 수정 (assets/js 폴더 기준)
 
 // 중복 검사 상태를 저장하는 변수
@@ -62,11 +62,11 @@ async function validateSignup(event) {
         return false;
     }
 
+    // 고유한 uid 생성 및 데이터 저장
     try {
-        // Firebase 데이터베이스에 사용자 추가
         const userRef = ref(database, 'UserData');
-        const newUserRef = push(userRef);
-        const uid = newUserRef.key; // 자동 생성된 uid 가져오기
+        const newUserRef = push(userRef); // 고유한 uid가 생성됨
+        const uid = newUserRef.key;
 
         await set(newUserRef, {
             uid: uid,
@@ -82,6 +82,8 @@ async function validateSignup(event) {
         console.error("회원가입 중 오류 발생:", error);
         alert("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
+
+    return true;
 }
 
 // 회원가입 버튼 활성화 함수
