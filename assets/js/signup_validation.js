@@ -1,4 +1,4 @@
-import { ref, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, push, set, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 import { database } from "./DB.js"; // Firebase 설정을 가져오는 경로 수정 (assets/js 폴더 기준)
 
 // 중복 검사 상태를 저장하는 변수
@@ -157,4 +157,3 @@ document.querySelectorAll('.input-container button')[1].addEventListener('click'
 });
 
 document.getElementById("signup-form").addEventListener("submit", validateSignup);
-
