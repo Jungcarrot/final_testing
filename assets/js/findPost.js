@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = parseInt(urlParams.get('id'), 10);
-    const posts = JSON.parse(localStorage.getItem('findPosts')) || [];
-    const post = posts[postId];
+    const urlParams = new URLSearchParams(window.location.search);  // URL에서 쿼리 매개변수 파싱
+    const postId = parseInt(urlParams.get('id'), 10);  // id 파라미터를 숫자로 변환
+    const posts = JSON.parse(localStorage.getItem('findPosts')) || [];  // 로컬 스토리지에서 게시물 목록 가져오기
+    const post = posts[postId];  // 해당 id에 맞는 게시물 가져오기
 
     if (!post) {
         alert('게시물을 찾을 수 없습니다.');
-        window.location.href = 'findList.html';
+        window.location.href = 'findList.html';  // 게시물이 없다면 목록 페이지로 리디렉션
         return;
     }
 
@@ -69,10 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 언어 변경 함수
     function changeLanguage(lang) {
-        const elements = document.querySelectorAll('[data-translate]');
+        const elements = document.querySelectorAll('[data-translate]'); // data-translate 속성을 가진 요소들
         elements.forEach(el => {
             const key = el.getAttribute('data-translate');
-            el.textContent = translations[lang][key] || el.textContent;
+            el.textContent = translations[lang][key] || el.textContent;  // 언어에 맞는 텍스트로 변경
         });
 
         // 신고하기 버튼 번역
@@ -90,20 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lang-en').addEventListener('click', () => changeLanguage('en'));
 
     // 초기화
-    changeLanguage('ko'); // 기본 언어 설정
+    changeLanguage('ko');  // 기본 언어 설정
 
     // 게시물 데이터 로드
-    document.getElementById('post-title').textContent = post.title || '제목이 없습니다.';
-    document.getElementById('post-image').src = post.image || 'assets/img/default-image.png';
-    document.getElementById('post-details').textContent = post.details || '상세 내용이 없습니다.';
+    document.getElementById('post-title').textContent = post.title || '제목이 없습니다.';  // 게시물 제목
+    document.getElementById('post-image').src = post.image || 'assets/img/default-image.png';  // 게시물 이미지
+    document.getElementById('post-details').textContent = post.details || '상세 내용이 없습니다.';  // 게시물 상세 내용
 
     // 댓글 섹션 처리
-    const comments = post.comments || [];
-    const commentContainer = document.getElementById('comments');
-    const commentInput = document.getElementById('comment-input');
+    const comments = post.comments || [];  // 댓글 배열
+    const commentContainer = document.getElementById('comments');  // 댓글을 출력할 컨테이너
+    const commentInput = document.getElementById('comment-input');  // 댓글 입력 필드
 
     function renderComments() {
-        commentContainer.innerHTML = '';
+        commentContainer.innerHTML = '';  // 기존 댓글 초기화
         comments.forEach((comment, index) => {
             const commentDiv = document.createElement('div');
             commentDiv.classList.add('comment-item');
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>${comment.author}</strong>: ${comment.text}
                 <button class="report-button" data-index="${index}" data-translate="report-button">${translations['ko']['report-button']}</button>
             `;
-            commentContainer.appendChild(commentDiv);
+            commentContainer.appendChild(commentDiv);  // 댓글을 컨테이너에 추가
         });
 
         // 신고하기 버튼 이벤트 추가
@@ -124,16 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('add-comment').addEventListener('click', () => {
-        const commentText = commentInput.value.trim();
-        const currentUser = localStorage.getItem('loggedInUser') || '익명'; // 로그인된 사용자 이름 가져오기
+        const commentText = commentInput.value.trim();  // 입력한 댓글 텍스트
+        const currentUser = localStorage.getItem('loggedInUser') || '익명';  // 로그인된 사용자 이름 가져오기
         if (commentText) {
-            comments.push({ text: commentText, author: currentUser });
-            post.comments = comments; // 게시물에 댓글 저장
-            localStorage.setItem('findPosts', JSON.stringify(posts)); // 로컬 스토리지 업데이트
-            renderComments();
-            commentInput.value = '';
+            comments.push({ text: commentText, author: currentUser });  // 댓글 추가
+            post.comments = comments;  // 게시물에 댓글 저장
+            localStorage.setItem('findPosts', JSON.stringify(posts));  // 로컬 스토리지 업데이트
+            renderComments();  // 댓글 다시 렌더링
+            commentInput.value = '';  // 댓글 입력 필드 초기화
         }
     });
 
-    renderComments();
+    renderComments();  // 댓글 처음 렌더링
 });
