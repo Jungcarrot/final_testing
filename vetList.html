@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>동물병원</title>
+    <link rel="stylesheet" href="assets/css/postList.css">
+    <link rel="stylesheet" href="assets/css/style_main.css">
+    <link rel="stylesheet" href="assets/css/postLanguage.css">
     <link rel="stylesheet" href="assets/css/vetList.css">
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database-compat.js"></script>
-    <script src="assets/js/DB.js"></script>
+    <link rel="stylesheet" href="assets/css/chat.css">
+    <script src="assets/js/navigation.js" defer></script>
+    <script src="assets/js/login_status.js" defer></script>
+    <script src="assets/js/language_index.js" defer></script>
+    <script src="assets/js/postList.js" defer></script>
+    <script src="assets/js/vetList.js" defer></script>
+    <script src="assets/js/chat.js" defer></script>
 </head>
 <body>
     <!-- 헤더 -->
@@ -19,40 +26,12 @@
         </div>
         <nav>
             <ul>
-                <li>
-                    <a href="lostList.html" data-translate="header-lost">
-                        <img src="assets/img/lost.png" alt="Lost">
-                        실종
-                    </a>
-                </li>
-                <li>
-                    <a href="findList.html" data-translate="header-found">
-                        <img src="assets/img/find.png" alt="Found">
-                        발견
-                    </a>
-                </li>
-                <li>
-                    <a href="protectList.html" data-translate="header-protect">
-                        <img src="assets/img/protect.png" alt="Temporary Protection">
-                        임시보호
-                    </a>
-                </li>
-                <li>
-                    <a href="vetList.html" data-translate="header-vet">
-                        <img src="assets/img/vet.png" alt="Veterinary Clinic">
-                        동물병원
-                    </a>
-                </li>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
             </ul>
         </nav>
-        <div class="auth">
-            <span class="logged-out">
-                <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
-            </span>
-            <span class="logged-in" style="display: none;">
-                <a href="logout.html" data-translate="logout">로그아웃</a> | <a href="mypage.html" data-translate="mypage">마이페이지</a>
-            </span>
-        </div>        
     </header>
 
     <!-- 메인 컨텐츠 -->
@@ -61,7 +40,6 @@
         <div id="location-selector">
             <select id="region-select">
                 <option value="">구/군 선택</option>
-                <!-- 동적 지역 추가 -->
             </select>
         </div>
     
@@ -70,66 +48,75 @@
             <table>
                 <thead>
                     <tr>
-                        <th>번호</th>
-                        <th>병원 이름</th>
-                        <th>주소</th>
+                        <th data-translate="header-number">번호</th>
+                        <th data-translate="header-name">병원 이름</th>
+                        <th data-translate="header-address">주소</th>
                     </tr>
                 </thead>
-                <tbody id="vet-list">
-                    <!-- 병원 데이터가 동적으로 추가됩니다 -->
+                <tbody>
+                    <!-- 동적으로 추가될 병원 데이터 -->
                 </tbody>
-            </table>
+            </table>            
         </div>        
     </main>
     
-    <!-- 채팅 섹션 -->
-    <aside class="chat-section">
-        <h2>채팅</h2>
-        <div id="chat-messages">
-            <!-- 채팅 메시지가 동적으로 추가되는 영역 -->
+    <aside class="right-section">
+        <!-- 비로그인 상태 UI -->
+        <div id="logged-out-ui">
+            <div class="auth-text">
+                <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
+            </div>
+            <!-- 메뉴얼 내용 -->
+            <div class="manual">
+                <h2 data-translate="manual-title">MANUAL</h2>
+                <p data-translate="manual-item1">발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item2">주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item3">이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item4">여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!</p>
+            </div>
+        </div>        
+        <!-- 로그인 상태 UI -->
+        <div id="logged-in-ui" style="display: none;">
+            <div class="auth-text">
+                <a href="mypage.html" data-translate="mypage">마이페이지</a> | <a href="#" id="logout" data-translate="logout">로그아웃</a>
+            </div>
+            <div class="chat-container">
+                <!-- 채팅 목록 -->
+                <aside class="chat-sidebar">
+                    <h2 data-translate="chat-list-title">채팅 목록</h2>
+                    <ul>
+                        <li onclick="openChatPopup('user1')">사용자 1</li>
+                        <li onclick="openChatPopup('user2')">사용자 2</li>
+                        <li onclick="openChatPopup('user3')">사용자 3</li>
+                    </ul>
+                </aside>
+            </div>
+            
+            <!-- 팝업 채팅창 -->
+            <div class="chat-popup hidden" id="chat-popup">
+                <div class="chat-header">
+                    <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
+                    <button onclick="closeChatPopup()">X</button>
+                </div>
+                <div id="popup-messages" class="messages">
+                    <!-- 채팅 메시지가 여기에 추가됩니다 -->
+                </div>
+                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
+            </div>
         </div>
-        <p id="no-chat-message">채팅 내역이 없습니다.</p>
     </aside>
-    
-    <!-- 푸터 -->
-    <footer>
-        <div class="language-switch">
-            <button id="btn-ko" class="lang-btn active">한국어</button>
-            <button id="btn-en" class="lang-btn">ENGLISH</button>
-        </div>
-        <p>© 2024 발자국 탐정</p>
-    </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const vetListElement = document.getElementById('vet-list');
 
-            // Firebase에서 병원 목록 가져오기
-            database.ref('VetInfo').once('value')
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        let index = 1;
-                        snapshot.forEach((childSnapshot) => {
-                            const vet = childSnapshot.val();
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${index++}</td>
-                                <td>${vet.Vetname}</td>
-                                <td>${vet.Vetaddress}</td>
-                            `;
-                            vetListElement.appendChild(row);
-                        });
-                    } else {
-                        const row = document.createElement('tr');
-                        row.innerHTML = '<td colspan="3">등록된 동물병원이 없습니다.</td>';
-                        vetListElement.appendChild(row);
-                    }
-                })
-                .catch((error) => {
-                    console.error("병원 목록 불러오기 중 오류 발생:", error);
-                });
-        });
-    </script>
-    <script src="assets/js/vetList.js"></script>
+<!-- 푸터 -->
+<footer>
+    <div class="post-language-selector">
+        <button onclick="changeLanguage('ko')" id="lang-ko" class="active">한국어</button>
+        <button onclick="changeLanguage('en')" id="lang-en">ENGLISH</button>
+    </div>
+</footer>
 </body>
 </html>
