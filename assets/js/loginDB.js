@@ -1,26 +1,28 @@
 // 로그인 유효성 검사 및 처리
 async function validateLogin() {
-    const loginID = document.getElementById('login-loginID').value;
-    const password = document.getElementById('login-password').value;
+    const loginID = document.getElementById('login-loginID').value; // UserData.loginID
+    const password = document.getElementById('login-password').value; // UserData.password
+
     // 간단한 유효성 검사
     if (!loginID || !password) {
         alert("아이디와 비밀번호를 모두 입력해주세요.");
         return false;
     }
+
     try {
         // Firebase Realtime Database에서 loginID를 검색
-        const snapshot = await database
-            .ref('UserData')
-            .orderByChild('loginID')
-            .equalTo(loginID)
-            .once('value');
+        const snapshot = await get(query(ref(db, 'UserData'), orderByChild('loginID'), equalTo(loginID))); // UserData.loginID 기반 검색
+
         if (snapshot.exists()) {
-            const userData = Object.values(snapshot.val())[0];
+            const userData = Object.values(snapshot.val())[0]; // UserData 구조로 가져오기
+
             // 비밀번호 확인
-            if (userData.password === password) {
+            if (userData.password === password) { // UserData.password와 비교
                 // 로그인 상태 저장
                 localStorage.setItem("loggedIn", "true");
-                localStorage.setItem("username", userData.nickName); // 닉네임 저장
+                localStorage.setItem("nickname", userData.nickName); // UserData.nickName 저장
+                localStorage.setItem("uid", userData.uid); // UserData.uid 저장
+
                 // index.html로 리다이렉트
                 alert("로그인 성공!");
                 window.location.href = "index.html";
@@ -39,6 +41,7 @@ async function validateLogin() {
         return false;
     }
 }
+
 // DOMContentLoaded 이벤트 사용
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
