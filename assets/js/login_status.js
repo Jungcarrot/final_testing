@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loggedOutUI = document.getElementById("logged-out-ui");
 
     // 로그인 상태 확인
-    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true"; // 'loggedIn'을 'userLoggedIn'으로 변경하여 근본과 맞춤
+    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
 
     if (isLoggedIn) {
         loggedInUI.style.display = "block";
@@ -15,6 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById("logout")?.addEventListener("click", () => {
-    localStorage.removeItem("userLoggedIn"); // 로그인 상태 제거 (변수명 'loggedIn'을 'userLoggedIn'으로 변경하여 근본과 맞춤)
+    localStorage.removeItem("loggedIn"); // 로그인 상태 제거
     window.location.href = "index.html"; // index.html로 리다이렉트
 });
