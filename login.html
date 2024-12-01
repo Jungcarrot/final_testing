@@ -42,7 +42,7 @@
         <main class="login-main">
             <section class="login-signup-section">
                 <h2 id="login-title">로그인</h2>
-                <form onsubmit="return validateLogin()">
+                <form id="login-form">
                     <div class="form-group">
                         <label for="login-username" data-db-field="loginID" id="username-label">아이디</label>
                         <input type="text" id="login-username" name="loginID" placeholder="아이디를 입력하세요">
@@ -72,25 +72,53 @@
         </div>   
     </div>
 
-    <script>
-        function validateLogin() {
-            const username = document.getElementById('login-username').value;
+    <script type="module">
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        async function validateLogin(event) {
+            event.preventDefault(); // 폼 제출 막기
+
+            const loginID = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
 
-            // 간단한 유효성 검사
-            if (username === 'admin' && password === '1234') {
-                // 로그인 상태 저장
-                localStorage.setItem('loggedIn', 'true');
-                localStorage.setItem('username', username);
+            if (!loginID || !password) {
+                alert("아이디와 비밀번호를 모두 입력해주세요.");
+                return;
+            }
 
-                // index.html로 리다이렉트
-                window.location.href = 'index.html';
-                return false; // 폼의 기본 제출 동작 방지
-            } else {
-                alert('아이디 또는 비밀번호가 잘못되었습니다.');
-                return false; // 폼의 기본 제출 동작 방지
+            try {
+                const database = getDatabase();
+                const userRef = ref(database, 'UserData/' + loginID);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    if (userData.password === password) {
+                        // 로그인 상태 저장
+                        localStorage.setItem('loggedIn', 'true');
+                        localStorage.setItem('username', userData.nickName);
+
+                        // index.html로 리다이렉트
+                        alert("로그인 성공!");
+                        window.location.href = 'index.html';
+                    } else {
+                        alert('비밀번호가 잘못되었습니다.');
+                    }
+                } else {
+                    alert('아이디가 존재하지 않습니다.');
+                }
+            } catch (error) {
+                console.error("로그인 중 오류 발생:", error);
+                alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
             }
         }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginForm = document.getElementById("login-form");
+            if (loginForm) {
+                loginForm.addEventListener("submit", validateLogin);
+            }
+        });
     </script>
 </body>
 </html>
