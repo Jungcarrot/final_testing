@@ -54,7 +54,7 @@
 
                     // 닉네임과 댓글 내용
                     const commentText = document.createElement('span');
-                    commentText.textContent = `${index + 1}. [${nickname}] ${comment}`;
+                    commentText.textContent = `${index + 1}. [${nickName}] ${comment}`;
                     commentText.style.flexGrow = "1";
 
                     // 신고하기 버튼
