@@ -61,6 +61,20 @@
                             <button type="button" id="myPostsButton" onclick="navigateToPage('myposts.html')">내가 작성한 게시글 보기</button>
                             <!-- 실제 닉네임 변경 버튼 추가 -->
                             <button type="button" onclick="saveNickname()">닉네임 변경</button>
+                            <script>
+    function saveNickname() {
+        const nicknameInput = document.getElementById('edit-nickname');
+        const newNickname = nicknameInput.value.trim();
+
+        if (newNickname === '') {
+            alert('닉네임을 입력해주세요.');
+            return;
+        }
+
+        alert(`닉네임이 "${newNickname}"(으)로 변경되었습니다.`);
+        nicknameInput.value = '';
+    }
+</script>
                     </div>
                    
                 </form>
@@ -73,5 +87,6 @@
             <button id="lang-en" onclick="changeLanguage('en')">ENGLISH</button>
         </div>
     </div>
+    
 </body>
 </html>
