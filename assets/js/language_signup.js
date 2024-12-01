@@ -32,8 +32,8 @@ function changeLanguage(lang) {
         document.querySelectorAll('.duplicate-check')[1].innerText = "Check";
 
         // placeholder 변경
-        document.getElementById('signup-username').placeholder = "Enter your username";
-        document.getElementById('signup-nickname').placeholder = "Enter your nickname";
+        document.getElementById('signup-loginID').placeholder = "Enter your loginID";
+        document.getElementById('signup-nickName').placeholder = "Enter your nickname";
         document.getElementById('signup-password').placeholder = "Enter your password";
         document.getElementById('signup-confirm-password').placeholder = "Re-enter your password";
     }
