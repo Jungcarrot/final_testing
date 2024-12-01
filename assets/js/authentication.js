@@ -4,27 +4,30 @@ document.addEventListener("DOMContentLoaded", () => {
     loginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const username = document.getElementById("login-username").value.trim();
-        const password = document.getElementById("login-password").value.trim();
+        const loginID = document.getElementById("login-loginID").value.trim(); // UserData.loginID로 변경
+        const password = document.getElementById("login-password").value.trim(); // UserData.password로 변경
 
-        // 서버로 요청 보내기 (Mock API 사용 예시)
+        // Firebase Realtime Database에서 loginID 검색
         try {
-            const response = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ usexrname, password }),
-            });
+            const snapshot = await get(query(ref(db, 'UserData'), orderByChild('loginID'), equalTo(loginID))); // UserData.loginID로 변경
 
-            const data = await response.json();
+            if (snapshot.exists()) {
+                const userData = Object.values(snapshot.val())[0]; // UserData 구조로 가져오기
+                
+                // 비밀번호 확인
+                if (userData.password === password) { // UserData.password와 비교
+                    // 로그인 상태 저장
+                    localStorage.setItem("userLoggedIn", "true");
+                    localStorage.setItem("nickname", userData.nickName); // UserData.nickName 저장
+                    localStorage.setItem("uid", userData.uid); // UserData.uid 저장
 
-            if (data.success) {
-                localStorage.setItem("userLoggedIn", "true");
-                alert("로그인 성공!");
-                window.location.href = "index.html";
+                    alert("로그인 성공!");
+                    window.location.href = "index.html";
+                } else {
+                    alert("비밀번호가 잘못되었습니다.");
+                }
             } else {
-                alert("로그인 실패: " + data.message);
+                alert("아이디가 존재하지 않습니다.");
             }
         } catch (error) {
             console.error("로그인 중 오류 발생:", error);
