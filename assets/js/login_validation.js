@@ -1,7 +1,7 @@
-import { ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-import { database } from "./DB.js"; // Firebase 설정을 가져오는 경로 수정 (assets/js 폴더 기준)
-
+// Firebase 관련 객체에 접근
 document.addEventListener("DOMContentLoaded", () => {
+    const database = firebase.database(); // DB 객체 가져오기
+
     const loginForm = document.querySelector("form");
 
     if (loginForm) {
@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                const userRef = ref(database, `UserData/${loginID}`);
-                const snapshot = await get(userRef);
+                const userRef = database.ref(`UserData/${loginID}`);
+                const snapshot = await userRef.get();
 
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
