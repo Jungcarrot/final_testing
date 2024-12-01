@@ -4,13 +4,16 @@ import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/fire
 // 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
 const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UID 가져오기
 
+// 콘솔로 UID 확인하기 (디버깅 용도)
+console.log("로그인된 사용자 UID:", uid);
+
 // Firebase에서 사용자 닉네임 가져오기
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("로그인된 사용자 UID:", uid); // uid가 제대로 로드되는지 확인
     if (localStorage.getItem("userLoggedIn") === "true" && uid) {
         try {
             const userRef = ref(database, `UserData/${uid}`); // Firebase 경로 참조
-            console.log("Firebase 참조 경로:", userRef); // 참조 경로 확인
+            console.log("Firebase 참조 경로:", userRef); // 디버깅 용도
+
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
@@ -24,6 +27,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     } else {
         console.error("로그인된 사용자 UID가 필요합니다.");
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        window.location.href = "login.html"; // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
     }
 
     // 닉네임 변경 버튼 이벤트 리스너 추가
@@ -61,3 +66,4 @@ function saveNickname() {
         console.error("로그인된 사용자 UID가 필요합니다.");
     }
 }
+
