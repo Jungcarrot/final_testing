@@ -23,15 +23,15 @@
     <header>
         <div class="logo">
             <a href="index.html">
-                <img src="assets/img/logo.png" alt="로고">
+                <img src="assets/img/logo.png" alt="logo">
             </a>
         </div>
         <nav>
             <ul>
-                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
-                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
-                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
-                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="lost"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="find"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="protect"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="vet"> <span data-translate="header-vet">동물병원</span></a></li>
             </ul>
         </nav>
     </header>
@@ -49,7 +49,7 @@
 
         <!-- 게시물 검색 영역 -->
         <div class="search-bar">
-            <input type="text" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
+            <input type="text" name="search" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
             <button><img src="assets/img/search-icon.png" alt="돋보기" data-translate="search-icon-alt"></button>
         </div>
 
@@ -121,7 +121,7 @@
                 <div id="popup-messages" class="messages">
                     <!-- 채팅 메시지가 여기에 추가됩니다 -->
                 </div>
-                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" name="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
