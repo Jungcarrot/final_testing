@@ -46,98 +46,14 @@
                     <table class="myposts-table">
                         <thead>
                             <tr>
-                                <th>번호</th>
-                                <th>제목</th>
-                                <th>작성자</th>
-                                <th>작성일</th>
+                                <th data-translate="table-header-number">번호</th>
+                                <th data-db-field="title" data-translate="table-header-title">제목</th>
+                                <th data-db-field="nickName" data-translate="table-header-author">작성자</th>
+                                <th data-db-field="timeStamp" data-translate="table-header-date">작성일</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>게시물 제목2</td>
-                                <td>작성자2</td>
-                                <td>2024-11-02</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>게시물 제목1</td>
-                                <td>작성자1</td>
-                                <td>2024-11-01</td>
-                            </tr>
-                            <!-- 추가 행 -->
+                        <tbody id="myposts-list">
+                            <!-- 게시물이 생성되면 여기에 추가됩니다 -->
                         </tbody>
                     </table>
                 </div>                
@@ -152,3 +68,4 @@
     </div>
 </body>
 </html>
+
