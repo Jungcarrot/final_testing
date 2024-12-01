@@ -1,51 +1,72 @@
+import { database } from "./DB.js";
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
 document.addEventListener('DOMContentLoaded', () => {
-    // posts 배열과 관련된 부분은 그대로 두고, 필요한 변수만 수정
-    const posts = JSON.parse(localStorage.getItem('findPosts')) || []; // localStorage에서 데이터를 가져옴
+    // 게시물 관련 변수
     const tableBody = document.querySelector('.post-table tbody'); // 게시물 테이블 tbody 요소
     const noPostsMessage = document.querySelector('.no-posts'); // 게시물이 없을 경우 보여주는 메시지
     const searchInput = document.querySelector('.search-bar input'); // 검색창의 input 요소
     const searchButton = document.querySelector('.search-bar button'); // 검색 버튼 요소
-    const manualContent = document.querySelector('.manual p'); // 매뉴얼 내용을 포함한 p 태그
 
-    function renderPosts(filteredPosts) {
-        tableBody.innerHTML = ''; // 기존 목록 초기화
-        if (filteredPosts.length === 0) {
-            noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
-        } else {
-            noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
-            filteredPosts.forEach((post, index) => {
-                const row = 
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><a href="findPost.html?id=${posts.indexOf(post)}">${post.title}</a></td>
-                        <td>${post.author}</td>
-                        <td>${post.date}</td>
-                    </tr>
-                ;
-                tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
-            });
+    // Firebase에서 게시물 가져오기
+    const postsRef = ref(database, 'Post');
+    onValue(postsRef, async (snapshot) => {
+        const posts = [];
+        const userPromises = [];
+        snapshot.forEach((childSnapshot) => {
+            const post = childSnapshot.val();
+            if (post.category === '발견') { // "발견" 카테고리의 게시물만 필터링
+                posts.push(post);
+                userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
+            }
+        });
+
+        const userSnapshots = await Promise.all(userPromises);
+
+        // 게시물 렌더링 함수
+        function renderPosts(filteredPosts, authorNicknames) {
+            tableBody.innerHTML = ''; // 기존 목록 초기화
+            if (filteredPosts.length === 0) {
+                noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
+            } else {
+                noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
+                filteredPosts.forEach((post, index) => {
+                    const authorNickname = authorNicknames[index] || 'Unknown'; // 작성자 닉네임이 없을 경우 'Unknown'
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td> <!-- 번호 -->
+                            <td><a href="findPost.html?id=${post.pid}">${post.title}</a></td> <!-- 제목 -->
+                            <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
+                            <td>${post.date}</td> <!-- 작성일 -->
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
+                });
+            }
         }
-    }
 
-    // 초기 렌더링
-    renderPosts(posts);
+        // 작성자 닉네임과 함께 게시물 렌더링
+        const authorNicknames = userSnapshots.map((snapshot) => snapshot.exists() ? snapshot.val().nickName : 'Unknown');
+        renderPosts(posts, authorNicknames);
 
-    // 검색 이벤트
-    function filterPosts() {
-        const query = searchInput.value.trim().toLowerCase(); // 검색어를 소문자로 변환하여 비교
-        const filteredPosts = posts.filter(post =>
-            post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
-        );
-        renderPosts(filteredPosts); // 필터링된 게시물 렌더링
-    }
-
-    searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
-    searchInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            filterPosts(); // Enter 키 입력 시 필터링
+        // 검색 이벤트
+        function filterPosts() {
+            const query = searchInput.value.trim().toLowerCase(); // 검색어를 소문자로 변환하여 비교
+            const filteredPosts = posts.filter(post =>
+                post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
+            );
+            renderPosts(filteredPosts, authorNicknames); // 필터링된 게시물 렌더링
         }
+
+        searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                filterPosts(); // Enter 키 입력 시 필터링
+            }
+        });
     });
 
+    // 언어 선택과 관련된 부분
     const translations = {
         ko: {
             'page-title': '발견 게시물',
@@ -63,11 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': '작성된 게시물이 없습니다.',
             'login': '로그인',
             'signup': '회원가입',
-            'manual-title': 'MANUAL',
-            'manual-item1': '매뉴얼 내용',
-            'chat-list-title': '채팅 목록',
-            'mypage': '마이페이지',
-            'logout': '로그아웃',
             'manual-title': '매뉴얼',
             'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
             'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
@@ -90,11 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': 'No posts available.',
             'login': 'Login',
             'signup': 'Sign Up',
-            'manual-title': 'MANUAL',
-            'manual-item1': 'Manual Content',
-            'chat-list-title': 'Chat List',
-            'mypage': 'My Page',
-            'logout': 'Logout',
             'manual-title': 'MANUAL',
             'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
             'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
