@@ -45,11 +45,48 @@ function toggleSignupButton() {
     }
 }
 
+function validateSignup(event) {
+    const loginID = document.getElementById('loginID').value;
+    const nickName = document.getElementById('nickName').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // 중복 검사 확인
+    if (!isUsernameChecked) {
+        alert("아이디 중복 검사를 진행해주세요.");
+        return false;
+    }
+    if (!isNicknameChecked) {
+        alert("닉네임 중복 검사를 진행해주세요.");
+        return false;
+    }
+
+    // 비밀번호 확인
+    if (password !== confirmPassword) {
+        alert("비밀번호가 일치하지 않습니다.");
+        return false;
+    }
+    if (password.length < 8) {
+        alert("비밀번호는 8자 이상이어야 합니다.");
+        return false;
+    }
+
+    // 모든 필드 입력 확인
+    if (!loginID || !nickName || !password || !confirmPassword) {
+        alert("모든 필드를 입력해주세요.");
+        return false;
+    }
+
+    alert("회원가입이 완료되었습니다!");
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const passwordField = document.getElementById('password');
     const confirmPasswordField = document.getElementById('confirmPassword');
     const usernameButton = document.querySelector('.input-container button');
     const nicknameButton = document.querySelectorAll('.input-container button')[1];
+    const signupForm = document.getElementById('signup-form');
 
     if (passwordField && confirmPasswordField) {
         passwordField.addEventListener('input', validatePasswordMatch);
@@ -99,4 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 폼 제출 처리
+    if (signupForm) {
+        signupForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            validateSignup(event);
+        });
+    }
 });
+
