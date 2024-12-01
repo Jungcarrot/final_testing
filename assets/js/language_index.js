@@ -1,3 +1,5 @@
+// language_index.js
+
 // 번역 데이터 객체
 const translations = {
     ko: {
@@ -52,58 +54,33 @@ function changeLanguage(lang) {
     currentLanguage = lang;
 
     // 제목 변경
-    const titleElement = document.querySelector(".logo h1");
-    if (titleElement) {
-        titleElement.innerHTML = translations[lang].title;
-    }
+    document.querySelector(".logo h1").innerHTML = translations[lang].title;
 
     // 카테고리 텍스트 변경
     const categories = document.querySelectorAll(".category-center p");
-    if (categories.length > 0) {
-        categories.forEach((category, index) => {
-            if (translations[lang].categories[index]) {
-                category.textContent = translations[lang].categories[index];
-            }
-        });
-    }
+    categories.forEach((category, index) => {
+        category.textContent = translations[lang].categories[index];
+    });
 
     // 로그인/회원가입 텍스트 변경
-    const loginElement = document.querySelector('[data-translate="login"]');
-    if (loginElement) {
-        loginElement.textContent = translations[lang].login;
-    }
-
-    const signupElement = document.querySelector('[data-translate="signup"]');
-    if (signupElement) {
-        signupElement.textContent = translations[lang].signup;
-    }
+    document.querySelector('[data-translate="login"]').textContent = translations[lang].login;
+    document.querySelector('[data-translate="signup"]').textContent = translations[lang].signup;
 
     // 마이페이지/로그아웃 텍스트 변경
     const mypage = document.querySelector('a[href="mypage.html"]');
-    if (mypage) {
-        mypage.textContent = translations[lang].mypage;
-    }
+    if (mypage) mypage.textContent = translations[lang].mypage;
 
     const logout = document.querySelector("#logout");
-    if (logout) {
-        logout.textContent = translations[lang].logout;
-    }
+    if (logout) logout.textContent = translations[lang].logout;
 
     // 매뉴얼 제목 변경
-    const manualTitleElement = document.querySelector('[data-translate="manual-title"]');
-    if (manualTitleElement) {
-        manualTitleElement.textContent = translations[lang].manualTitle;
-    }
+    document.querySelector('[data-translate="manual-title"]').textContent = translations[lang].manualTitle;
 
     // 매뉴얼 내용 변경
     const manualItems = document.querySelectorAll('[data-translate^="manual-item"]');
-    if (manualItems.length > 0) {
-        manualItems.forEach((item, index) => {
-            if (translations[lang].manualItems[index]) {
-                item.textContent = translations[lang].manualItems[index];
-            }
-        });
-    }
+    manualItems.forEach((item, index) => {
+        item.textContent = translations[lang].manualItems[index];
+    });
 
     // 버튼 스타일 업데이트
     document.querySelectorAll(".language-selector button").forEach(button => {
