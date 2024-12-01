@@ -19,7 +19,7 @@ try {
         }
 
         const post = snapshot.val();
-        
+
         // 게시물 제목 표시
         const postTitleElement = document.getElementById('post-title');
         postTitleElement.textContent = post.title || '제목 없음'; // Post.title 사용
@@ -31,14 +31,19 @@ try {
 
     // Realtime Database에서 댓글 가져오기
     const commentsRef = ref(db, `Comment`); // Comment 테이블 참조
-    onValue(commentsRef, (snapshot) => {
+    onValue(commentsRef, async (snapshot) => {
         const comments = [];
+        const commenterPromises = [];
+
         snapshot.forEach((childSnapshot) => {
             const commentData = childSnapshot.val();
             if (commentData.postID === parseInt(postId)) { // Comment.postID 필드 사용
                 comments.push(commentData);
+                commenterPromises.push(get(ref(db, `UserData/${commentData.commenter}`))); // 댓글 작성자 정보 가져오기
             }
         });
+
+        const commenterSnapshots = await Promise.all(commenterPromises);
 
         // 댓글 표시
         const commentContainer = document.getElementById('comments');
@@ -46,7 +51,10 @@ try {
         const renderComments = () => {
             commentContainer.innerHTML = '';
             comments.forEach((commentObj, index) => {
-                const { commenter, comment } = commentObj; // Comment.commenter, Comment.comment 사용
+                const userSnapshot = commenterSnapshots[index];
+                const nickName = userSnapshot.exists() ? userSnapshot.val().nickName : '알 수 없음';
+
+                const { comment } = commentObj; // Comment.comment 사용
 
                 const commentElement = document.createElement('div');
                 commentElement.style.display = "flex";
@@ -54,7 +62,7 @@ try {
 
                 // 닉네임과 댓글 내용
                 const commentText = document.createElement('span');
-                commentText.textContent = `${index + 1}. [${commenter}] ${comment}`;
+                commentText.textContent = `${index + 1}. [${nickName}] ${comment}`;
                 commentText.style.flexGrow = "1";
 
                 // 신고하기 버튼
@@ -68,7 +76,7 @@ try {
                 reportButton.style.borderRadius = '4px';
                 reportButton.style.cursor = 'pointer';
 
-                reportButton.addEventListener('click', () => showReportPopup(commenter)); // commenter로 신고 팝업
+                reportButton.addEventListener('click', () => showReportPopup(nickName)); // nickName으로 신고 팝업
 
                 // 댓글과 버튼 추가
                 commentElement.appendChild(commentText);
