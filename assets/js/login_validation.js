@@ -25,7 +25,7 @@ async function validateLogin() {
                 // 비밀번호 확인
                 if (user.password === password) {
                     // 로그인 상태 저장
-                    localStorage.setItem("userLoggedIn", "true");
+                    localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("nickName", user.nickName);
 
                     // 데이터 저장 확인 및 페이지 리다이렉트
@@ -69,4 +69,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('로그인 폼을 찾을 수 없습니다. 폼이 존재하는지 확인하세요.');
     }
 });
-
