@@ -3,54 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>임시보호 게시물</title>
+    <title data-translate="page-title">발견 게시물</title>
     <link rel="stylesheet" href="assets/css/postList.css">
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database-compat.js"></script>
-    <script src="assets/js/DB.js"></script>
+    <link rel="stylesheet" href="assets/css/style_main.css">
+    <link rel="stylesheet" href="assets/css/postLanguage.css">
+    <script src="assets/js/navigation.js" defer></script>
+    <script src="assets/js/login_status.js" defer></script>
+    <script src="assets/js/language_index.js" defer></script>
+    <script src="assets/js/postList.js" defer></script>
+    <script src="assets/js/protectList.js" defer></script>
+    <link rel="stylesheet" href="assets/css/chat.css">
+    <script src="assets/js/chat.js" defer></script>
 </head>
 <body>
     <!-- 헤더 -->
     <header>
         <div class="logo">
-            <!-- 로고 클릭 시 메인 화면으로 이동 -->
             <a href="index.html">
                 <img src="assets/img/logo.png" alt="로고">
             </a>
         </div>
         <nav>
             <ul>
-                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> 실종</a></li>
-                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> 발견</a></li>
-                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> 임시보호</a></li>
-                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> 동물병원</a></li>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
             </ul>
         </nav>
-        <div class="auth">
-            <span class="logged-out">
-                <a href="login.html">로그인</a> | <a href="signup.html">회원가입</a>
-            </span>
-            <span class="logged-in" style="display: none;">
-                <a href="logout.html">로그아웃</a> | <a href="mypage.html">마이페이지</a>
-            </span>
-        </div>
     </header>
 
     <!-- 메인 컨텐츠 -->
     <main>
-        <h1>임시보호 게시물</h1>
+        <h1 data-translate="page-title">임시보호 게시물</h1>
 
         <!-- 게시글 작성 버튼 -->
-        <div class="post-create">
+        <div class="post-create" id="post-create">
             <a href="protectWrite.html">
-                <button id="post-create-button">게시글 작성</button>
+                <button id="post-create-button" data-translate="post-create-button">게시글 작성</button>
             </a>
         </div>
 
         <!-- 게시물 검색 영역 -->
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="게시물을 검색하세요...">
-            <button id="search-button"><img src="assets/img/search-icon.png" alt="돋보기"></button>
+            <input type="text" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
+            <button><img src="assets/img/search-icon.png" alt="돋보기" data-translate="search-icon-alt"></button>
         </div>
 
         <!-- 게시물 테이블 헤더 -->
@@ -58,72 +55,81 @@
             <table>
                 <thead>
                     <tr>
-                        <th>번호</th>
-                        <th>제목</th>
-                        <th>작성자</th>
-                        <th>작성일</th>
+                        <th data-translate="table-header-number">번호</th>
+                        <th data-translate="table-header-title">제목</th>
+                        <th data-translate="table-header-author">작성자</th>
+                        <th data-translate="table-header-date">작성일</th>
                     </tr>
                 </thead>
-                <tbody id="post-list">
+                <tbody>
                     <!-- 게시물이 생성되면 여기에 추가됩니다 -->
                 </tbody>
             </table>
         </div>
 
         <!-- 게시물이 없을 때 안내 메시지 -->
-        <div class="no-posts" id="no-posts-message">
-            <p>작성된 게시물이 없습니다.</p>
+        <div class="no-posts">
+            <p data-translate="no-posts-message">작성된 게시물이 없습니다.</p>
         </div>
     </main>
 
     <!-- 채팅 섹션 -->
-    <aside class="chat-section">
-        <h2>채팅</h2>
-        <div id="chat-messages">
-            <!-- 채팅 메시지가 동적으로 추가되는 영역 -->
+    <aside class="right-section">
+        <!-- 비로그인 상태 UI -->
+        <div id="logged-out-ui">
+            <div class="auth-text">
+                <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
+            </div>
+            <!-- 메뉴얼 내용 -->
+            <div class="manual">
+                <h2 data-translate="manual-title">MANUAL</h2>
+                <p data-translate="manual-item1">발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item2">주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item3">이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item4">여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!</p>
+            </div>
+        </div>        
+        <!-- 로그인 상태 UI -->
+        <div id="logged-in-ui" style="display: none;">
+            <div class="auth-text">
+                <a href="mypage.html" data-translate="mypage">마이페이지</a> | <a href="#" id="logout" data-translate="logout">로그아웃</a>
+            </div>
+            <div class="chat-container">
+                <!-- 채팅 목록 -->
+                <aside class="chat-sidebar">
+                    <h2 data-translate="chat-list-title">채팅 목록</h2>
+                    <ul>
+                        <li onclick="openChatPopup('user1')">사용자 1</li>
+                        <li onclick="openChatPopup('user2')">사용자 2</li>
+                        <li onclick="openChatPopup('user3')">사용자 3</li>
+                    </ul>
+                </aside>
+            </div>
+            
+            <!-- 팝업 채팅창 -->
+            <div class="chat-popup hidden" id="chat-popup">
+                <div class="chat-header">
+                    <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
+                    <button onclick="closeChatPopup()">X</button>
+                </div>
+                <div id="popup-messages" class="messages">
+                    <!-- 채팅 메시지가 여기에 추가됩니다 -->
+                </div>
+                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
+            </div>
         </div>
-        <p id="no-chat-message">채팅 내역이 없습니다.</p>
     </aside>
-    
+
     <!-- 푸터 -->
     <footer>
-        <div class="language-switch">
-            <button id="btn-ko" class="lang-btn active">한국어</button>
-            <button id="btn-en" class="lang-btn">ENGLISH</button>
+        <div class="post-language-selector">
+            <button id="lang-ko" class="active">한국어</button>
+            <button id="lang-en">ENGLISH</button>
         </div>
-        <p>© 2024 발자국 탐정</p>
-    </footer>      
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const postList = document.getElementById('post-list');
-            const noPostsMessage = document.getElementById('no-posts-message');
-
-            // Firebase에서 임시보호 게시물 가져오기
-            database.ref('Post').orderByChild('category').equalTo('임시보호').once('value')
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        let index = 1;
-                        snapshot.forEach((childSnapshot) => {
-                            const post = childSnapshot.val();
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${index++}</td>
-                                <td><a href="protectPost.html?pid=${post.pid}">${post.title}</a></td>
-                                <td>${post.writer}</td>
-                                <td>${new Date(post.pid).toLocaleDateString()}</td>
-                            `;
-                            postList.appendChild(row);
-                        });
-                        noPostsMessage.style.display = 'none';
-                    } else {
-                        noPostsMessage.style.display = 'block';
-                    }
-                })
-                .catch((error) => {
-                    console.error("게시물 불러오기 중 오류 발생:", error);
-                });
-        });
-    </script>
-    <script src="assets/js/protectList.js"></script>
+    </footer>
 </body>
 </html>
