@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const postCreateButton = document.getElementById("post-create");
 
-    if (postCreateButton) { // null 체크
+    if (postCreateButton) { // null 체크 추가
         // 로그인 상태 확인 (localStorage에 'userLoggedIn' 값 사용)
         const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
 
