@@ -1,4 +1,4 @@
-import { database } from "./DB.js"; // 데이터베이스 객체 import
+import { database } from "./DB.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 ID 가져오기 (예시용)
@@ -23,6 +23,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         console.error("로그인된 사용자 ID가 필요합니다.");
     }
+
+    // 닉네임 변경 버튼 이벤트 리스너 추가
+    const saveButton = document.getElementById('save-nickname-button');
+    if (saveButton) {
+        saveButton.addEventListener('click', saveNickname);
+    } else {
+        console.error("닉네임 저장 버튼이 존재하지 않습니다.");
+    }
 });
 
 // 닉네임 변경 처리 함수
@@ -35,7 +43,7 @@ function saveNickname() {
     }
 
     // Firebase의 데이터베이스에 닉네임 저장
-    const userRef = ref(database, `UserData/${userId}`);
+    const userRef = ref(database, `UserData/${loginID}`);
 
     update(userRef, {
         nickName: newNickname
@@ -47,13 +55,3 @@ function saveNickname() {
         alert("닉네임 변경에 실패했습니다.");
     });
 }
-
-// 닉네임 변경 버튼에 이벤트 추가
-document.addEventListener("DOMContentLoaded", () => {
-    const saveButton = document.getElementById('save-nickname-button');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveNickname);
-    } else {
-        console.error("닉네임 저장 버튼이 존재하지 않습니다.");
-    }
-});
