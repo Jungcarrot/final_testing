@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const loggedOutUI = document.getElementById("logged-out-ui");
+    const notLoggedInUI = document.getElementById("not-logged-in-ui");
     const loggedInUI = document.getElementById("logged-in-ui");
 
     // 로그인 상태 확인 (임시: 로컬 스토리지 활용)
@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 로그인 상태에 따라 UI 전환
     if (isLoggedIn) {
-        loggedOutUI.style.display = "none"; // 비로그인 UI 숨김
+        notLoggedInUI.style.display = "none"; // 비로그인 UI 숨김
         loggedInUI.style.display = "block"; // 로그인 UI 표시
     } else {
-        loggedOutUI.style.display = "block"; // 비로그인 UI 표시
+        notLoggedInUI.style.display = "block"; // 비로그인 UI 표시
         loggedInUI.style.display = "none"; // 로그인 UI 숨김
     }
 
