@@ -42,3 +42,5 @@ document.addEventListener("DOMContentLoaded", () => {
         postCreateButton.style.display = "block";
     }
 });
+
+export { database };  // 데이터베이스 객체를 export
