@@ -1,6 +1,6 @@
 // 중복 검사 상태를 저장하는 변수
-let isUsernameChecked = false;
-let isNicknameChecked = false;
+let isLoginIDChecked = false;
+let isNickNameChecked = false;
 
 function checkPasswordMatch() {
     const password = document.getElementById('signup-password').value;
@@ -26,17 +26,17 @@ function checkPasswordMatch() {
 function validateSignup(event) {
     event.preventDefault(); // 폼 기본 제출 동작 방지
 
-    const username = document.getElementById('signup-username').value;
-    const nickname = document.getElementById('signup-nickname').value;
+    const loginID = document.getElementById('signup-loginID').value;
+    const nickName = document.getElementById('signup-nickName').value;
     const password = document.getElementById('signup-password').value;
     const confirmPassword = document.getElementById('signup-confirm-password').value;
 
     // 중복 검사 확인
-    if (!isUsernameChecked) {
+    if (!isLoginIDChecked) {
         alert("아이디 중복 검사를 진행해주세요.");
         return false;
     }
-    if (!isNicknameChecked) {
+    if (!isNickNameChecked) {
         alert("닉네임 중복 검사를 진행해주세요.");
         return false;
     }
@@ -52,7 +52,7 @@ function validateSignup(event) {
     }
 
     // 모든 필드 입력 확인
-    if (!username || !nickname || !password || !confirmPassword) {
+    if (!loginID || !nickName || !password || !confirmPassword) {
         alert("모든 필드를 입력해주세요.");
         return false;
     }
@@ -69,8 +69,8 @@ function toggleSignupButton() {
     const signupButton = document.getElementById('signup-button');
 
     if (
-        isUsernameChecked &&
-        isNicknameChecked &&
+        isLoginIDChecked &&
+        isNickNameChecked &&
         password === confirmPassword &&
         password.length >= 8
     ) {
@@ -85,11 +85,11 @@ document.getElementById('signup-confirm-password').addEventListener('input', che
 
 // 아이디 중복 검사
 document.querySelector('.input-container button').addEventListener('click', function () {
-    const username = document.getElementById('signup-username').value;
-    if (username) {
+    const loginID = document.getElementById('signup-loginID').value;
+    if (loginID) {
         // 중복 검사 로직 (예: 서버 호출로 확인)
         alert("아이디 중복 확인 완료!");
-        isUsernameChecked = true;
+        isLoginIDChecked = true;
         toggleSignupButton();
     } else {
         alert("아이디를 입력해주세요.");
@@ -98,11 +98,11 @@ document.querySelector('.input-container button').addEventListener('click', func
 
 // 닉네임 중복 검사
 document.querySelectorAll('.input-container button')[1].addEventListener('click', function () {
-    const nickname = document.getElementById('signup-nickname').value;
-    if (nickname) {
+    const nickName = document.getElementById('signup-nickName').value;
+    if (nickName) {
         // 중복 검사 로직 (예: 서버 호출로 확인)
         alert("닉네임 중복 확인 완료!");
-        isNicknameChecked = true;
+        isNickNameChecked = true;
         toggleSignupButton();
     } else {
         alert("닉네임을 입력해주세요.");
