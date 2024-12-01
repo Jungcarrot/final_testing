@@ -1,4 +1,4 @@
-import { database } from "assets/js/DB.js";
+import { database } from "./DB.js";
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 ID 가져오기 (예시용)
@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
-                document.getElementById("mypage-loginID").value = userData.loginID || '';
-                document.getElementById("mypage-nickName").value = userData.nickName || '';
+                document.getElementById("mypage-username").value = userData.loginID || '';
+                document.getElementById("mypage-nickname").value = userData.nickName || '';
             } else {
                 console.error("사용자 데이터가 존재하지 않습니다.");
             }
@@ -49,6 +49,4 @@ function saveNickname() {
 }
 
 // 닉네임 변경 버튼에 이벤트 추가
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('save-nickname-button').addEventListener('click', saveNickname);
-});
+document.getElementById('save-nickname-button').addEventListener('click', saveNickname);
