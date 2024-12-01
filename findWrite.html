@@ -41,17 +41,17 @@
         <h1 data-translate="page-title">발견 게시물 작성</h1>
         <div class="form-container">
             <div class="section title-section">
-                <input type="text" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
+                <input type="text" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
             </div>
 
             <div class="content-wrapper">
                 <div class="section photo-section">
                     <label for="photo-upload" data-translate="photoLabel">사진 첨부</label>
-                    <input type="file" id="photo-upload" accept="image/*">
+                    <input type="file" id="photo-upload" name="image" accept="image/*">
                 </div>
 
                 <div class="section detail-section">
-                    <textarea placeholder="발견한 동물의 이름, 특징, 성별, 종, 발견 위치, 발견 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
+                    <textarea name="details" placeholder="발견한 동물의 이름, 특징, 성별, 종, 발견 위치, 발견 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
                 </div>
             </div>
 
@@ -95,7 +95,7 @@
                     <button onclick="closeChatPopup()">X</button>
                 </div>
                 <div id="popup-messages" class="messages"></div>
-                <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" name="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
@@ -109,3 +109,4 @@
     </footer>
 </body>
 </html>
+
