@@ -69,7 +69,7 @@ async function validateSignup(event) {
         const uid = newUserRef.key;
 
         await set(newUserRef, {
-            uid: uid,
+            uid: uid,  // 고유한 uid 저장
             loginID: loginID,
             nickName: nickName,
             password: password
@@ -152,3 +152,4 @@ document.querySelectorAll('.input-container button')[1].addEventListener('click'
         alert("닉네임을 입력해주세요.");
     }
 });
+
