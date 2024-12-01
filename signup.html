@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="assets/css/signup.css">
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/language_signup.js" defer></script>
-    <script type="module" src="assets/js/signup_validation.js" defer></script>
+    <script type="module" src="assets/js/signup_validation.js" defer></script> <!-- signup_validation.js 포함 -->
     <script src="assets/js/authentication.js" defer></script>
 </head>
 <body>
@@ -73,7 +73,7 @@
                         <small id="password-check-message" style="display: none; color: red;">비밀번호가 일치하지 않습니다.</small>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" id="signup-button">회원가입 완료</button>
+                        <button type="submit" id="signup-button" disabled>회원가입 완료</button> <!-- 버튼 초기 상태는 비활성화 -->
                     </div>                    
                 </form>
             </section>
