@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const postCreateButton = document.getElementById("post-create");
 
-    // 로그인 상태 확인 (예: localStorage에 'loggedIn' 값 사용)
-    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+    // 로그인 상태 확인 (localStorage에 'userLoggedIn' 값 사용)
+    const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
 
     if (!isLoggedIn) {
         // 로그인하지 않았으면 게시글 작성 버튼 숨김
