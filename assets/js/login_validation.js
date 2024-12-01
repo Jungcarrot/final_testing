@@ -23,7 +23,7 @@ async function validateLogin() {
                 if (user.password === password) {
                     // 로그인 상태 저장
                     localStorage.setItem("userLoggedIn", "true");
-                    localStorage.setItem("nickname", user.nickname);
+                    localStorage.setItem("nickName", user.nickName);
 
                     // index.html로 리다이렉트
                     alert("로그인 성공!");
