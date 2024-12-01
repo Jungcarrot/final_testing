@@ -1,128 +1,104 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const posts = JSON.parse(localStorage.getItem('protectPosts')) || [];
-    const tableBody = document.querySelector('.post-table tbody');
-    const noPostsMessage = document.querySelector('.no-posts');
-    const searchInput = document.querySelector('.search-bar input');
-    const searchButton = document.querySelector('.search-bar button');
-    const manualContent = document.querySelector('.manual p');
+    // 게시물 작성 버튼 클릭 이벤트
+    document.getElementById('submit-button').addEventListener('click', () => {
+        const title = document.querySelector('.title-section input').value;
+        const details = document.querySelector('.detail-section textarea').value;
+        const photo = document.querySelector('.photo-section input[type="file"]').files[0];
+        const author = "익명"; // 기본 작성자
+        const date = new Date().toLocaleString(); // 작성일
 
-    function renderPosts(filteredPosts) {
-        tableBody.innerHTML = ''; // 기존 목록 초기화
-        if (filteredPosts.length === 0) {
-            noPostsMessage.style.display = 'block';
-        } else {
-            noPostsMessage.style.display = 'none';
-            filteredPosts.forEach((post, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><a href="protectPost.html?id=${posts.indexOf(post)}">${post.title}</a></td>
-                        <td>${post.author}</td>
-                        <td>${post.date}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
+        if (!title) {
+            alert('제목을 입력해주세요!');
+            return;
         }
-    }
 
-    // 초기 렌더링
-    renderPosts(posts);
-
-    // 검색 이벤트
-    function filterPosts() {
-        const query = searchInput.value.trim().toLowerCase();
-        const filteredPosts = posts.filter(post =>
-            post.title.toLowerCase().includes(query)
-        );
-        renderPosts(filteredPosts);
-    }
-
-    searchButton.addEventListener('click', filterPosts);
-    searchInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            filterPosts();
+        if (!details) {
+            alert('상세 내용을 입력해주세요!');
+            return;
         }
+
+        const postData = { title, details, photo: photo?.name || '', author, date };
+        const posts = JSON.parse(localStorage.getItem('protectPosts')) || [];
+        posts.push(postData);
+        localStorage.setItem('protectPosts', JSON.stringify(posts)); // 로컬 스토리지에 저장
+
+        alert('게시물이 저장되었습니다!');
+        window.location.href = 'protectList.html'; // 게시물 목록으로 이동
     });
 
+    // 번역 데이터
     const translations = {
         ko: {
-            'page-title': '임시보호 게시물',
+            'page-title': '임시보호 게시물 작성',
             'header-lost': '실종',
             'header-find': '발견',
             'header-protect': '임시보호',
             'header-vet': '동물병원',
-            'post-create-button': '게시글 작성',
-            'search-placeholder': '게시물을 검색하세요...',
-            'search-icon-alt': '돋보기',
-            'table-header-number': '번호',
-            'table-header-title': '제목',
-            'table-header-author': '작성자',
-            'table-header-date': '작성일',
-            'no-posts-message': '작성된 게시물이 없습니다.',
+            'titlePlaceholder': '제목을 입력해 주세요.',
+            'photoLabel': '사진 첨부',
+            'detailPlaceholder': '임시보호 중인 특징, 성별, 종 등을 상세하게 적어 주세요.',
+            'submitButton': '작성 완료',
             'login': '로그인',
             'signup': '회원가입',
-            'manual-title': 'MANUAL',
-            'manual-item1': '매뉴얼 내용',
-            'chat-list-title': '채팅 목록',
             'mypage': '마이페이지',
             'logout': '로그아웃',
-            'manual-title': '매뉴얼',
-            'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
-            'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
-            'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
-            'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
+            'chat-list-title': '채팅 목록',
+            'chat-room-title': '채팅방',
+            'chat-send-button': '전송',
         },
         en: {
-            'page-title': 'Temporary Protection Posts',
+            'page-title': 'Write Temporary Protection Post',
             'header-lost': 'Lost',
             'header-find': 'Found',
             'header-protect': 'Temporary Protection',
             'header-vet': 'Vet',
-            'post-create-button': 'Create Post',
-            'search-placeholder': 'Search for posts...',
-            'search-icon-alt': 'Magnifier',
-            'table-header-number': 'No.',
-            'table-header-title': 'Title',
-            'table-header-author': 'Author',
-            'table-header-date': 'Date',
-            'no-posts-message': 'No posts available.',
+            'titlePlaceholder': 'Enter a title.',
+            'photoLabel': 'Attach Photo',
+            'detailPlaceholder': 'Please write detailed information about the temporary protected animal (e.g., characteristics, gender, species, etc.)',
+            'submitButton': 'Submit',
             'login': 'Login',
             'signup': 'Sign Up',
-            'manual-title': 'MANUAL',
-            'manual-item1': 'Manual Content',
-            'chat-list-title': 'Chat List',
             'mypage': 'My Page',
             'logout': 'Logout',
-            'manual-title': 'MANUAL',
-            'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
-            'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
-            'manual-item3': 'The site is composed of four main boards: Lost, Found, Vet, and Temporary Shelter.',
-            'manual-item4': 'Feel free to write posts about your questions regarding Footprint and share information with other users!'
+            'chat-list-title': 'Chat List',
+            'chat-room-title': 'Chat Room',
+            'chat-send-button': 'Send',
         }
     };
 
+    // 언어 변경 함수
     function updateLanguage(lang) {
         document.querySelectorAll('[data-translate]').forEach(element => {
             const key = element.getAttribute('data-translate');
             if (translations[lang][key]) {
-                if (element.placeholder !== undefined) {
-                    element.placeholder = translations[lang][key];
-                } else {
-                    element.textContent = translations[lang][key];
-                }
+                element.textContent = translations[lang][key];
             }
         });
+
+        // 페이지 제목 번역
+        document.querySelector('title').textContent = translations[lang]['page-title'];
+
+        // 입력 필드와 버튼 번역
+        document.querySelector('.title-section input').placeholder = translations[lang]['titlePlaceholder'];
+        document.querySelector('.photo-section label').textContent = translations[lang]['photoLabel'];
+        document.querySelector('.detail-section textarea').placeholder = translations[lang]['detailPlaceholder'];
+        document.getElementById('submit-button').textContent = translations[lang]['submitButton'];
     }
 
-    document.querySelectorAll('.post-language-selector button').forEach(button => {
-        button.addEventListener('click', () => {
-            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
-            updateLanguage(lang);
-            document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        });
+    // 언어 버튼 이벤트
+    document.getElementById('lang-ko').addEventListener('click', () => {
+        updateLanguage('ko');
+        document.getElementById('lang-ko').classList.add('active');
+        document.getElementById('lang-en').classList.remove('active');
     });
 
+    document.getElementById('lang-en').addEventListener('click', () => {
+        updateLanguage('en');
+        document.getElementById('lang-en').classList.add('active');
+        document.getElementById('lang-ko').classList.remove('active');
+    });
+
+    // 초기 언어 설정
     updateLanguage('ko');
+    document.getElementById('lang-ko').classList.add('active');
 });
