@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (localStorage.getItem("userLoggedIn") === "true" && uid) {
         try {
             const userRef = ref(database, `UserData/${uid}`); // Firebase 경로 참조
+            console.log("Firebase 참조 경로:", userRef);
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
