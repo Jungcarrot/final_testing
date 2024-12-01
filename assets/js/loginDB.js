@@ -1,28 +1,26 @@
 // 로그인 유효성 검사 및 처리
 async function validateLogin() {
-    const loginID = document.getElementById('login-loginID').value; // UserData.loginID
-    const password = document.getElementById('login-password').value; // UserData.password
-
+    const loginID = document.getElementById('login-loginID').value;
+    const password = document.getElementById('login-password').value;
     // 간단한 유효성 검사
     if (!loginID || !password) {
         alert("아이디와 비밀번호를 모두 입력해주세요.");
         return false;
     }
-
     try {
         // Firebase Realtime Database에서 loginID를 검색
-        const snapshot = await get(query(ref(db, 'UserData'), orderByChild('loginID'), equalTo(loginID))); // UserData.loginID 기반 검색
-
+        const snapshot = await database
+            .ref('UserData')
+            .orderByChild('loginID')
+            .equalTo(loginID)
+            .once('value');
         if (snapshot.exists()) {
-            const userData = Object.values(snapshot.val())[0]; // UserData 구조로 가져오기
-
+            const userData = Object.values(snapshot.val())[0];
             // 비밀번호 확인
-            if (userData.password === password) { // UserData.password와 비교
+            if (userData.password === password) {
                 // 로그인 상태 저장
-                localStorage.setItem("loggedIn", "true");
-                localStorage.setItem("nickname", userData.nickName); // UserData.nickName 저장
-                localStorage.setItem("uid", userData.uid); // UserData.uid 저장
-
+                localStorage.setItem("userLoggedIn", "true"); // 'loggedIn'을 'userLoggedIn'으로 변경하여 근본과 맞춤
+                localStorage.setItem("nickName", userData.nickName); // 'username'을 'nickName'으로 변경하여 근본과 맞춤
                 // index.html로 리다이렉트
                 alert("로그인 성공!");
                 window.location.href = "index.html";
