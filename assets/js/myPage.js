@@ -2,13 +2,13 @@ import { database } from "./DB.js"; // 데이터베이스 객체 import
 import { ref, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 ID 가져오기 (예시용)
-const userId = "abcd1234"; // 실제 로그인된 사용자 ID로 변경해야 함
+const loginID = "abcd1234"; // 실제 로그인된 사용자 ID로 변경해야 함
 
 // Firebase에서 사용자 닉네임 가져오기
 document.addEventListener("DOMContentLoaded", async () => {
-    if (userId) {
+    if (loginID) {
         try {
-            const userRef = ref(database, `UserData/${userId}`); // Firebase 경로 참조
+            const userRef = ref(database, `UserData/${loginID}`); // Firebase 경로 참조
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
