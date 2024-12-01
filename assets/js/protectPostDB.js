@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 및 댓글 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = parseInt(urlParams.get('id'), 10) || 0;
+    const pid = parseInt(urlParams.get('id'), 10) || 0;
 
-    const postRef = ref(db, `Post/${postId}`);
+    const postRef = ref(db, `Post/${pid}`);
     get(postRef).then(async (snapshot) => {
         if (!snapshot.exists()) {
             alert('게시물이 존재하지 않습니다.');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const post = snapshot.val();
         const authorSnapshot = await get(ref(db, `UserData/${post.authorId}`));
-        const authorNickname = authorSnapshot.exists() ? authorSnapshot.val().nickName : '알 수 없음';
+        const nickName = authorSnapshot.exists() ? authorSnapshot.val().nickName : '알 수 없음';
 
         // 댓글 가져오기
         const commentsRef = ref(db, `Comment`);
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const comments = [];
             commentsSnapshot.forEach((childSnapshot) => {
                 const comment = childSnapshot.val();
-                if (comment.postId === postId) {
+                if (comment.pid === pid) {
                     comments.push(comment);
                 }
             });
