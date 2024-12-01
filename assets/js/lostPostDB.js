@@ -14,21 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 댓글 가져오기
         const commentsRef = ref(db, `Comment`);
-        onValue(commentsRef, (commentsSnapshot) => {
+        onValue(commentsRef, async (commentsSnapshot) => {
             const comments = [];
+            const userPromises = [];
+
             commentsSnapshot.forEach((childSnapshot) => {
                 const comment = childSnapshot.val();
                 if (comment.postId === postId) {
                     comments.push(comment);
+                    userPromises.push(get(ref(db, `UserData/${comment.commenter}`))); // 댓글 작성자 정보 가져오기
                 }
             });
+
+            const userSnapshots = await Promise.all(userPromises);
 
             // 댓글 표시
             const commentContainer = document.getElementById('comments');
             commentContainer.innerHTML = '';
             comments.forEach((commentObj, index) => {
-                const { nickName, comment } = commentObj;
+                const userSnapshot = userSnapshots[index];
+                const nickName = userSnapshot.exists() ? userSnapshot.val().nickName : 'Unknown';
+                const { comment } = commentObj;
+
                 // 댓글 요소 추가 로직
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment-item');
+                commentElement.innerHTML = `
+                    <strong>${nickName}</strong>: ${comment}
+                `;
+                commentContainer.appendChild(commentElement);
             });
         });
     }).catch((error) => {
