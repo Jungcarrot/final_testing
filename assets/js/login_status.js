@@ -8,16 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-
-
-    if (isLoggedIn) {
-        loggedInUI.style.display = "block";
-        loggedOutUI.style.display = "none";
-    } else {
-        loggedInUI.style.display = "none";
-        loggedOutUI.style.display = "block";
-    }
-
     // 로그아웃 이벤트 리스너 등록
     const logoutButton = document.getElementById("logout");
     if (logoutButton) {
