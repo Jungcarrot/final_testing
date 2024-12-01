@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 로그인 상태 확인
     const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
 
+    // 로그인 상태에 따라 UI 표시
     if (isLoggedIn) {
         loggedInUI.style.display = "block";
         loggedOutUI.style.display = "none";
@@ -31,3 +32,4 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("로그아웃 버튼을 찾을 수 없습니다.");
     }
 });
+
