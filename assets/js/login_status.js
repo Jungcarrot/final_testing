@@ -1,5 +1,4 @@
-import { database } from "assets/js/DB.js"; // 필요시 사용하기 위해 import
-// 이미 로그인한 상태인지 확인하는 로직 추가
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const loggedInUI = document.getElementById("logged-in-ui");
