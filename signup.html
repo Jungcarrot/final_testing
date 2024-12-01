@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
+    <script type="module" src="assets/js/DB.js"></script>
+    
     <title>회원가입 - 발자국 탐정</title>
     <link rel="stylesheet" href="assets/css/style_main.css">
     <link rel="stylesheet" href="assets/css/style_2nd.css">
@@ -11,9 +15,6 @@
     <script src="assets/js/language_signup.js" defer></script>
     <script src="assets/js/signup_validation.js" defer></script>
     <script src="assets/js/authentication.js" defer></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
-    <script type="module" src="assets/js/DB.js"></script>
 </head>
 <body>
     <div class="container">
@@ -47,27 +48,27 @@
                 <!-- 수정된 폼 -->
                 <form onsubmit="return validateSignup(event)">
                     <div class="form-group">
-                        <label for="signup-username">아이디</label>
+                        <label for="loginID">아이디</label>
                         <div class="input-container">
-                            <input type="text" id="signup-username" placeholder="아이디를 입력하세요">
+                            <input type="text" id="loginID" placeholder="아이디를 입력하세요">
                             <button type="button" class="duplicate-check">중복 검사</button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="signup-nickname">닉네임</label>
+                        <label for="nickName">닉네임</label>
                         <div class="input-container">
-                            <input type="text" id="signup-nickname" placeholder="닉네임을 입력하세요">
+                            <input type="text" id="nickName" placeholder="닉네임을 입력하세요">
                             <button type="button" class="duplicate-check">중복 검사</button>
                         </div>
                     </div>                    
                     <div class="form-group">
-                        <label for="signup-password">비밀번호</label>
-                        <input type="password" id="signup-password" placeholder="비밀번호를 입력하세요">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div class="form-group">
-                        <label for="signup-confirm-password">비밀번호 재입력</label>
+                        <label for="confirmPassword">비밀번호 재입력</label>
                         <div class="input-container">
-                            <input type="password" id="signup-confirm-password" placeholder="비밀번호를 다시 입력하세요">
+                            <input type="password" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요">
                         </div>
                         <small id="password-check-message" style="display: none; color: red;">비밀번호가 일치하지 않습니다.</small>
                     </div>
@@ -86,3 +87,4 @@
     </div>
 </body>
 </html>
+
