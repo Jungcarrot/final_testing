@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
+    <title>내가 작성한 게시글</title>
     <link rel="stylesheet" href="assets/css/style_main.css">
     <link rel="stylesheet" href="assets/css/style_2nd.css">
     <link rel="stylesheet" href="assets/css/mypage.css">
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database-compat.js"></script>
-    <script src="assets/js/DB.js"></script>
     <script src="assets/js/navigation.js" defer></script>
-    <script src="assets/js/language_mypage.js" defer></script>
+    <script src="assets/js/language_myposts.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -38,27 +35,9 @@
             </nav>
         </aside>
 
-        <!-- 마이페이지 메인 컨텐츠 -->
-        <main class="login-main">
-            <section class="mypage-section">
-                <h2>마이페이지</h2>
-                <form>
-                    <div class="form-group">
-                        <label for="mypage-username">아이디</label>
-                        <input type="text" id="mypage-username" value="" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="mypage-nickname">닉네임</label>
-                        <input type="text" id="mypage-nickname" value="" readonly>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" id="view-my-posts">내가 작성한 게시글 보기</button>
-                    </div>
-                </form>
-            </section>
-            
-            <!-- 내가 작성한 게시글 섹션 -->
-            <section class="myposts-section" id="myposts-section" style="display: none;">
+        <!-- 게시글 목록 메인 컨텐츠 -->
+        <main class="myposts-main">
+            <section class="myposts-section">
                 <h2>내가 작성한 게시물</h2>
                 <div class="table-container">
                     <table class="myposts-table">
@@ -66,11 +45,96 @@
                             <tr>
                                 <th>번호</th>
                                 <th>제목</th>
+                                <th>작성자</th>
                                 <th>작성일</th>
                             </tr>
                         </thead>
-                        <tbody id="myposts-list">
-                            <!-- 게시글 리스트가 동적으로 추가됩니다 -->
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>게시물 제목2</td>
+                                <td>작성자2</td>
+                                <td>2024-11-02</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>게시물 제목1</td>
+                                <td>작성자1</td>
+                                <td>2024-11-01</td>
+                            </tr>
+                            <!-- 추가 행 -->
                         </tbody>
                     </table>
                 </div>                
@@ -83,65 +147,5 @@
             <button id="lang-en" onclick="changeLanguage('en')">ENGLISH</button>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const userId = localStorage.getItem('userId');
-
-            if (!userId) {
-                alert('로그인 후 이용 가능한 페이지입니다. 로그인 페이지로 이동합니다.');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // Firebase에서 사용자 정보 가져오기
-            database.ref('UserData/' + userId).once('value')
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        document.getElementById('mypage-username').value = userData.loginID;
-                        document.getElementById('mypage-nickname').value = userData.nickName;
-                    } else {
-                        alert('사용자 정보를 찾을 수 없습니다.');
-                    }
-                })
-                .catch((error) => {
-                    console.error("사용자 정보 불러오기 중 오류 발생:", error);
-                });
-
-            // 내가 작성한 게시글 보기 버튼 클릭 시
-            document.getElementById('view-my-posts').addEventListener('click', () => {
-                const myPostsSection = document.getElementById('myposts-section');
-                const myPostsList = document.getElementById('myposts-list');
-                myPostsList.innerHTML = '';
-                myPostsSection.style.display = 'block';
-
-                // Firebase에서 내가 작성한 게시글 가져오기
-                database.ref('Post').orderByChild('userId').equalTo(userId).once('value')
-                    .then((snapshot) => {
-                        if (snapshot.exists()) {
-                            let index = 1;
-                            snapshot.forEach((childSnapshot) => {
-                                const post = childSnapshot.val();
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${index++}</td>
-                                    <td>${post.title}</td>
-                                    <td>${new Date(post.pid).toLocaleDateString()}</td>
-                                `;
-                                myPostsList.appendChild(row);
-                            });
-                        } else {
-                            const row = document.createElement('tr');
-                            row.innerHTML = '<td colspan="3">작성한 게시글이 없습니다.</td>';
-                            myPostsList.appendChild(row);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("게시글 불러오기 중 오류 발생:", error);
-                    });
-            });
-        });
-    </script>
 </body>
 </html>
