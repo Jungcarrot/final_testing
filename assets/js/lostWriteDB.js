@@ -1,7 +1,7 @@
 document.getElementById('submit-button').addEventListener('click', async () => {
     const title = document.querySelector('.title-section input').value;
     const details = document.querySelector('.detail-section textarea').value;
-    const authorId = localStorage.getItem('uid'); // 사용자 ID 가져오기
+    const uid = localStorage.getItem('uid'); // 사용자 ID 가져오기
     const date = new Date().toLocaleString(); // 작성일
 
     if (!title) {
@@ -11,11 +11,11 @@ document.getElementById('submit-button').addEventListener('click', async () => {
 
     try {
         // 작성자 닉네임 가져오기
-        if (!authorId) {
+        if (!uid) {
             alert('로그인이 필요합니다.');
             return;
         }
-        const authorSnapshot = await get(ref(db, `UserData/${authorId}`));
+        const authorSnapshot = await get(ref(db, `UserData/${uid}`));
         if (!authorSnapshot.exists()) {
             alert('사용자 정보를 찾을 수 없습니다.');
             return;
@@ -27,7 +27,7 @@ document.getElementById('submit-button').addEventListener('click', async () => {
             category: '실종',
             postStatus: '작성됨',
             details,
-            authorId,
+            authorId: uid,
             nickName,
             date,
             image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
