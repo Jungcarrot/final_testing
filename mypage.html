@@ -56,11 +56,13 @@
                         <label for="edit-nickname">닉네임 변경</label>
                         <input type="text" id="edit-nickname" placeholder="새로운 닉네임을 입력하세요">
                     </div>
-                    <div class="form-actions">
-                        <button type="button" id="myPostsButton" onclick="navigateToPage('myposts.html')">내가 작성한 게시글 보기</button>
-                        <!-- 버튼 클릭 시 알림 -->
-                        <button type="button" onclick="alert('닉네임 설정은 저장되지 않습니다. UI 데모입니다.')">닉네임 변경</button>
-                    </div>                    
+                    <!-- 닉네임 변경 버튼 -->
+                        <div class="form-actions">
+                            <button type="button" id="myPostsButton" onclick="navigateToPage('myposts.html')">내가 작성한 게시글 보기</button>
+                            <!-- 실제 닉네임 변경 버튼 추가 -->
+                            <button type="button" onclick="saveNickname()">닉네임 변경</button>
+                    </div>
+                   
                 </form>
             </section>
         </main>
