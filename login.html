@@ -14,10 +14,10 @@
     <script type="module" src="assets/js/DB.js"></script>
     <script defer>
         document.addEventListener("DOMContentLoaded", () => {
-            const loggedIn = localStorage.getItem("userLoggedIn") === "true";
-            
+            const isLoggedIn = localStorage.getItem("userLoggedIn");
+
             // 로그인 상태 확인 후 로그인 UI 상태 변경
-            if (loggedIn) {
+            if (isLoggedIn === "true") {
                 alert("이미 로그인된 상태입니다. 홈으로 이동합니다.");
                 window.location.href = "index.html"; // 이미 로그인된 경우 홈으로 이동
             }
@@ -84,4 +84,3 @@
     </div>
 </body>
 </html>
-
