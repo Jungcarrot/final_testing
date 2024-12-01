@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("form");
 
     loginForm.addEventListener("submit", (event) => {
-        const username = document.getElementById("login-loginID").value.trim();
+        const username = document.getElementById("login-username").value.trim();
         const password = document.getElementById("login-password").value.trim();
 
         if (!username || !password) {
