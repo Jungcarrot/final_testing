@@ -72,12 +72,12 @@
             <!-- 로그인 상태 UI -->
             <div id="logged-in-ui" style="display: none;">
                 <div class="auth-text">
-                    <a href="mypage.html">마이페이지</a> | <a href="#" id="logout">로그아웃</a>
+                    <a href="mypage.html" data-translate="mypage">마이페이지</a> | <a href="#" id="logout" data-translate="logout">로그아웃</a>
                 </div>
                 <div class="chat-container">
                     <!-- 채팅 목록 -->
                     <aside class="chat-sidebar">
-                        <h2>채팅 목록</h2>
+                        <h2 data-translate="chat-list-title">채팅 목록</h2>
                         <ul>
                             <li onclick="openChatPopup('user1')">사용자 1</li>
                             <li onclick="openChatPopup('user2')">사용자 2</li>
@@ -89,19 +89,17 @@
                 <!-- 팝업 채팅창 -->
                 <div class="chat-popup hidden" id="chat-popup">
                     <div class="chat-header">
-                        <h2 id="popup-chat-title">채팅방</h2>
+                        <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
                         <button onclick="closeChatPopup()">X</button>
                     </div>
                     <div id="popup-messages" class="messages">
                         <!-- 채팅 메시지가 여기에 추가됩니다 -->
                     </div>
-                    <textarea id="popup-message-input" placeholder="메시지를 입력하세요"></textarea>
-                    <button class="chat-send-button" onclick="sendPopupMessage()">전송</button>
+                    <textarea id="popup-message-input" name="messageContent" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
+                    <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
                 </div>
-                
-                
-            
             </div>
         </aside>
 </body>
 </html>
+
