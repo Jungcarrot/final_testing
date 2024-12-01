@@ -71,56 +71,5 @@
             <button id="lang-en" onclick="changeLanguage('en')">ENGLISH</button>
         </div>   
     </div>
-
-    <script type="module">
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-
-        async function validateLogin(event) {
-            event.preventDefault(); // 폼 제출 막기
-
-            const loginID = document.getElementById('login-loginID').value;
-            const password = document.getElementById('login-password').value;
-
-            if (!loginID || !password) {
-                alert("아이디와 비밀번호를 모두 입력해주세요.");
-                return;
-            }
-
-            try {
-                const database = getDatabase();
-                const userRef = ref(database, 'UserData/' + loginID);
-                const snapshot = await get(userRef);
-
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    if (userData.password === password) {
-                        // 로그인 상태 저장
-                        localStorage.setItem('loggedIn', 'true');
-                        localStorage.setItem('username', userData.nickName);
-
-                        // index.html로 리다이렉트
-                        alert("로그인 성공!");
-                        window.location.href = 'index.html';
-                    } else {
-                        alert('비밀번호가 잘못되었습니다.');
-                    }
-                } else {
-                    alert('아이디가 존재하지 않습니다.');
-                }
-            } catch (error) {
-                console.error("로그인 중 오류 발생:", error);
-                alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const loginForm = document.getElementById("login-form");
-            if (loginForm) {
-                loginForm.addEventListener("submit", validateLogin);
-            }
-        });
-    </script>
 </body>
 </html>
-
-
