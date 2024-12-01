@@ -49,4 +49,6 @@ function saveNickname() {
 }
 
 // 닉네임 변경 버튼에 이벤트 추가
-document.getElementById('save-nickname-button').addEventListener('click', saveNickname);
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('save-nickname-button').addEventListener('click', saveNickname);
+});
