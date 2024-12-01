@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
-                document.getElementById("mypage-username").value = userData.loginID || '';
-                document.getElementById("mypage-nickname").value = userData.nickName || '';
+                document.getElementById("mypage-loginID").value = userData.loginID || '';
+                document.getElementById("mypage-nickName").value = userData.nickName || '';
             } else {
                 console.error("사용자 데이터가 존재하지 않습니다.");
             }
