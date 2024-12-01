@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 작성 버튼 클릭 이벤트
     document.getElementById('submit-button').addEventListener('click', () => {
-        const title = document.querySelector('.title-section input').value;
-        const details = document.querySelector('.detail-section textarea').value;
-        const authorId = localStorage.getItem('uid'); // 사용자 ID 가져오기
-        const date = new Date().toLocaleString(); // 작성일
+        const title = document.querySelector('.title-section input').value; // Post.title
+        const details = document.querySelector('.detail-section textarea').value; // Post.details
+        const authorId = localStorage.getItem('uid'); // UserData.uid로 사용자 ID 가져오기
+        const date = new Date().toLocaleString(); // 작성일 (Post에 별도 추가 없음)
 
         if (!title) {
             alert('제목을 입력해주세요!');
@@ -12,14 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 작성자 닉네임 가져오기
-        const userRef = ref(db, `UserData/${authorId}`);
+        const userRef = ref(db, `UserData/${authorId}`); // UserData 테이블 참조
         get(userRef).then((userSnapshot) => {
             if (userSnapshot.exists()) {
-                const { nickName } = userSnapshot.val();
-                const postData = { title, details, author: nickName, date };
+                const { nickName } = userSnapshot.val(); // UserData.nickName 사용
+                const postData = { 
+                    title, // Post.title
+                    details, // Post.details
+                    authorId, // 작성자 ID 저장 (UserData.uid)
+                    authorNickname: nickName, // UserData.nickName
+                    date // 작성일 저장
+                };
                 
                 // 게시물 데이터 저장
-                const newPostRef = push(ref(db, 'Post'));
+                const newPostRef = push(ref(db, 'Post')); // Post 테이블에 데이터 추가
                 newPostRef.set(postData).then(() => {
                     window.location.href = 'findList.html'; // 게시물 목록으로 이동
                 }).catch((error) => {
