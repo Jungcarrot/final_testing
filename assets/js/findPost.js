@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     postImageElement.style.display = 'none';
                 }
 
-                // 게시물 상세 내용 설정
+                // 게시물 상세 내용 설정 (줄바꿈 처리)
                 const postDetailsElement = document.getElementById('post-details');
-                postDetailsElement.textContent = post.details || '내용이 없습니다.';
+                postDetailsElement.innerHTML = (post.details || '내용이 없습니다.').replace(/\n/g, '<br>');
 
                 // 작성자 정보 추가
                 if (post.authorId) {
@@ -86,12 +86,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 snapshot.forEach(childSnapshot => {
                     const comment = childSnapshot.val();
                     if (comment.postID === postId) {
-                        // 댓글 작성자 정보 가져오기
+                        // 댓글 작성자 정보 가져오기 (줄바꿈 적용)
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment';
 
                         const commenterName = comment.commenterNickname || '익명';
-                        const commentContent = comment.comment || '내용 없음';
+                        const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
                         const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
                         
                         commentElement.innerHTML = commentHTML;
@@ -233,3 +233,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
+
