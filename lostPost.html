@@ -12,11 +12,11 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script type="module" src="assets/js/lostPost.js" defer></script>
+    <script type="module" src="assets/js/lostPost.js" defer></script> <!-- 변경되지 않았음 -->
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
-    <script type="module" src="./assets/js/DB.js"></script> <!-- 경로 수정 -->
+    <script type="module" src="./assets/js/DB.js"></script> <!-- 경로 확인 -->
 </head>
 <body>
     <!-- 헤더 -->
@@ -124,12 +124,12 @@
     </footer>
 
     <script type="module">
-        import { database } from './assets/js/DB.js';  // 경로가 정확한지 확인
-        import { ref, get, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+        import { database } from './assets/js/DB.js';
+        import { ref, get, push, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const postId = urlParams.get('pid');  // 'id'를 'pid'로 수정
+            const postId = urlParams.get('pid'); // 'id'를 'pid'로 수정
             
             if (!postId) {
                 alert('게시물 PID가 존재하지 않습니다.');
@@ -149,10 +149,10 @@
 
             const post = snapshot.val();
             document.getElementById('post-title').textContent = post.title || '제목 없음';
-            document.getElementById('post-details').textContent = post.details || '내용이 없습니다.';
+            document.getElementById('post-details').innerHTML = post.details ? post.details.replace(/\n/g, '<br>') : '내용이 없습니다.';
             const postImageElement = document.getElementById('post-image');
             if (post.image) {
-                postImageElement.src = post.image;
+                postImageElement.src = `assets/images/${post.image}`;
                 postImageElement.style.display = 'block';
             }
 
@@ -167,7 +167,15 @@
                 document.getElementById('edit-buttons').style.display = 'block';
 
                 document.getElementById('edit-post').addEventListener('click', () => {
-                    window.location.href = `lostWrite.html?pid=${postId}`;  // 'id'를 'pid'로 수정
+                    const postDetails = document.getElementById('post-details').innerText.replace(/<br>/g, '\n');
+                    window.location.href = `lostWrite.html?pid=${postId}&edit=true&details=${encodeURIComponent(postDetails)}`;
+                });
+                document.getElementById('delete-post').addEventListener('click', async () => {
+                    if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+                        await remove(postRef);
+                        alert('게시물이 삭제되었습니다.');
+                        window.location.href = 'lostList.html';
+                    }
                 });
             }
 
@@ -189,7 +197,7 @@
                     const commentElement = document.createElement('div');
                     commentElement.classList.add('comment-item');
                     commentElement.innerHTML = `
-                        <strong>${commentObj.nickName}</strong>: ${commentObj.comment}
+                        <strong>${commentObj.nickName}</strong>: ${commentObj.comment.replace(/\n/g, '<br>')}
                     `;
                     commentContainer.appendChild(commentElement);
                 });
