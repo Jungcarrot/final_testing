@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="page-title">발견 게시물</title>
+    <title data-translate="page-title">임시보호 게시물</title>
     <link rel="stylesheet" href="assets/css/postList.css">
     <link rel="stylesheet" href="assets/css/style_main.css">
     <link rel="stylesheet" href="assets/css/postLanguage.css">
@@ -11,8 +11,7 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script src="assets/js/postList.js" defer></script>
-    <script src="assets/js/protectList.js" defer></script>
+    <script type="module" src="assets/js/protectList.js" defer></script> <!-- 수정된 부분 -->
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
@@ -23,15 +22,15 @@
     <header>
         <div class="logo">
             <a href="index.html">
-                <img src="assets/img/logo.png" alt="로고">
+                <img src="assets/img/logo.png" alt="logo">
             </a>
         </div>
         <nav>
             <ul>
-                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
-                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
-                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
-                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="lost"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="find"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="protect"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="vet"> <span data-translate="header-vet">동물병원</span></a></li>
             </ul>
         </nav>
     </header>
@@ -41,7 +40,7 @@
         <h1 data-translate="page-title">임시보호 게시물</h1>
 
         <!-- 게시글 작성 버튼 -->
-        <div class="post-create" id="post-create">
+        <div class="post-create" id="post-create" style="display: none;">
             <a href="protectWrite.html">
                 <button id="post-create-button" data-translate="post-create-button">게시글 작성</button>
             </a>
@@ -49,8 +48,8 @@
 
         <!-- 게시물 검색 영역 -->
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
-            <button id="search-button"><img src="assets/img/search-icon.png" alt="돋보기" data-translate="search-icon-alt"></button>
+            <input type="text" name="search" placeholder="게시물을 검색하세요..." data-translate="search-placeholder">
+            <button><img src="assets/img/search-icon.png" alt="돋보기" data-translate="search-icon-alt"></button>
         </div>
 
         <!-- 게시물 테이블 헤더 -->
@@ -59,12 +58,12 @@
                 <thead>
                     <tr>
                         <th data-translate="table-header-number">번호</th>
-                        <th data-db-field="title" data-translate="table-header-title">제목</th>
-                        <th data-db-field="nickName" data-translate="table-header-author">작성자</th>
-                        <th data-db-field="timeStamp" data-translate="table-header-date">작성일</th>
+                        <th data-translate="table-header-title">제목</th>
+                        <th data-translate="table-header-author">작성자</th>
+                        <th data-translate="table-header-date">작성일</th>
                     </tr>
                 </thead>
-                <tbody id="post-list">
+                <tbody>
                     <!-- 게시물이 생성되면 여기에 추가됩니다 -->
                 </tbody>
             </table>
@@ -121,7 +120,7 @@
                 <div id="popup-messages" class="messages">
                     <!-- 채팅 메시지가 여기에 추가됩니다 -->
                 </div>
-                <textarea id="popup-message-input" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" name="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
@@ -134,5 +133,25 @@
             <button id="lang-en">ENGLISH</button>
         </div>
     </footer>
+
+    <script>
+        // 로그인 상태에 따라 UI 변경
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+            const postCreateButton = document.getElementById("post-create");
+
+            if (isLoggedIn) {
+                // 로그인 상태일 때 게시물 작성 버튼 보이기
+                postCreateButton.style.display = "block";
+                document.getElementById('logged-in-ui').style.display = 'block';
+                document.getElementById('logged-out-ui').style.display = 'none';
+            } else {
+                // 비로그인 상태일 때 게시물 작성 버튼 숨기기
+                postCreateButton.style.display = "none";
+                document.getElementById('logged-in-ui').style.display = 'none';
+                document.getElementById('logged-out-ui').style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
