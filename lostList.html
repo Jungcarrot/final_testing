@@ -11,12 +11,11 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script src="assets/js/postList.js" defer></script>
-    <script type="module" src="./assets/js/lostList.js"></script>
+    <script type="module" src="assets/js/lostList.js" defer></script> <!-- 수정된 부분 -->
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
-    <script type="module" src="./assets/js/DB.js"></script>
+    <script type="module" src="assets/js/DB.js"></script>
 </head>
 <body>
     <!-- 헤더 -->
@@ -41,7 +40,7 @@
         <h1 data-translate="page-title">실종 게시물</h1>
 
         <!-- 게시글 작성 버튼 -->
-        <div class="post-create" id="post-create">
+        <div class="post-create" id="post-create" style="display: none;">
             <a href="lostWrite.html">
                 <button id="post-create-button" data-translate="post-create-button">게시글 작성</button>
             </a>
@@ -59,9 +58,9 @@
                 <thead>
                     <tr>
                         <th data-translate="table-header-number">번호</th>
-                        <th data-db-field="title" data-translate="table-header-title">제목</th>
-                        <th data-db-field="nickName" data-translate="table-header-author">작성자</th>
-                        <th data-db-field="timeStamp" data-translate="table-header-date">작성일</th>
+                        <th data-translate="table-header-title">제목</th>
+                        <th data-translate="table-header-author">작성자</th>
+                        <th data-translate="table-header-date">작성일</th>
                     </tr>
                 </thead>
                 <tbody id="post-list">
@@ -121,7 +120,7 @@
                 <div id="popup-messages" class="messages">
                     <!-- 채팅 메시지가 여기에 추가됩니다 -->
                 </div>
-                <textarea id="popup-message-input" name="messageContent" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" name="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
@@ -134,6 +133,26 @@
             <button id="lang-en">ENGLISH</button>
         </div>
     </footer>
+
+    <script>
+        // 로그인 상태에 따라 UI 변경
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+            const postCreateButton = document.getElementById("post-create");
+
+            if (isLoggedIn) {
+                // 로그인 상태일 때 게시물 작성 버튼 보이기
+                postCreateButton.style.display = "block";
+                document.getElementById('logged-in-ui').style.display = 'block';
+                document.getElementById('logged-out-ui').style.display = 'none';
+            } else {
+                // 비로그인 상태일 때 게시물 작성 버튼 숨기기
+                postCreateButton.style.display = "none";
+                document.getElementById('logged-in-ui').style.display = 'none';
+                document.getElementById('logged-out-ui').style.display = 'block';
+            }
+        });
+    </script>
 
     <!-- Firebase와의 연동 관련 스크립트 -->
     <script type="module">
@@ -155,7 +174,7 @@
                     if (post.category === '실종') {
                         posts.push({
                             ...post,
-                            id: childSnapshot.key
+                            pid: childSnapshot.key // 'pid'로 변경
                         });
                     }
                 });
@@ -175,7 +194,7 @@
                         const row = `
                             <tr>
                                 <td>${index + 1}</td>
-                                <td><a href="lostPost.html?id=${post.id}">${post.title}</a></td>
+                                <td><a href="lostPost.html?pid=${post.pid}">${post.title}</a></td> <!-- 'pid'로 수정 -->
                                 <td>${post.nickName || '알 수 없음'}</td>
                                 <td>${post.date || '작성일 없음'}</td>
                             </tr>
@@ -208,7 +227,7 @@
                         if (post.category === '실종' && post.title.toLowerCase().includes(query)) {
                             filteredPosts.push({
                                 ...post,
-                                id: childSnapshot.key
+                                pid: childSnapshot.key // 'pid'로 변경
                             });
                         }
                     });
@@ -219,3 +238,4 @@
     </script>
 </body>
 </html>
+
