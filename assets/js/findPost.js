@@ -1,19 +1,16 @@
+import { database } from "./DB.js"; // Firebase 데이터베이스 객체 import
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { database } from "./DB.js";
 import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-// Firebase 설정 객체 (예시로 작성된 값들입니다. 실제로는 사용자의 Firebase 설정 정보를 사용해야 합니다.)
+// Firebase 설정 객체 (firebaseConfig 필요시 추가하세요)
 const firebaseConfig = {
-    apiKey: "your-api-key",
-    authDomain: "your-auth-domain",
-    projectId: "your-project-id",
-    storageBucket: "your-storage-bucket",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id"
+    // Firebase 설정 정보
 };
 
 // Firebase 초기화
-initializeApp(firebaseConfig);
+if (typeof window !== "undefined") {
+    initializeApp(firebaseConfig);
+}
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
     document.addEventListener('DOMContentLoaded', async () => {
@@ -107,42 +104,23 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
 
                             const commenterName = comment.commenterNickname || '익명';
                             const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                            const commentHTML = `<strong>${commenterName}:</strong> ${commentContent} <button class="report-button" data-comment-id="${childSnapshot.key}">신고하기</button>`;
+                            const commentHTML = `<strong>${commenterName}:</strong> ${commentContent} <button class="report-button">신고하기</button>`;
                             
                             commentElement.innerHTML = commentHTML;
                             commentContainer.appendChild(commentElement);
-                        }
-                    });
 
-                    // 댓글 신고하기 버튼 이벤트 추가
-                    document.querySelectorAll('.report-button').forEach(button => {
-                        button.addEventListener('click', (event) => {
-                            const commentId = event.target.getAttribute('data-comment-id');
-                            reportComment(commentId);
-                        });
+                            // 신고하기 버튼에 이벤트 추가
+                            const reportButton = commentElement.querySelector('.report-button');
+                            reportButton.addEventListener('click', () => {
+                                alert(`댓글 "${comment.comment}"을(를) 신고했습니다.`);
+                                // 신고 관련 로직 추가 가능
+                            });
+                        }
                     });
                 }
             } catch (error) {
                 console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
                 alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
-            }
-        }
-
-        // 댓글 신고 처리 함수
-        async function reportComment(commentId) {
-            if (confirm('이 댓글을 신고하시겠습니까?')) {
-                try {
-                    const commentRef = ref(database, `CommentReport/${commentId}`);
-                    await set(commentRef, {
-                        reported: true,
-                        reportTime: new Date().toLocaleString(),
-                        reporterId: loggedUserId
-                    });
-                    alert('댓글이 신고되었습니다.');
-                } catch (error) {
-                    console.error('댓글 신고 중 오류 발생:', error);
-                    alert('댓글 신고 중 오류가 발생했습니다.');
-                }
             }
         }
 
@@ -231,4 +209,30 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
                 'mypage': '마이페이지',
                 'logout': '로그아웃',
                 'chat-list-title': '채팅 목록',
-                'chat-room-title
+                'chat-room-title': '채팅방',
+                'chat-send-button': '전송',
+            },
+            en: {
+                'page-title': 'View Found Post',
+                'comment-section-title': 'Comments',
+                'add-comment-button': 'Add Comment',
+                'edit-post-button': 'Edit',
+                'delete-post-button': 'Delete',
+                'report-button': 'Report',
+                'login': 'Login',
+                'signup': 'Sign Up',
+                'mypage': 'My Page',
+                'logout': 'Logout',
+                'chat-list-title': 'Chat List',
+                'chat-room-title': 'Chat Room',
+                'chat-send-button': 'Send',
+            }
+        };
+
+        function updateLanguage(lang) {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+           
