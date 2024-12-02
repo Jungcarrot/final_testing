@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 snapshot.forEach(childSnapshot => {
                     const comment = childSnapshot.val();
-                    if (comment.postID === postId) {
+                    if (comment.pid === postId) { // pid로 변경
                         // 댓글 작성자 정보 가져오기
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment';
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const newCommentRef = push(ref(database, 'Comment'));
             const newComment = {
-                postID: postId,
+                pid: postId, // pid로 변경
                 commenter: commenterId,
                 commenterNickname,
                 comment: commentContent,
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 2. 게시물에 달린 모든 댓글 삭제
             const commentsRef = ref(database, 'Comment');
-            const commentsQuery = query(commentsRef, orderByChild('postID'), equalTo(postId));
+            const commentsQuery = query(commentsRef, orderByChild('pid'), equalTo(postId));
             const commentsSnapshot = await get(commentsQuery);
             
             if (commentsSnapshot.exists()) {
