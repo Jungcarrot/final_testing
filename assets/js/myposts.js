@@ -2,9 +2,9 @@ import { database } from "./DB.js";
 import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
-const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UID 가져오기
-
 document.addEventListener("DOMContentLoaded", async () => {
+    const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UID 가져오기
+
     if (!uid) {
         console.error("로그인된 사용자 UID가 필요합니다.");
         alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
