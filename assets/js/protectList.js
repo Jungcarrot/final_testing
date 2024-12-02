@@ -1,50 +1,72 @@
+import { database } from "./DB.js";
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
 document.addEventListener('DOMContentLoaded', () => {
-    const posts = JSON.parse(localStorage.getItem('protectPosts')) || [];
-    const tableBody = document.querySelector('.post-table tbody');
-    const noPostsMessage = document.querySelector('.no-posts');
-    const searchInput = document.querySelector('.search-bar input');
-    const searchButton = document.querySelector('.search-bar button');
-    const manualContent = document.querySelector('.manual p');
+    // 게시물 관련 변수
+    const tableBody = document.querySelector('.post-table tbody'); // 게시물 테이블 tbody 요소
+    const noPostsMessage = document.querySelector('.no-posts'); // 게시물이 없을 경우 보여주는 메시지
+    const searchInput = document.querySelector('.search-bar input'); // 검색창의 input 요소
+    const searchButton = document.querySelector('.search-bar button'); // 검색 버튼 요소
 
-    function renderPosts(filteredPosts) {
-        tableBody.innerHTML = ''; // 기존 목록 초기화
-        if (filteredPosts.length === 0) {
-            noPostsMessage.style.display = 'block';
-        } else {
-            noPostsMessage.style.display = 'none';
-            filteredPosts.forEach((post, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><a href="protectPost.html?id=${posts.indexOf(post)}">${post.title}</a></td>
-                        <td>${post.nickName}</td>
-                        <td>${post.date}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
+    // Firebase에서 임시보호 카테고리의 게시물 가져오기
+    const postsRef = ref(database, 'Post');
+    onValue(postsRef, async (snapshot) => {
+        const posts = [];
+        const userPromises = [];
+        snapshot.forEach((childSnapshot) => {
+            const post = childSnapshot.val();
+            if (post.category === '임시보호') { // "임시보호" 카테고리의 게시물만 필터링
+                posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
+                userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
+            }
+        });
+
+        const userSnapshots = await Promise.all(userPromises);
+
+        // 게시물 렌더링 함수
+        function renderPosts(filteredPosts, authorNicknames) {
+            tableBody.innerHTML = ''; // 기존 목록 초기화
+            if (filteredPosts.length === 0) {
+                noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
+            } else {
+                noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
+                filteredPosts.forEach((post, index) => {
+                    const authorNickname = authorNicknames[index] || '알 수 없음'; // 작성자 닉네임이 없을 경우 '알 수 없음'
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td> <!-- 번호 -->
+                            <td><a href="protectPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목, 게시물 ID 추가 -->
+                            <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
+                            <td>${post.date || 'N/A'}</td> <!-- 작성일 -->
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
+                });
+            }
         }
-    }
 
-    // 초기 렌더링
-    renderPosts(posts);
+        // 작성자 닉네임과 함께 게시물 렌더링
+        const authorNicknames = userSnapshots.map((snapshot) => snapshot.exists() ? snapshot.val().nickName : '알 수 없음');
+        renderPosts(posts, authorNicknames);
 
-    // 검색 이벤트
-    function filterPosts() {
-        const query = searchInput.value.trim().toLowerCase();
-        const filteredPosts = posts.filter(post =>
-            post.title.toLowerCase().includes(query)
-        );
-        renderPosts(filteredPosts);
-    }
-
-    searchButton.addEventListener('click', filterPosts);
-    searchInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            filterPosts();
+        // 검색 이벤트
+        function filterPosts() {
+            const query = searchInput.value.trim().toLowerCase(); // 검색어를 소문자로 변환하여 비교
+            const filteredPosts = posts.filter(post =>
+                post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
+            );
+            renderPosts(filteredPosts, authorNicknames); // 필터링된 게시물 렌더링
         }
+
+        searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                filterPosts(); // Enter 키 입력 시 필터링
+            }
+        });
     });
 
+    // 언어 선택과 관련된 부분
     const translations = {
         ko: {
             'page-title': '임시보호 게시물',
@@ -63,11 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'login': '로그인',
             'signup': '회원가입',
             'manual-title': 'MANUAL',
-            'manual-item1': '매뉴얼 내용',
-            'chat-list-title': '채팅 목록',
-            'mypage': '마이페이지',
-            'logout': '로그아웃',
-            'manual-title': '매뉴얼',
             'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
             'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
             'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
@@ -90,11 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'login': 'Login',
             'signup': 'Sign Up',
             'manual-title': 'MANUAL',
-            'manual-item1': 'Manual Content',
-            'chat-list-title': 'Chat List',
-            'mypage': 'My Page',
-            'logout': 'Logout',
-            'manual-title': 'MANUAL',
             'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
             'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
             'manual-item3': 'The site is composed of four main boards: Lost, Found, Vet, and Temporary Shelter.',
@@ -113,16 +125,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // 페이지 제목 업데이트
+        document.querySelector('title').textContent = translations[lang]['page-title'];
     }
 
     document.querySelectorAll('.post-language-selector button').forEach(button => {
         button.addEventListener('click', () => {
-            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
+            const lang = button.id === 'lang-ko' ? 'ko' : 'en'; // 언어 선택
             updateLanguage(lang);
             document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
         });
     });
 
-    updateLanguage('ko');
+    updateLanguage('ko'); // 초기 언어 설정
+    document.getElementById('lang-ko').classList.add('active');
 });
