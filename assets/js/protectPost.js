@@ -199,13 +199,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const commentsRef = ref(database, 'Comment');
             const commentsSnapshot = await get(commentsRef);
             if (commentsSnapshot.exists()) {
-                commentsSnapshot.forEach(async (childSnapshot) => {
+                const deletePromises = []; // 모든 댓글 삭제 요청을 저장할 배열
+                commentsSnapshot.forEach((childSnapshot) => {
                     const comment = childSnapshot.val();
                     if (comment.pid === postId) {
                         const commentKey = childSnapshot.key;
-                        await remove(ref(database, `Comment/${commentKey}`));
+                        deletePromises.push(remove(ref(database, `Comment/${commentKey}`)));
                     }
                 });
+                // 모든 댓글 삭제가 완료될 때까지 대기
+                await Promise.all(deletePromises);
             }
 
             // 게시물 삭제
@@ -300,4 +303,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
-
