@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let posts = [];
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
-            if (post.category === '발견') { // "발견" 카테고리의 게시물만 필터링
+            if (post.category === '실종') { // "실종" 카테고리의 게시물만 필터링
                 posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
             }
         });
