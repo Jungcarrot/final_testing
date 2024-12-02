@@ -1,6 +1,3 @@
-import { database } from "./DB.js";
-import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 관련 변수
     const tableBody = document.querySelector('.post-table tbody'); // 게시물 테이블 tbody 요소
@@ -11,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Firebase에서 게시물 가져오기
     const postsRef = ref(database, 'Post');
     onValue(postsRef, async (snapshot) => {
-        const posts = [];
+        let posts = [];
         const userPromises = [];
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
@@ -19,6 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
                 userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
+        });
+
+        // 작성일을 기준으로 게시물을 내림차순 정렬
+        posts.sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB - dateA; // 최신순으로 정렬 (내림차순)
         });
 
         const userSnapshots = await Promise.all(userPromises);
