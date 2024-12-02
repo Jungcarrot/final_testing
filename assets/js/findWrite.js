@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     image: '' // 이미지 추가 부분은 향후 구현 가능
                 });
                 alert('게시물이 수정되었습니다.');
+                window.location.href = `findPost.html?pid=${postId}`; // 수정 후 해당 게시물 보기 페이지로 이동
             } else {
                 // 새 게시물 작성
                 const newPostRef = push(ref(database, 'Post'));
@@ -81,14 +82,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     image: '' // 이미지 부분은 향후 구현 가능
                 });
                 alert('게시물이 저장되었습니다.');
+                window.location.href = `findPost.html?pid=${pid}`; // 작성 후 해당 게시물 보기 페이지로 이동
             }
 
-            // 작성 또는 수정 후 목록 페이지로 이동
-            window.location.href = 'findList.html';
         } catch (error) {
             console.error('게시물 저장 중 오류 발생:', error);
             alert('게시물 저장 중 오류가 발생했습니다.');
         }
     });
 });
-
