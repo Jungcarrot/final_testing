@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = `
                         <tr>
                             <td>${index + 1}</td> <!-- 번호 -->
-                            <td><a href="findPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목 -->
+                            <td><a href="lostPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목 -->
                             <td>${post.authorNickname}</td> <!-- 작성자 닉네임 -->
                             <td>${post.date}</td> <!-- 작성일 -->
                         </tr>
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
         },
         en: {
-            'page-title': 'lost Posts',
+            'page-title': 'Lost Posts',
             'header-lost': 'Lost',
             'header-find': 'Found',
             'header-protect': 'Temporary Protection',
