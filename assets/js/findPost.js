@@ -1,5 +1,5 @@
 import { database } from "./DB.js";
-import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get, push, set, remove, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 게시물 ID 가져오기
@@ -132,15 +132,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 게시물 삭제 처리 함수
+    // 게시물 삭제 처리 함수 (게시물에 달린 댓글도 함께 삭제)
     async function deletePost() {
         if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
             return;
         }
 
         try {
+            // 1. 게시물 삭제
             const postRef = ref(database, `Post/${postId}`);
             await remove(postRef);
+
+            // 2. 게시물에 달린 모든 댓글 삭제
+            const commentsRef = ref(database, 'Comment');
+            const commentsQuery = query(commentsRef, orderByChild('postID'), equalTo(postId));
+            const commentsSnapshot = await get(commentsQuery);
+            
+            if (commentsSnapshot.exists()) {
+                commentsSnapshot.forEach(async (childSnapshot) => {
+                    await remove(ref(database, `Comment/${childSnapshot.key}`));
+                });
+            }
+
             alert('게시물이 삭제되었습니다.');
             window.location.href = 'findList.html';
         } catch (error) {
