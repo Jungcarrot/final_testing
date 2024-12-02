@@ -152,11 +152,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const postRef = ref(database, `Post/${postId}`);
             await remove(postRef);
-            alert('게시물이 삭제되었습니다.');
+            alert('게시물이 삭제되었습니다.(js)');
             window.location.href = 'findList.html';
         } catch (error) {
             console.error('게시물 삭제 중 오류 발생:', error);
-            alert('게시물 삭제 중 오류가 발생했습니다.');
+            alert('게시물 삭제 중 오류가 발생했습니다.(js)');
         }
     }
 
