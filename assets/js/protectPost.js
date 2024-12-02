@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     postImageElement.style.display = 'none';
                 }
 
-                // 게시물 상세 내용 설정
+                // 게시물 상세 내용 설정 (줄바꿈 처리를 위해 innerHTML 사용)
                 const postDetailsElement = document.getElementById('post-details');
-                postDetailsElement.textContent = post.details || '내용이 없습니다.';
+                postDetailsElement.innerHTML = post.details ? post.details.replace(/\n/g, '<br>') : '내용이 없습니다.';
 
                 // 작성자 정보 추가
                 if (post.authorId) {
@@ -234,3 +234,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
+
