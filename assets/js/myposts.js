@@ -78,16 +78,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 authorCell.textContent = authorNickname;
                 rowElement.appendChild(authorCell);
 
-                // 작성일 셀
+               // 작성일 셀
                 const dateCell = document.createElement('td');
-                if (post.createdAt) {
-                    // 작성 시간이 존재할 경우 사람이 읽기 쉬운 형식으로 변환하여 표시
-                    dateCell.textContent = new Date(post.createdAt).toLocaleString(); 
-                } else {
-                    // 작성 시간이 존재하지 않을 경우 'N/A' 표시
-                    dateCell.textContent = 'N/A';
-                }
+                dateCell.textContent = post.date || 'N/A';
                 rowElement.appendChild(dateCell);
+                }
 
                 // 테이블에 행 추가
                 myPostsTable.appendChild(rowElement);
