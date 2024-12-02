@@ -12,7 +12,6 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script src="assets/js/postList.js" defer></script>
     <script type="module" src="assets/js/lostPost.js"></script>
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
@@ -130,6 +129,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
+            
             if (!postId) {
                 alert('게시물 ID가 존재하지 않습니다.');
                 window.location.href = 'lostList.html';
@@ -242,3 +242,4 @@
     </script>
 </body>
 </html>
+
