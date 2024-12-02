@@ -12,7 +12,6 @@
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
     <script src="assets/js/postList.js" defer></script>
-    <script src="assets/js/lostList.js" defer></script>
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
@@ -134,5 +133,51 @@
             <button id="lang-en">ENGLISH</button>
         </div>
     </footer>
+
+    <!-- 스크립트 추가 (Firebase 관련 스크립트 포함) -->
+    <script type="module">
+        import { database } from './DB.js';
+        import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.getElementById('post-list');
+            const noPostsMessage = document.querySelector('.no-posts');
+
+            // Firebase에서 게시물 가져오기
+            const postsRef = ref(database, 'Post');
+            onValue(postsRef, (snapshot) => {
+                tableBody.innerHTML = ''; // 기존 목록 초기화
+                const posts = [];
+
+                snapshot.forEach(childSnapshot => {
+                    const post = childSnapshot.val();
+                    if (post.category === '실종') {
+                        posts.push({
+                            ...post,
+                            id: childSnapshot.key
+                        });
+                    }
+                });
+
+                // 게시물 렌더링
+                if (posts.length === 0) {
+                    noPostsMessage.style.display = 'block';
+                } else {
+                    noPostsMessage.style.display = 'none';
+                    posts.forEach((post, index) => {
+                        const row = `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td><a href="lostPost.html?id=${post.id}">${post.title}</a></td>
+                                <td>${post.nickName || '알 수 없음'}</td>
+                                <td>${post.date || '작성일 없음'}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
