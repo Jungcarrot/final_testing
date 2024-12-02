@@ -56,45 +56,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function fetchComments() {
-        try {
-            const commentsRef = ref(database, 'Comment');
-            const snapshot = await get(commentsRef);
-            const commentContainer = document.getElementById('comments');
-            commentContainer.innerHTML = '';
+    try {
+        const commentsRef = ref(database, 'Comment');
+        const snapshot = await get(commentsRef);
+        const commentContainer = document.getElementById('comments');
+        commentContainer.innerHTML = '';
 
-            if (snapshot.exists()) {
-                snapshot.forEach(childSnapshot => {
-                    const comment = childSnapshot.val();
-                    if (comment.postID === postId) {
-                        const commentElement = document.createElement('div');
-                        commentElement.className = 'comment';
+        if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+                const comment = childSnapshot.val();
+                if (comment.postID === postId) {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
 
-                        const commenterName = comment.commenterNickname || '익명';
-                        const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                        const isOwnComment = loggedUserId === comment.commenter;
-                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+                    const commenterName = comment.commenterNickname || '익명';
+                    const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
+                    const isOwnComment = loggedUserId === comment.commenter;
+                    const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
 
-                        // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
-                        if (!isOwnComment) {
-                            const reportButton = document.createElement('button');
-                            reportButton.textContent = '신고하기';
-                            reportButton.className = 'report-button';
-                            reportButton.addEventListener('click', () => showReportModal(childSnapshot.key));
-                            commentElement.innerHTML = commentHTML;
-                            commentElement.appendChild(reportButton);
-                        } else {
-                            commentElement.innerHTML = commentHTML;
-                        }
-
-                        commentContainer.appendChild(commentElement);
+                    // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
+                    if (!isOwnComment) {
+                        const reportButton = document.createElement('button');
+                        reportButton.textContent = '신고하기';
+                        reportButton.className = 'report-button';
+                        reportButton.addEventListener('click', async () => {
+                            try {
+                                const reason = prompt('신고 사유를 입력해주세요:');
+                                if (reason) {
+                                    await handleReport(childSnapshot.key, reason);  // 신고 처리
+                                }
+                            } catch (error) {
+                                console.error('신고 처리 중 오류 발생:', error);
+                                alert('신고 처리 중 오류가 발생했습니다.');
+                            }
+                        });
+                        commentElement.innerHTML = commentHTML;
+                        commentElement.appendChild(reportButton);
+                    } else {
+                        commentElement.innerHTML = commentHTML;
                     }
-                });
-            }
-        } catch (error) {
-            console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
-            alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+
+                    commentContainer.appendChild(commentElement);
+                }
+            });
         }
+    } catch (error) {
+        console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
+        alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
     }
+}
 
     // 신고 처리 함수
     async function handleReport(commentId, reason) {
