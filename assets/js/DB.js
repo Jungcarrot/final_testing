@@ -43,4 +43,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-export { database };  // 데이터베이스 객체를 export
+export { database };  //데이터베이스 객체를 export
