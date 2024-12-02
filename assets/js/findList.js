@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 작성일을 기준으로 게시물을 내림차순 정렬
         posts.sort((a, b) => {
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
+            const dateA = parseCustomDate(a.date);
+            const dateB = parseCustomDate(b.date);
             return dateB - dateA; // 최신순으로 정렬 (내림차순)
         });
 
@@ -72,6 +72,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // 날짜 문자열을 파싱하여 Date 객체로 변환하는 함수
+    function parseCustomDate(dateString) {
+        // "2024. 12. 3. 오전 2:13:12" 형식을 파싱
+        const [datePart, timePart] = dateString.split(' ');
+        const [year, month, day] = datePart.split('.').map(num => parseInt(num));
+        let [hour, minute, second] = timePart.split(':').map(num => parseInt(num));
+        const period = dateString.includes('오전') ? 'AM' : 'PM';
+
+        if (period === 'PM' && hour < 12) {
+            hour += 12;
+        } else if (period === 'AM' && hour === 12) {
+            hour = 0;
+        }
+
+        return new Date(year, month - 1, day, hour, minute, second);
+    }
 
     // 언어 선택과 관련된 부분
     const translations = {
