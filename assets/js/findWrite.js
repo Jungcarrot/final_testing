@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // 기존 데이터로 폼 채우기
                 document.getElementById('post-title').value = post.title || '';
-                document.getElementById('post-details').value = post.details || '';
+                document.getElementById('post-details').value = post.details.replace(/<br>/g, '\n') || '';
 
                 const postImageElement = document.getElementById('photo-upload');
                 if (post.image) {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 작성 완료 버튼 클릭 이벤트
     document.getElementById('submit-button').addEventListener('click', async () => {
         const title = document.getElementById('post-title').value.trim();
-        const details = document.getElementById('post-details').value.trim();
+        const details = document.getElementById('post-details').value.trim().replace(/\n/g, '<br>');
         const uid = localStorage.getItem('uid');
         const date = new Date().toLocaleString();
 
