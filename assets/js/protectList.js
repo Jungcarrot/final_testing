@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': '작성된 게시물이 없습니다.',
             'login': '로그인',
             'signup': '회원가입',
-            'manual-title': 'MANUAL',
+            'manual-title': '매뉴얼',
             'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
             'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
             'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
@@ -119,9 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = element.getAttribute('data-translate');
             if (translations[lang][key]) {
                 if (element.placeholder !== undefined) {
-                    element.placeholder = translations[lang][key];
+                    element.placeholder = translations[lang][key]; // 입력 필드의 placeholder 업데이트
                 } else {
-                    element.textContent = translations[lang][key];
+                    element.textContent = translations[lang][key]; // 텍스트 콘텐츠 업데이트
                 }
             }
         });
