@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // 작성자 닉네임 셀 생성 및 추가
                 const authorCell = document.createElement('td');
-                authorCell.textContent = post.authorNickname || '알 수 없음'; // 작성자 닉네임 설정
+                authorCell.textContent = authorNickname;
                 rowElement.appendChild(authorCell);
 
                 // 작성일 셀 생성 및 추가
