@@ -19,16 +19,34 @@
     <script type="module" src="assets/js/DB.js"></script>
 </head>
 <body>
+    <!-- 헤더 -->
     <header>
-        <!-- 헤더 영역 생략 -->
+        <div class="logo">
+            <a href="index.html">
+                <img src="assets/img/logo.png" alt="로고">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="lostList.html"><img src="assets/img/lost.png" alt="실종"> <span data-translate="header-lost">실종</span></a></li>
+                <li><a href="findList.html"><img src="assets/img/find.png" alt="발견"> <span data-translate="header-find">발견</span></a></li>
+                <li><a href="protectList.html"><img src="assets/img/protect.png" alt="임시보호"> <span data-translate="header-protect">임시보호</span></a></li>
+                <li><a href="vetList.html"><img src="assets/img/vet.png" alt="동물병원"> <span data-translate="header-vet">동물병원</span></a></li>
+            </ul>
+        </nav>
     </header>
     <main>
         <div class="post-container">
+            <!-- 제목 -->
             <h1 id="post-title" data-db-field="title"></h1>
+        
+            <!-- 사진 및 상세 내용 -->
             <div class="post-content">
                 <img id="post-image" data-db-field="image" alt="등록된 사진">
                 <div id="post-details" data-db-field="details"></div>
             </div>
+        
+            <!-- 댓글 섹션 -->
             <div class="comment-section">
                 <h2 data-translate="comment-section-title">댓글</h2>
                 <div id="comments" data-db-field="comment">
@@ -37,11 +55,65 @@
                 <textarea id="comment-input" name="comment" placeholder="댓글을 작성하세요..."></textarea>
                 <button id="add-comment" data-translate="add-comment-button">댓글 작성 완료</button>
             </div>
+        
+            <!-- 수정/삭제 버튼 (본인 게시물일 경우만 표시) -->
+            <div id="edit-buttons" style="display: none;">
+                <button id="edit-post" data-translate="edit-post-button">수정</button>
+                <button id="delete-post" data-translate="delete-post-button">삭제</button>
+            </div>
         </div>    
     </main>
+
+    <!-- 로그인 상태 UI -->
     <aside class="right-section">
-        <!-- 로그인 상태 UI 영역 생략 -->
+        <!-- 비로그인 상태 UI -->
+        <div id="logged-out-ui">
+            <div class="auth-text">
+                <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
+            </div>
+            <div class="manual">
+                <h2 data-translate="manual-title">MANUAL</h2>
+                <p data-translate="manual-item1">발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item2">주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item3">이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.</p>
+                <p>-</p>
+                <p data-translate="manual-item4">여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!</p>
+            </div>
+        </div>
+        <!-- 로그인 상태 UI -->
+        <div id="logged-in-ui" style="display: none;">
+            <div class="auth-text">
+                <a href="mypage.html" data-translate="mypage">마이페이지</a> | <a href="#" id="logout" data-translate="logout">로그아웃</a>
+            </div>
+            <div class="chat-container">
+                <aside class="chat-sidebar">
+                    <h2 data-translate="chat-list-title">채팅 목록</h2>
+                    <ul>
+                        <li onclick="openChatPopup('user1')">사용자 1</li>
+                        <li onclick="openChatPopup('user2')">사용자 2</li>
+                        <li onclick="openChatPopup('user3')">사용자 3</li>
+                    </ul>
+                </aside>
+            </div>
+            
+            <!-- 팝업 채팅창 -->
+            <div class="chat-popup hidden" id="chat-popup">
+                <div class="chat-header">
+                    <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
+                    <button onclick="closeChatPopup()">X</button>
+                </div>
+                <div id="popup-messages" class="messages">
+                    <!-- 채팅 메시지가 여기에 추가됩니다 -->
+                </div>
+                <textarea id="popup-message-input" name="messageContent" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
+                <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
+            </div>
+        </div>
     </aside>
+
+    <!-- 푸터 -->
     <footer>
         <div class="post-language-selector">
             <button onclick="changeLanguage('ko')" id="lang-ko" class="active">한국어</button>
@@ -74,9 +146,12 @@
             }
 
             const post = snapshot.val();
-            document.getElementById('post-title').textContent = post.title || '제목 없음';
-            document.getElementById('post-details').textContent = post.details || '내용이 없습니다.';
+            const postTitleElement = document.getElementById('post-title');
             const postImageElement = document.getElementById('post-image');
+            const postDetailsElement = document.getElementById('post-details');
+
+            postTitleElement.textContent = post.title || '제목 없음';
+            postDetailsElement.textContent = post.details || '내용이 없습니다.';
             if (post.image) {
                 postImageElement.src = post.image;
                 postImageElement.style.display = 'block';
@@ -90,6 +165,7 @@
                 document.getElementById('edit-buttons').style.display = 'block';
 
                 document.getElementById('edit-post').addEventListener('click', () => {
+                    // 수정 페이지로 이동하거나 수정 기능 구현
                     window.location.href = `lostWrite.html?id=${postId}`;
                 });
 
@@ -104,7 +180,7 @@
             }
 
             // 댓글 가져오기
-            const commentsRef = ref(database, `Comment`);
+            const commentsRef = ref(database, 'Comment');
             onValue(commentsRef, (commentsSnapshot) => {
                 const comments = [];
                 commentsSnapshot.forEach((childSnapshot) => {
@@ -114,6 +190,7 @@
                     }
                 });
 
+                // 댓글 표시
                 const commentContainer = document.getElementById('comments');
                 commentContainer.innerHTML = '';
                 comments.forEach((commentObj) => {
@@ -156,14 +233,9 @@
                     time: new Date().toLocaleString()
                 };
 
-                try {
-                    await push(ref(database, 'Comment'), newComment);
-                    commentInput.value = '';
-                    alert('댓글이 작성되었습니다.');
-                } catch (error) {
-                    console.error('댓글 작성 중 오류 발생:', error);
-                    alert('댓글 작성 중 오류가 발생했습니다.');
-                }
+                await push(ref(database, 'Comment'), newComment);
+                commentInput.value = '';
+                alert('댓글이 작성되었습니다.');
             });
         });
     </script>
