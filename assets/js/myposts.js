@@ -5,7 +5,7 @@ import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase
 const loginID = localStorage.getItem("loginID"); // 로그인 시 저장된 사용자 UID 가져오기
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (!uid) {
+    if (!loginID) {
         console.error("로그인된 사용자 UID가 필요합니다.");
         alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
         window.location.href = "login.html"; // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
-            if (post.authorId === uid) {
+            if (post.authorId === loginID) {
                 const row = `
                     <tr>
                         <td>${postIndex++}</td>
