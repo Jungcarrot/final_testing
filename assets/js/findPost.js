@@ -229,10 +229,37 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
             }
         };
 
-        function updateLanguage(lang) {
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
-           
+           function updateLanguage(lang) {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+
+        // 페이지 제목 번역
+        document.querySelector('title').textContent = translations[lang]['page-title'];
+
+        // 신고 버튼 번역
+        document.querySelectorAll('.report-button').forEach(button => {
+            button.textContent = translations[lang]['report-button'];
+        });
+    }
+
+    document.querySelectorAll('.post-language-selector button').forEach(button => {
+        button.addEventListener('click', () => {
+            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
+            updateLanguage(lang);
+            document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+
+    // 초기 언어 설정
+    updateLanguage('ko');
+    document.getElementById('lang-ko').classList.add('active');
+
+    // 게시물 데이터 및 댓글 초기 로드
+    await fetchPostDetails(postId);
+    await fetchComments(postId);
+});
