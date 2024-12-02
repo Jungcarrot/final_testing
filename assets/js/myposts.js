@@ -49,35 +49,46 @@ document.addEventListener("DOMContentLoaded", async () => {
             myPostsTable.appendChild(emptyRow);
         } else {
             // 게시물이 있으면 테이블에 추가
-            myPosts.forEach((post, index) => {
-                const rowElement = document.createElement('tr');
-                
-                // 번호 셀
-                const numberCell = document.createElement('td');
-                numberCell.textContent = index + 1;
-                rowElement.appendChild(numberCell);
+            for (const [index, post] of myPosts.entries()) {
+                try {
+                    // 작성자 닉네임 가져오기
+                    const authorRef = ref(database, `UserData/${post.authorId}`);
+                    const authorSnapshot = await get(authorRef);
+                    const authorNickname = authorSnapshot.exists() ? authorSnapshot.val().nickName : '알 수 없음';
 
-                // 제목 셀
-                const titleCell = document.createElement('td');
-                const titleLink = document.createElement('a');
-                titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정
-                titleLink.textContent = post.title;
-                titleCell.appendChild(titleLink);
-                rowElement.appendChild(titleCell);
+                    // 테이블에 행 추가
+                    const rowElement = document.createElement('tr');
+                    
+                    // 번호 셀
+                    const numberCell = document.createElement('td');
+                    numberCell.textContent = index + 1;
+                    rowElement.appendChild(numberCell);
 
-                // 작성자 닉네임 셀
-                const authorCell = document.createElement('td');
-                authorCell.textContent = post.authorNickname || '알 수 없음';
-                rowElement.appendChild(authorCell);
+                    // 제목 셀
+                    const titleCell = document.createElement('td');
+                    const titleLink = document.createElement('a');
+                    titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정
+                    titleLink.textContent = post.title;
+                    titleCell.appendChild(titleLink);
+                    rowElement.appendChild(titleCell);
 
-                // 작성일 셀
-                const dateCell = document.createElement('td');
-                dateCell.textContent = post.createdAt || 'N/A';
-                rowElement.appendChild(dateCell);
+                    // 작성자 닉네임 셀
+                    const authorCell = document.createElement('td');
+                    authorCell.textContent = authorNickname;
+                    rowElement.appendChild(authorCell);
 
-                // 테이블에 행 추가
-                myPostsTable.appendChild(rowElement);
-            });
+                    // 작성일 셀
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = post.createdAt || 'N/A';
+                    rowElement.appendChild(dateCell);
+
+                    // 테이블에 행 추가
+                    myPostsTable.appendChild(rowElement);
+
+                } catch (error) {
+                    console.error("작성자 정보를 가져오는 중 오류가 발생했습니다:", error);
+                }
+            }
         }
     } catch (error) {
         console.error("데이터 가져오기 오류:", error);
