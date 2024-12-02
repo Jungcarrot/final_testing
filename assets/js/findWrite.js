@@ -3,9 +3,6 @@ import { ref, push, set } from 'https://www.gstatic.com/firebasejs/11.0.2/fireba
 
 document.addEventListener('DOMContentLoaded', () => {
     const submitButton = document.getElementById('submit-button');
-
-    // 중복 이벤트 핸들러 등록 방지
-    submitButton.removeEventListener('click', handleSubmit);
     submitButton.addEventListener('click', handleSubmit);
 });
 
@@ -51,7 +48,8 @@ async function handleSubmit() {
         await set(newPostRef, postData);
 
         alert('게시물이 저장되었습니다!');
-        window.location.href = 'findList.html'; // 게시물 목록으로 이동
+        // 게시물 작성 후 해당 게시물 보기 페이지로 이동 (pid 포함)
+        window.location.href = `findPost.html?pid=${pid}`;
     } catch (error) {
         console.error('게시물 저장 중 오류 발생:', error);
         alert('게시물 저장 중 오류가 발생했습니다.');
