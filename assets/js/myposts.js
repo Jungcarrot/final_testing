@@ -48,15 +48,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
             // 게시물이 있으면 테이블에 추가
             myPosts.forEach((post, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td> <!-- 번호 -->
-                        <td><a href="protectPost.html?pid=${post.postId}">${post.title}</a></td> <!-- 제목, 게시물 ID 추가 -->
-                        <td>${post.authorNickname || '알 수 없음'}</td> <!-- 작성자 닉네임 -->
-                        <td>${post.createdAt || 'N/A'}</td> <!-- 작성일 -->
-                    </tr>
-                `;
-                myPostsTable.innerHTML += row;
+                const rowElement = document.createElement('tr');
+                
+                // 번호 셀
+                const numberCell = document.createElement('td');
+                numberCell.textContent = index + 1;
+                rowElement.appendChild(numberCell);
+
+                // 제목 셀
+                const titleCell = document.createElement('td');
+                const titleLink = document.createElement('a');
+                titleLink.href = `protectPost.html?pid=${post.postId}`;
+                titleLink.textContent = post.title;
+                titleCell.appendChild(titleLink);
+                rowElement.appendChild(titleCell);
+
+                // 작성자 닉네임 셀
+                const authorCell = document.createElement('td');
+                authorCell.textContent = post.authorNickname || '알 수 없음';
+                rowElement.appendChild(authorCell);
+
+                // 작성일 셀
+                const dateCell = document.createElement('td');
+                dateCell.textContent = post.createdAt || 'N/A';
+                rowElement.appendChild(dateCell);
+
+                // 테이블에 행 추가
+                myPostsTable.appendChild(rowElement);
             });
         }
     } catch (error) {
