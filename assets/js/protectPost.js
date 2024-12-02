@@ -195,8 +195,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
+            // 게시물에 달린 모든 댓글 삭제
+            const commentsRef = ref(database, 'Comment');
+            const commentsSnapshot = await get(commentsRef);
+            if (commentsSnapshot.exists()) {
+                commentsSnapshot.forEach(async (childSnapshot) => {
+                    const comment = childSnapshot.val();
+                    if (comment.postID === postId) {
+                        const commentKey = childSnapshot.key;
+                        await remove(ref(database, `Comment/${commentKey}`));
+                    }
+                });
+            }
+
+            // 게시물 삭제
             const postRef = ref(database, `Post/${postId}`);
             await remove(postRef);
+
             alert('게시물이 삭제되었습니다.');
             window.location.href = 'protectList.html';
         } catch (error) {
@@ -229,6 +244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'add-comment-button': '댓글 작성 완료',
             'edit-post-button': '수정',
             'delete-post-button': '삭제',
+            'report-button': '신고하기',
             'login': '로그인',
             'signup': '회원가입',
             'mypage': '마이페이지',
@@ -243,6 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'add-comment-button': 'Add Comment',
             'edit-post-button': 'Edit',
             'delete-post-button': 'Delete',
+            'report-button': 'Report',
             'login': 'Login',
             'signup': 'Sign Up',
             'mypage': 'My Page',
@@ -263,6 +280,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 페이지 제목 번역
         document.querySelector('title').textContent = translations[lang]['page-title'];
+
+        // 신고 버튼 번역
+        document.querySelectorAll('.report-button').forEach(button => {
+            button.textContent = translations[lang]['report-button'];
+        });
     }
 
     document.querySelectorAll('.post-language-selector button').forEach(button => {
