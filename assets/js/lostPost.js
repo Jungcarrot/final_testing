@@ -93,17 +93,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 // 신고하기 버튼 이벤트 추가
-                document.querySelectorAll('.report-button').forEach(button => {
-                    button.addEventListener('click', async (event) => {
-                        const commentId = event.target.dataset.commentId;
-                        await reportComment(commentId);
-                    });
-                });
+                addReportButtonListeners();
             }
         } catch (error) {
             console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
             alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
         }
+    }
+
+    // 신고하기 버튼 이벤트 리스너 추가 함수
+    function addReportButtonListeners() {
+        document.querySelectorAll('.report-button').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const commentId = event.target.dataset.commentId;
+                await reportComment(commentId);
+            });
+        });
     }
 
     // 댓글 신고 처리 함수
@@ -203,7 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
     function editPost() {
-        window.location.href = `lostWrite.html?pid=${postId}&edit=true`; // id 대신 pid 사용
+        window.location.href = `lostWrite.html?pid=${postId}&edit=true`;
     }
 
     // 댓글 작성 버튼 클릭 이벤트 추가
