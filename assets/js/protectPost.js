@@ -131,6 +131,21 @@ document.addEventListener('DOMContentLoaded', () => {
             commentInput.value = '';
         }
     });
+    document.getElementById("add-comment").addEventListener("click", () => {
+    const commentInput = document.getElementById("comment-input").value.trim();
+    const username = getLoggedInUsername(); // 사용자 이름 가져오기
+
+    console.log("작성한 댓글:", commentInput);
+    console.log("사용자 이름:", username);
+
+    if (!commentInput || !username) {
+        alert("사용자 이름 또는 댓글 내용이 누락되었습니다.");
+        return;
+    }
+
+    // 이후 서버로 데이터를 전송하는 로직 실행
+});
+
 
     renderComments();
 });
