@@ -63,25 +63,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // 제목 셀 생성 및 추가
                 const titleCell = document.createElement('td');
                 const titleLink = document.createElement('a');
-
-                // 게시판에 맞는 링크 설정
-                let boardUrl = '';
-                switch (post.category) {
-                    case '임시보호':
-                        boardUrl = 'protectPost.html';
-                        break;
-                    case '실종':
-                        boardUrl = 'lostPost.html';
-                        break;
-                    case '발견':
-                        boardUrl = 'findPost.html';
-                        break;
-                    default:
-                        boardUrl = 'generalPost.html'; // 기본 게시판 경로 설정
-                }
-
-                titleLink.href = `${boardUrl}?pid=${post.postId}`; // 게시물 링크 설정
-                titleLink.textContent = post.title;
+                titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정 (게시물 ID 포함)
+                titleLink.textContent = post.title; // 제목 설정
                 titleCell.appendChild(titleLink); // 링크를 제목 셀에 추가
                 rowElement.appendChild(titleCell);
 
