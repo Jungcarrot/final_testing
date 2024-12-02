@@ -125,6 +125,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('pid'); // 이제 pid를 참조하도록 변경
+
+            if (!postId) {
+                alert('게시물 ID가 존재하지 않습니다.');
+                window.location.href = 'findList.html';
+                return;
+            }
+
             const loggedInUserId = localStorage.getItem('uid');
             const postAuthorId = document.getElementById('post-author').getAttribute('data-author-id');
 
