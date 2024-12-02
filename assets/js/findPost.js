@@ -1,10 +1,10 @@
 import { database } from "./DB.js";
-import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // URL에서 게시물 PID 가져오기 (한 번만 가져옴)
+    // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('pid');
+    const postId = urlParams.get('pid');  // 'id' 대신 'pid'로 수정
     
     if (!postId) {
         alert('게시물 PID가 존재하지 않습니다.');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loggedUserId = localStorage.getItem('uid'); // 로그인한 사용자 ID 가져오기
 
     // Firebase에서 게시물 데이터를 가져와 표시
-    async function fetchPostDetails() {
+    async function fetchPostDetails(postId) {
         try {
             const postRef = ref(database, `Post/${postId}`);
             const snapshot = await get(postRef);
@@ -23,27 +23,46 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 const post = snapshot.val();
 
-                // 게시물 제목, 이미지, 내용 설정
-                document.getElementById('post-title').textContent = post.title || '제목 없음';
+                // 게시물 제목 설정
+                const postTitleElement = document.getElementById('post-title');
+                postTitleElement.textContent = post.title || '제목 없음';
+
+                // 게시물 이미지 설정 (이미지가 있을 경우만 표시)
                 const postImageElement = document.getElementById('post-image');
-                postImageElement.style.display = post.image ? 'block' : 'none';
-                postImageElement.src = post.image ? `assets/images/${post.image}` : '';
-                document.getElementById('post-details').innerHTML = (post.details || '내용이 없습니다.').replace(/\n/g, '<br>');
+                if (post.image) {
+                    postImageElement.src = `assets/images/${post.image}`;
+                    postImageElement.style.display = 'block';
+                } else {
+                    postImageElement.style.display = 'none';
+                }
+
+                // 게시물 상세 내용 설정 (줄바꿈 처리)
+                const postDetailsElement = document.getElementById('post-details');
+                postDetailsElement.innerHTML = (post.details || '내용이 없습니다.').replace(/\n/g, '<br>');
 
                 // 작성자 정보 추가
                 if (post.authorId) {
-                    const authorSnapshot = await get(ref(database, `UserData/${post.authorId}`));
-                    document.getElementById('post-author').textContent = authorSnapshot.exists() ? authorSnapshot.val().nickName : '작성자 정보 없음';
+                    const authorRef = ref(database, `UserData/${post.authorId}`);
+                    const authorSnapshot = await get(authorRef);
+                    if (authorSnapshot.exists()) {
+                        const authorNickName = authorSnapshot.val().nickName;
+                        const authorElement = document.getElementById('post-author');
+                        authorElement.textContent = authorNickName || '작성자 정보 없음';
+                    } else {
+                        document.getElementById('post-author').textContent = '작성자 정보 없음';
+                    }
                 } else {
                     document.getElementById('post-author').textContent = '작성자 정보 없음';
                 }
-
+                
                 // 작성일 설정
-                document.getElementById('post-date').textContent = post.date || '작성일 없음';
+                const dateElement = document.getElementById('post-date');
+                dateElement.textContent = post.date || '작성일 없음';
 
-                // 수정/삭제 버튼 표시
+                // 게시물 작성자와 로그인한 사용자가 일치하면 수정/삭제 버튼 표시
                 if (loggedUserId && post.authorId === loggedUserId) {
-                    document.getElementById('edit-buttons').style.display = 'block';
+                    const editButtons = document.getElementById('edit-buttons');
+                    editButtons.style.display = 'block';
                 }
             } else {
                 alert('해당 게시물이 존재하지 않습니다.');
@@ -55,67 +74,101 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    async function fetchComments() {
-    try {
+    // 댓글 데이터를 실시간으로 가져와 표시하는 함수
+    function fetchComments(postId) {
         const commentsRef = ref(database, 'Comment');
-        const snapshot = await get(commentsRef);
         const commentContainer = document.getElementById('comments');
         commentContainer.innerHTML = '';
 
-        if (snapshot.exists()) {
-            snapshot.forEach(childSnapshot => {
-                const comment = childSnapshot.val();
-                if (comment.postID === postId) {
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'comment';
+        // 실시간 데이터 업데이트 처리
+        onValue(commentsRef, (snapshot) => {
+            commentContainer.innerHTML = ''; // 기존 댓글 초기화
 
-                    const commenterName = comment.commenterNickname || '익명';
-                    const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                    const isOwnComment = loggedUserId === comment.commenter;
-                    const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+            if (snapshot.exists()) {
+                snapshot.forEach(childSnapshot => {
+                    const comment = childSnapshot.val();
+                    if (comment.postID === postId) {
+                        // 댓글 작성자 정보 가져오기 (줄바꿈 적용)
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment';
 
-                    // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
-                    if (!isOwnComment) {
-                        const reportButton = document.createElement('button');
-                        reportButton.textContent = '신고하기';
-                        reportButton.className = 'report-button';
-                        reportButton.addEventListener('click', async () => {
-                            try {
-                                const reason = prompt('신고 사유를 입력해주세요:');
-                                if (reason) {
-                                    await handleReport(childSnapshot.key, reason);  // 신고 처리
-                                }
-                            } catch (error) {
-                                console.error('신고 처리 중 오류 발생:', error);
-                                alert('신고 처리 중 오류가 발생했습니다.');
-                            }
-                        });
-                        commentElement.innerHTML = commentHTML;
-                        commentElement.appendChild(reportButton);
-                    } else {
-                        commentElement.innerHTML = commentHTML;
+                        const commenterName = comment.commenterNickname || '익명';
+                        const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
+                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+
+                        // 댓글 작성자가 로그인한 사용자와 동일한지 확인
+                        const isOwnComment = loggedUserId === comment.commenter;
+
+                        // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
+                        if (!isOwnComment) {
+                            const reportButton = document.createElement('button');
+                            reportButton.textContent = '신고하기';
+                            reportButton.className = 'report-button';
+                            // 신고 버튼 클릭 시 모달 띄우기
+                            reportButton.addEventListener('click', () => {
+                                showReportModal(childSnapshot.key); // childSnapshot.key를 전달
+                            });
+                            commentElement.innerHTML = commentHTML;
+                            commentElement.appendChild(reportButton);  // 신고하기 버튼 추가
+                        } else {
+                            commentElement.innerHTML = commentHTML;
+                        }
+
+                        commentContainer.appendChild(commentElement);
                     }
-
-                    commentContainer.appendChild(commentElement);
-                }
-            });
-        }
-    } catch (error) {
-        console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
-        alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+                });
+            }
+        }, (error) => {
+            console.error('댓글 데이터를 실시간으로 가져오는 중 오류 발생:', error);
+            alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+        });
     }
-}
 
-    // 신고 처리 함수
+    // 신고 사유를 묻는 모달 띄우기
+    function showReportModal(commentId) {
+        const reportModal = document.createElement('div');
+        reportModal.className = 'report-modal';
+        reportModal.innerHTML = `
+            <div class="modal-content">
+                <h3>신고 사유를 작성해주세요</h3>
+                <textarea id="report-reason" placeholder="신고 사유"></textarea>
+                <button id="submit-report">확인</button>
+                <button id="close-modal">닫기</button>
+            </div>
+        `;
+        document.body.appendChild(reportModal);
+
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.body.removeChild(reportModal);
+        });
+
+        document.getElementById('submit-report').addEventListener('click', () => {
+            const reason = document.getElementById('report-reason').value.trim();
+            if (!reason) {
+                alert('신고 사유를 입력해주세요.');
+                return;
+            }
+            handleReport(commentId, reason);  // 신고 처리 함수 호출
+            document.body.removeChild(reportModal); // 모달 닫기
+        });
+    }
+
+    // 신고 처리 및 댓글 삭제
     async function handleReport(commentId, reason) {
         try {
+            // 신고된 댓글을 'ReportedComments'에 저장
             const reportRef = ref(database, `ReportedComments/${commentId}`);
-            await set(reportRef, { reported: true, reason, time: new Date().toLocaleString() });
+            await set(reportRef, {
+                reported: true,
+                reason: reason,
+                time: new Date().toLocaleString(),
+            });
 
-            await remove(ref(database, `Comment/${commentId}`));
+            // 댓글 삭제 처리
+            const commentRef = ref(database, `Comment/${commentId}`);
+            await remove(commentRef);
 
             alert('댓글이 신고되어 삭제되었습니다.');
-            await fetchComments(); // 댓글 목록 업데이트
         } catch (error) {
             console.error('댓글 신고 중 오류 발생:', error);
             alert('댓글 신고 중 오류가 발생했습니다.');
@@ -142,75 +195,97 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const newCommentRef = push(ref(database, 'Comment'));
-            await set(newCommentRef, {
+            const newComment = {
                 postID: postId,
                 commenter: commenterId,
                 commenterNickname,
                 comment: commentContent,
                 time: new Date().toLocaleString(),
-            });
+            };
 
+            await set(newCommentRef, newComment);
             commentInput.value = ''; // 입력 필드 초기화
             alert('댓글이 작성되었습니다.');
-            await fetchComments(); // 댓글 목록 업데이트
         } catch (error) {
             console.error('댓글 작성 중 오류 발생:', error);
             alert('댓글 작성 중 오류가 발생했습니다.');
         }
     }
 
-    // 게시물 삭제 및 수정 처리 함수
+    // 게시물 삭제 처리 함수
     async function deletePost() {
-        if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
-            try {
-                await remove(ref(database, `Post/${postId}`));
-                alert('게시물이 삭제되었습니다.');
-                window.location.href = 'findList.html';
-            } catch (error) {
-                console.error('게시물 삭제 중 오류 발생:', error);
-                alert('게시물 삭제 중 오류가 발생했습니다.');
-            }
+        if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            const postRef = ref(database, `Post/${postId}`);
+            await remove(postRef);
+            alert('게시물이 삭제되었습니다.');
+            window.location.href = 'findList.html';
+        } catch (error) {
+            console.error('게시물 삭제 중 오류 발생:', error);
+            alert('게시물 삭제 중 오류가 발생했습니다.');
         }
     }
 
+    // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
     function editPost() {
         window.location.href = `findWrite.html?pid=${postId}&edit=true`;
     }
 
-    // 초기 게시물 및 댓글 로드
-    await fetchPostDetails();
-    await fetchComments();
-
     // 댓글 작성 버튼 클릭 이벤트 추가
     document.getElementById('add-comment').addEventListener('click', addComment);
+
+    // 수정/삭제 버튼 클릭 이벤트 추가
     document.getElementById('edit-post').addEventListener('click', editPost);
     document.getElementById('delete-post').addEventListener('click', deletePost);
 
-    // 언어 설정 및 번역 (불필요한 부분은 생략)
-    function updateLanguage(lang) {
-        const translations = {
-            ko: {
-                'page-title': '발견 게시물 보기',
-                'comment-section-title': '댓글',
-                'add-comment-button': '댓글 작성 완료',
-                'edit-post-button': '수정',
-                'delete-post-button': '삭제',
-            },
-            en: {
-                'page-title': 'View Found Post',
-                'comment-section-title': 'Comments',
-                'add-comment-button': 'Add Comment',
-                'edit-post-button': 'Edit',
-                'delete-post-button': 'Delete',
-            }
-        };
+    // 초기 게시물 및 댓글 로드
+    await fetchPostDetails(postId);
+    fetchComments(postId);
 
+    // 언어 설정 및 번역
+    const translations = {
+        ko: {
+            'page-title': '발견 게시물 보기',
+            'comment-section-title': '댓글',
+            'add-comment-button': '댓글 작성 완료',
+            'edit-post-button': '수정',
+            'delete-post-button': '삭제',
+            'login': '로그인',
+            'signup': '회원가입',
+            'mypage': '마이페이지',
+            'logout': '로그아웃',
+            'chat-list-title': '채팅 목록',
+            'chat-room-title': '채팅방',
+            'chat-send-button': '전송',
+        },
+        en: {
+            'page-title': 'View Found Post',
+            'comment-section-title': 'Comments',
+            'add-comment-button': 'Add Comment',
+            'edit-post-button': 'Edit',
+            'delete-post-button': 'Delete',
+            'login': 'Login',
+            'signup': 'Sign Up',
+            'mypage': 'My Page',
+            'logout': 'Logout',
+            'chat-list-title': 'Chat List',
+            'chat-room-title': 'Chat Room',
+            'chat-send-button': 'Send',
+        }
+    };
+
+    function updateLanguage(lang) {
         document.querySelectorAll('[data-translate]').forEach(element => {
             const key = element.getAttribute('data-translate');
             if (translations[lang][key]) {
                 element.textContent = translations[lang][key];
             }
         });
+
+        // 페이지 제목 번역
         document.querySelector('title').textContent = translations[lang]['page-title'];
     }
 
