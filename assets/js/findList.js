@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 작성일을 기준으로 게시물을 내림차순 정렬
         posts.sort((a, b) => {
-            const dateA = parseCustomDate(a.date);
-            const dateB = parseCustomDate(b.date);
+            const dateA = parseKoreanDate(a.date);
+            const dateB = parseKoreanDate(b.date);
             return dateB - dateA; // 최신순으로 정렬 (내림차순)
         });
 
@@ -72,23 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // 날짜 문자열을 파싱하여 Date 객체로 변환하는 함수
-    function parseCustomDate(dateString) {
-        // "2024. 12. 3. 오전 2:13:12" 형식을 파싱
-        const [datePart, timePart] = dateString.split(' ');
-        const [year, month, day] = datePart.split('.').map(num => parseInt(num));
-        let [hour, minute, second] = timePart.split(':').map(num => parseInt(num));
-        const period = dateString.includes('오전') ? 'AM' : 'PM';
-
-        if (period === 'PM' && hour < 12) {
-            hour += 12;
-        } else if (period === 'AM' && hour === 12) {
-            hour = 0;
-        }
-
-        return new Date(year, month - 1, day, hour, minute, second);
-    }
 
     // 언어 선택과 관련된 부분
     const translations = {
@@ -165,4 +148,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateLanguage('ko'); // 초기 언어 설정
     document.getElementById('lang-ko').classList.add('active');
+
+    // 작성일 파싱 함수
+    function parseKoreanDate(koreanDateStr) {
+        // 예: "2024. 12. 3. 오전 2:13:12"
+        const regex = /(\d{4})\.\s(\d{1,2})\.\s(\d{1,2})\.\s(오전|오후)\s(\d{1,2}):(\d{2}):(\d{2})/;
+        const match = koreanDateStr.match(regex);
+        if (!match) return new Date(0); // 매칭되지 않으면 아주 이전 날짜로 반환하여 정렬에서 밀리게 함
+
+        let [_, year, month, day, meridiem, hour, minute, second] = match;
+        year = parseInt(year);
+        month = parseInt(month) - 1; // 월은 0부터 시작 (0 = 1월)
+        day = parseInt(day);
+        hour = parseInt(hour);
+        minute = parseInt(minute);
+        second = parseInt(second);
+
+        // 오전/오후 처리
+        if (meridiem === '오후' && hour !== 12) {
+            hour += 12;
+        } else if (meridiem === '오전' && hour === 12) {
+            hour = 0;
+        }
+
+        return new Date(year, month, day, hour, minute, second);
+    }
 });
