@@ -17,6 +17,17 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
     <script type="module" src="assets/js/DB.js"></script>
+    <style>
+        /* 신고하기 버튼 스타일 */
+        .report-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <!-- 헤더 -->
@@ -44,7 +55,7 @@
             <div class="post-content">
                 <img id="post-image" name="image" alt="등록된 사진">
                 <div id="post-details" name="details"></div>
-                <div id="post-author" name="author" data-translate="post-author">작성자 정보 없음</div>
+                <div id="post-author" name="author" data-author-id="" data-translate="post-author">작성자 정보 없음</div>
                 <div id="post-date" name="date" data-translate="post-date">작성일 없음</div>
             </div>
         
