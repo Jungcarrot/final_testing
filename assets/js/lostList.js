@@ -2,11 +2,11 @@ import { database } from "./DB.js";
 import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 게시물 테이블 관련 요소
-    const tableBody = document.querySelector('.post-table tbody');
-    const noPostsMessage = document.querySelector('.no-posts');
-    const searchInput = document.querySelector('.search-bar input');
-    const searchButton = document.querySelector('.search-bar button');
+    // 게시물 관련 변수
+    const tableBody = document.querySelector('.post-table tbody'); // 게시물 테이블 tbody 요소
+    const noPostsMessage = document.querySelector('.no-posts'); // 게시물이 없을 경우 보여주는 메시지
+    const searchInput = document.querySelector('.search-bar input'); // 검색창의 input 요소
+    const searchButton = document.querySelector('.search-bar button'); // 검색 버튼 요소
 
     // Firebase에서 게시물 가져오기
     const postsRef = ref(database, 'Post');
@@ -15,52 +15,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const userPromises = [];
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
-            if (post.category === '실종') { // 특정 카테고리 필터링 (실종)
-                posts.push({ ...post, pid: childSnapshot.key }); // pid 추가
+            if (post.category === '실종') { // "실종" 카테고리의 게시물만 필터링
+                posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
                 userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
         });
 
         const userSnapshots = await Promise.all(userPromises);
 
-        if (posts.length === 0) {
-            noPostsMessage.style.display = 'block'; // 게시물이 없으면 메시지 표시
-        } else {
-            noPostsMessage.style.display = 'none'; // 게시물이 있으면 메시지 숨김
-            tableBody.innerHTML = ''; // 기존 내용 초기화
-            posts.forEach((post, index) => {
-                const userSnapshot = userSnapshots[index];
-                const nickName = userSnapshot.exists() ? userSnapshot.val().nickName : '알 수 없음';
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td> <!-- 번호 -->
-                        <td><a href="lostPost.html?id=${post.pid}">${post.title}</a></td> <!-- 제목 -->
-                        <td>${nickName}</td> <!-- 작성자 닉네임 -->
-                        <td>${post.date}</td> <!-- 작성일 -->
-                    </tr>
-                `;
-                tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
-            });
+        // 게시물 렌더링 함수
+        function renderPosts(filteredPosts, authorNicknames) {
+            tableBody.innerHTML = ''; // 기존 목록 초기화
+            if (filteredPosts.length === 0) {
+                noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
+            } else {
+                noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
+                filteredPosts.forEach((post, index) => {
+                    const authorNickname = authorNicknames[index] || 'Unknown'; // 작성자 닉네임이 없을 경우 'Unknown'
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td> <!-- 번호 -->
+                            <td><a href="lostPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목 수정됨 -->
+                            <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
+                            <td>${post.date}</td> <!-- 작성일 -->
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
+                });
+            }
         }
+
+        // 작성자 닉네임과 함께 게시물 렌더링
+        const authorNicknames = userSnapshots.map((snapshot) => snapshot.exists() ? snapshot.val().nickName : 'Unknown');
+        renderPosts(posts, authorNicknames);
+
+        // 검색 이벤트
+        function filterPosts() {
+            const query = searchInput.value.trim().toLowerCase(); // 검색어를 소문자로 변환하여 비교
+            const filteredPosts = posts.filter(post =>
+                post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
+            );
+            renderPosts(filteredPosts, authorNicknames); // 필터링된 게시물 렌더링
+        }
+
+        searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                filterPosts(); // Enter 키 입력 시 필터링
+            }
+        });
     });
 
-    // 검색 이벤트
-    function filterPosts(posts) {
-        const query = searchInput.value.trim().toLowerCase();
-        const filteredPosts = posts.filter(post =>
-            post.title.toLowerCase().includes(query)
-        );
-        renderPosts(filteredPosts);
-    }
-
-    searchButton.addEventListener('click', filterPosts);
-    searchInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            filterPosts();
-        }
-    });
-
-    // 번역 관련 데이터 및 언어 변경 함수
+    // 언어 선택과 관련된 부분
     const translations = {
         ko: {
             'page-title': '실종 게시물',
@@ -78,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': '작성된 게시물이 없습니다.',
             'login': '로그인',
             'signup': '회원가입',
-            'manual-title': 'MANUAL',
+            'manual-title': '매뉴얼',
             'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
             'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
             'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
@@ -113,17 +119,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = element.getAttribute('data-translate');
             if (translations[lang][key]) {
                 if (element.placeholder !== undefined) {
-                    element.placeholder = translations[lang][key];
+                    element.placeholder = translations[lang][key]; // 입력 필드의 placeholder 업데이트
                 } else {
-                    element.textContent = translations[lang][key];
+                    element.textContent = translations[lang][key]; // 텍스트 콘텐츠 업데이트
                 }
             }
         });
+
+        // 페이지 제목 업데이트
+        document.querySelector('title').textContent = translations[lang]['page-title'];
     }
 
     document.querySelectorAll('.post-language-selector button').forEach(button => {
         button.addEventListener('click', () => {
-            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
+            const lang = button.id === 'lang-ko' ? 'ko' : 'en'; // 언어 선택
             updateLanguage(lang);
             document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
@@ -131,4 +140,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     updateLanguage('ko'); // 초기 언어 설정
+    document.getElementById('lang-ko').classList.add('active');
 });
