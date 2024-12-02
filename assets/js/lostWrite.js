@@ -1,14 +1,40 @@
 import { database } from './DB.js'; // DB.js에서 Firebase 연결 정보 가져오기
 import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // URL에서 postId와 edit 파라미터 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('pid');
+    const isEditMode = urlParams.get('edit') === 'true';
+
+    if (isEditMode && postId) {
+        // 수정 모드인 경우, 기존 데이터 로드
+        try {
+            const postRef = ref(database, `Post/${postId}`);
+            const snapshot = await get(postRef);
+            if (snapshot.exists()) {
+                const post = snapshot.val();
+
+                // 기존 데이터로 폼 채우기
+                document.querySelector('.title-section input').value = post.title || '';
+                document.querySelector('.detail-section textarea').value = post.details.replace(/<br>/g, '\n') || '';
+            } else {
+                alert('수정할 게시물을 찾을 수 없습니다.');
+                window.location.href = 'lostList.html';
+            }
+        } catch (error) {
+            console.error('게시물 데이터를 불러오는 중 오류 발생:', error);
+            alert('게시물 데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+    }
+
     // 게시물 작성 버튼 클릭 이벤트
     document.getElementById('submit-button').addEventListener('click', handleSubmit);
 });
 
 async function handleSubmit() {
     const title = document.querySelector('.title-section input').value.trim();
-    const details = document.querySelector('.detail-section textarea').value.trim();
+    const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>'); // 줄바꿈 적용
     const authorId = localStorage.getItem('uid'); // 사용자 ID 가져오기
     const date = new Date().toLocaleString(); // 작성일
 
@@ -38,28 +64,48 @@ async function handleSubmit() {
 
         const nickName = authorSnapshot.val().nickName;
 
-        // 게시물 데이터 구성
-        const newPostRef = push(ref(database, 'Post')); // push를 사용하여 고유 ID 생성
-        const pid = newPostRef.key; // 자동 생성된 키를 pid로 사용
+        if (urlParams.get('edit') === 'true' && postId) {
+            // 수정 모드인 경우, 기존 게시물 업데이트
+            const postRef = ref(database, `Post/${postId}`);
+            await set(postRef, {
+                pid: postId,
+                title,
+                category: '실종',
+                postStatus: '작성됨',
+                details,
+                authorId,
+                nickName,
+                date,
+                image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
+            });
 
-        const postData = {
-            pid,
-            title,
-            category: '실종',
-            postStatus: '작성됨',
-            details,
-            authorId,
-            nickName,
-            date,
-            image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
-        };
+            alert('게시물이 수정되었습니다!');
+            // 수정 후 해당 게시물 보기 페이지로 이동
+            window.location.href = `lostPost.html?pid=${postId}`;
+        } else {
+            // 새 게시물 작성
+            const newPostRef = push(ref(database, 'Post')); // push를 사용하여 고유 ID 생성
+            const pid = newPostRef.key; // 자동 생성된 키를 pid로 사용
 
-        // 게시물 데이터 저장
-        await set(newPostRef, postData);
+            const postData = {
+                pid,
+                title,
+                category: '실종',
+                postStatus: '작성됨',
+                details,
+                authorId,
+                nickName,
+                date,
+                image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
+            };
 
-        alert('게시물이 저장되었습니다!');
-        // 게시물 작성 후 해당 게시물 보기 페이지로 이동 (pid 포함)
-        window.location.href = `lostPost.html?pid=${pid}`;
+            // 게시물 데이터 저장
+            await set(newPostRef, postData);
+
+            alert('게시물이 저장되었습니다!');
+            // 게시물 작성 후 해당 게시물 보기 페이지로 이동 (pid 포함)
+            window.location.href = `lostPost.html?pid=${pid}`;
+        }
     } catch (error) {
         console.error("게시물을 저장하는 중 오류가 발생했습니다:", error);
         alert('게시물을 저장하는 중 오류가 발생했습니다.');
