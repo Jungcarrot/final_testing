@@ -1,17 +1,38 @@
-function filterPosts() {
-    const searchInput = document.getElementById('search-input').value.toLowerCase(); // 검색 입력 값
-    const table = document.getElementById('protectPosts'); // 게시물 테이블
-    const rows = table.getElementsByTagName('tr');
+import { database } from "./DB.js";
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-    for (let i = 1; i < rows.length; i++) { // 첫 번째 행은 헤더, 1부터 시작
-        const cells = rows[i].getElementsByTagName('td');
-        let match = false;
-        for (const cell of cells) {
-            if (cell.innerText.toLowerCase().includes(searchInput)) {
-                match = true;
-                break;
-            }
-        }
-        rows[i].style.display = match ? '' : 'none'; // 검색 결과에 따라 행 표시 여부 결정
+// 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
+const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UID 가져오기
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!uid) {
+        console.error("로그인된 사용자 UID가 필요합니다.");
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        window.location.href = "login.html"; // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+        return;
     }
-}
+
+    // 사용자의 게시물 가져오기
+    const userPostsRef = ref(database, "Post");
+    onValue(userPostsRef, (snapshot) => {
+        const myPostsTable = document.getElementById("myposts-list");
+        myPostsTable.innerHTML = ''; // 기존 게시물 초기화
+
+        let postIndex = 1;
+
+        snapshot.forEach((childSnapshot) => {
+            const post = childSnapshot.val();
+            if (post.authorId === uid) {
+                const row = `
+                    <tr>
+                        <td>${postIndex++}</td>
+                        <td>${post.title}</td>
+                        <td>${post.nickName || '알 수 없음'}</td>
+                        <td>${post.timeStamp || 'N/A'}</td>
+                    </tr>
+                `;
+                myPostsTable.innerHTML += row;
+            }
+        });
+    });
+});
