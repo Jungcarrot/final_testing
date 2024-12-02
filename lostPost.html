@@ -169,15 +169,6 @@
                 document.getElementById('edit-post').addEventListener('click', () => {
                     window.location.href = `lostWrite.html?pid=${postId}`;  // 'id'를 'pid'로 수정
                 });
-
-                document.getElementById('delete-post').addEventListener('click', async () => {
-                    const confirmDelete = confirm('정말로 이 게시물을 삭제하시겠습니까?');
-                    if (confirmDelete) {
-                        await remove(postRef);
-                        alert('게시물이 삭제되었습니다.');
-                        window.location.href = 'lostList.html';
-                    }
-                });
             }
 
             // 댓글 가져오기
