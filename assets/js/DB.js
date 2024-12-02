@@ -43,7 +43,7 @@ function openChatPopup(user) {
     const messages = document.getElementById('popup-messages');
 
     // 채팅창 제목 업데이트
-    chatTitle.textContent = ${user와의 채팅};
+   chatTitle.textContent = `${user}와의 채팅`;
 
     // 이전 메시지를 지우지 않으려면 아래 줄 주석 처리
     messages.innerHTML = ''; // 채팅 메시지 초기화
