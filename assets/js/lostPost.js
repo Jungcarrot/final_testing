@@ -69,15 +69,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
     }
 
-    // 댓글 작성 및 기타 기능들은 추가로 필요할 경우 여기에 작성
-
-    // 삭제 버튼 클릭 이벤트 등록 (중복 등록 방지)
-    const deleteButton = document.getElementById('delete-post');
-    deleteButton.addEventListener('click', () => deletePost(postId));
+    // 삭제 버튼 클릭 이벤트 등록
+    document.getElementById('delete-post').addEventListener('click', () => deletePost(postId));
 
     // 수정 버튼 클릭 이벤트 등록
-    const editButton = document.getElementById('edit-post');
-    editButton.addEventListener('click', () => {
+    document.getElementById('edit-post').addEventListener('click', () => {
         window.location.href = `lostWrite.html?pid=${postId}&edit=true`;
     });
 
