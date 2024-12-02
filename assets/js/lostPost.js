@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             commentElement.className = 'comment';
 
                             const commenterName = comment.commenterNickname || '익명';
-                            const commentContent = comment.comment || '내용 없음';
+                            const commentContent = comment.comment ? comment.comment.replace(/\n/g, '<br>') : '내용 없음';
                             const isAuthor = comment.commenter === loggedUserId;
 
                             let commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
@@ -228,7 +228,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
         function editPost() {
-            window.location.href = `lostWrite.html?pid=${postId}&edit=true`; // 연결된 부분 수정: findWrite.html -> lostWrite.html
+            const postDetails = document.getElementById('post-details').innerText.replace(/<br>/g, '\n'); // 기존 내용을 보존
+            window.location.href = `lostWrite.html?pid=${postId}&edit=true&details=${encodeURIComponent(postDetails)}`; // 연결된 부분 수정
         }
 
         // 댓글 작성 버튼 클릭 이벤트 추가
