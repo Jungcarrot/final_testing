@@ -106,6 +106,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // 댓글 작성 처리 함수 추가
+    async function addComment() {
+        const commentInput = document.getElementById('comment-input');
+        const commentContent = commentInput.value.trim();
+
+        if (!commentContent) {
+            alert('댓글 내용을 입력해주세요.');
+            return;
+        }
+
+        const commenterId = localStorage.getItem('uid');
+        const commenterNickname = localStorage.getItem('nickName') || '익명';
+
+        if (!commenterId) {
+            alert('로그인 후 댓글을 작성할 수 있습니다.');
+            return;
+        }
+
+        try {
+            const newCommentRef = push(ref(database, 'Comment'));
+            const newComment = {
+                postID: postId,
+                commenter: commenterId,
+                commenterNickname,
+                comment: commentContent,
+                time: new Date().toLocaleString(),
+            };
+
+            await set(newCommentRef, newComment);
+            commentInput.value = ''; // 입력 필드 초기화
+            alert('댓글이 작성되었습니다.');
+            await fetchComments(postId); // 댓글 목록 업데이트
+        } catch (error) {
+            console.error('댓글 작성 중 오류 발생:', error);
+            alert('댓글 작성 중 오류가 발생했습니다.');
+        }
+    }
+
     // 댓글 신고 처리 함수
     window.reportComment = async function (commentId) {
         if (!confirm('정말로 이 댓글을 신고하시겠습니까?')) {
@@ -240,3 +278,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
+
