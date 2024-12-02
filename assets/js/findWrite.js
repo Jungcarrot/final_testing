@@ -1,5 +1,5 @@
 import { database } from "./DB.js";
-import { ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get, push, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 postId와 edit 파라미터 가져오기
@@ -91,3 +91,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
