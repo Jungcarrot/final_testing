@@ -101,6 +101,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const reportButton = document.createElement('button');
                         reportButton.textContent = '신고하기';
                         reportButton.className = 'report-button';
+                         // 신고 버튼 클릭 시 모달 띄우기
+                        reportButton.addEventListener('click', () => {
+                            showReportModal(childSnapshot.key); // childSnapshot.key를 전달
+                        });
+                        commentElement.innerHTML = commentHTML;
                         commentElement.appendChild(reportButton);  // 신고하기 버튼 추가
                     } else {
                         commentElement.innerHTML = commentHTML;
@@ -115,36 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
     }
 }
-
-// 신고 사유를 묻는 모달 띄우기
-function showReportModal(commentId) {
-    const reportModal = document.createElement('div');
-    reportModal.className = 'report-modal';
-    reportModal.innerHTML = `
-        <div class="modal-content">
-            <h3>신고 사유를 작성해주세요</h3>
-            <textarea id="report-reason" placeholder="신고 사유"></textarea>
-            <button id="submit-report">확인</button>
-            <button id="close-modal">닫기</button>
-        </div>
-    `;
-    document.body.appendChild(reportModal);
-
-    document.getElementById('close-modal').addEventListener('click', () => {
-        document.body.removeChild(reportModal);
-    });
-
-    document.getElementById('submit-report').addEventListener('click', () => {
-        const reason = document.getElementById('report-reason').value.trim();
-        if (!reason) {
-            alert('신고 사유를 입력해주세요.');
-            return;
-        }
-        handleReport(commentId, reason);  // 신고 처리 함수 호출
-        document.body.removeChild(reportModal); // 모달 닫기
-    });
-}
-
 // 신고 처리 및 댓글 삭제
 async function handleReport(commentId, reason) {
     try {
