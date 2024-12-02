@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // 작성일 셀
                 const dateCell = document.createElement('td');
-                dateCell.textContent = post.createdAt || 'N/A';
+                dateCell.textContent = post.createdAt ? new Date(post.createdAt).toLocaleString() : 'N/A'; // 작성 시간을 읽어와서 포맷 적용
                 rowElement.appendChild(dateCell);
 
                 // 테이블에 행 추가
