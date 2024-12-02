@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const post = childSnapshot.val();
             if (post.category === '임시보호') { // "임시보호" 카테고리의 게시물만 필터링
                 posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
-                userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
+                userPromises.push({ postId: childSnapshot.key, promise: get(ref(database, `UserData/${post.authorId}`)) }); // 작성자 정보 가져오기
             }
         });
 
@@ -28,22 +28,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return dateB - dateA; // 최신순으로 정렬 (내림차순)
         });
 
-        const userSnapshots = await Promise.all(userPromises);
+        // 작성자 정보를 비동기적으로 가져오고 posts 배열에 추가
+        const userSnapshots = await Promise.all(userPromises.map(({ promise }) => promise));
+        userSnapshots.forEach((snapshot, index) => {
+            if (snapshot.exists()) {
+                const matchingPost = posts.find(post => post.id === userPromises[index].postId);
+                matchingPost.authorNickname = snapshot.val().nickName || '알 수 없음';
+            } else {
+                const matchingPost = posts.find(post => post.id === userPromises[index].postId);
+                matchingPost.authorNickname = '알 수 없음';
+            }
+        });
 
         // 게시물 렌더링 함수
-        function renderPosts(filteredPosts, authorNicknames) {
+        function renderPosts(filteredPosts) {
             tableBody.innerHTML = ''; // 기존 목록 초기화
             if (filteredPosts.length === 0) {
                 noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
             } else {
                 noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
                 filteredPosts.forEach((post, index) => {
-                    const authorNickname = authorNicknames[index] || '알 수 없음'; // 작성자 닉네임이 없을 경우 '알 수 없음'
                     const row = `
                         <tr>
                             <td>${index + 1}</td> <!-- 번호 -->
                             <td><a href="protectPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목, 게시물 ID 추가 -->
-                            <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
+                            <td>${post.authorNickname}</td> <!-- 작성자 닉네임 -->
                             <td>${post.date || 'N/A'}</td> <!-- 작성일 -->
                         </tr>
                     `;
@@ -52,9 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 작성자 닉네임과 함께 게시물 렌더링
-        const authorNicknames = userSnapshots.map((snapshot) => snapshot.exists() ? snapshot.val().nickName : '알 수 없음');
-        renderPosts(posts, authorNicknames);
+        // 게시물 렌더링 호출
+        renderPosts(posts);
 
         // 검색 이벤트
         function filterPosts() {
@@ -62,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const filteredPosts = posts.filter(post =>
                 post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
             );
-            renderPosts(filteredPosts, authorNicknames); // 필터링된 게시물 렌더링
+            renderPosts(filteredPosts); // 필터링된 게시물 렌더링
         }
 
         searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
