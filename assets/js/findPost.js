@@ -4,7 +4,7 @@ import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('pid');
+    const postId = urlParams.get('pid');  // 'id' 대신 'pid'로 수정
 
     if (!postId) {
         alert('게시물 PID가 존재하지 않습니다.');
@@ -94,25 +94,44 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
                         const commentHTML = `
                             <strong>${commenterName}:</strong> ${commentContent}
-                            <button class="report-button" data-comment-id="${childSnapshot.key}">신고하기</button>
+                            <button class="report-button" data-comment-id="${childSnapshot.key}" data-translate="report-button">신고하기</button>
                         `;
-
+                        
                         commentElement.innerHTML = commentHTML;
                         commentContainer.appendChild(commentElement);
                     }
                 });
 
-                // 신고하기 버튼 이벤트 추가
+                // '신고하기' 버튼에 대한 이벤트 리스너 추가
                 document.querySelectorAll('.report-button').forEach(button => {
                     button.addEventListener('click', (event) => {
-                        const commentId = event.target.dataset.commentId;
-                        alert(`댓글 ID "${commentId}"을(를) 신고했습니다.`);
+                        const commentId = event.target.getAttribute('data-comment-id');
+                        reportComment(commentId);
                     });
                 });
             }
         } catch (error) {
             console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
             alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 댓글 신고 처리 함수
+    async function reportComment(commentId) {
+        if (!confirm('이 댓글을 신고하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            const reportRef = ref(database, `CommentReport/${commentId}`);
+            await set(reportRef, {
+                reported: true,
+                reportedAt: new Date().toLocaleString(),
+            });
+            alert('댓글이 신고되었습니다.');
+        } catch (error) {
+            console.error('댓글 신고 중 오류 발생:', error);
+            alert('댓글 신고 중 오류가 발생했습니다.');
         }
     }
 
