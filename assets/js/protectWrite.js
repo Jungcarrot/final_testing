@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // 기존 데이터로 폼 채우기
                 document.querySelector('.title-section input').value = post.title || '';
-                document.querySelector('.detail-section textarea').value = post.details.replace(/<br>/g, '\n') || '';
+                document.querySelector('.detail-section textarea').value = post.details.replace(/<br>/g, '\n') || ''; // <br> 태그를 \n으로 변환하여 표시
 
                 const postImageElement = document.getElementById('photo-upload');
                 if (post.image) {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 작성 완료 버튼 클릭 이벤트
     document.getElementById('submit-button').addEventListener('click', async () => {
         const title = document.querySelector('.title-section input').value.trim();
-        const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>');
+        const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>'); // 줄바꿈을 <br>로 변경하여 저장
         const uid = localStorage.getItem('uid');
         const date = new Date().toLocaleString();
 
@@ -96,6 +96,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
+
 
 // 언어 번역 데이터
 const translations = {
