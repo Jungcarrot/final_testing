@@ -1,5 +1,5 @@
 import { database } from "./DB.js";
-import { ref, get, push, set, remove, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 게시물 ID 가져오기
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Firebase에서 게시물 데이터를 가져와 표시
     async function fetchPostDetails(postId) {
         try {
-            const postRef = ref(database, `Post/${postId}`);
+            const postRef = ref(database, Post/${postId});
             const snapshot = await get(postRef);
 
             if (snapshot.exists()) {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 게시물 이미지 설정 (이미지가 있을 경우만 표시)
                 const postImageElement = document.getElementById('post-image');
                 if (post.image) {
-                    postImageElement.src = `assets/images/${post.image}`;
+                    postImageElement.src = assets/images/${post.image};
                     postImageElement.style.display = 'block';
                 } else {
                     postImageElement.style.display = 'none';
@@ -74,14 +74,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 snapshot.forEach(childSnapshot => {
                     const comment = childSnapshot.val();
-                    if (comment.pid === postId) { // pid로 변경
+                    if (comment.postID === postId) {
                         // 댓글 작성자 정보 가져오기
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment';
 
                         const commenterName = comment.commenterNickname || '익명';
                         const commentContent = comment.comment || '내용 없음';
-                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+                        const commentHTML = <strong>${commenterName}:</strong> ${commentContent};
                         
                         commentElement.innerHTML = commentHTML;
                         commentContainer.appendChild(commentElement);
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const newCommentRef = push(ref(database, 'Comment'));
             const newComment = {
-                pid: postId, // pid로 변경
+                postID: postId,
                 commenter: commenterId,
                 commenterNickname,
                 comment: commentContent,
@@ -132,28 +132,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 게시물 삭제 처리 함수 (게시물에 달린 댓글도 함께 삭제)
+    // 게시물 삭제 처리 함수
     async function deletePost() {
         if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
             return;
         }
 
         try {
-            // 1. 게시물 삭제
-            const postRef = ref(database, `Post/${postId}`);
+            const postRef = ref(database, Post/${postId});
             await remove(postRef);
-
-            // 2. 게시물에 달린 모든 댓글 삭제
-            const commentsRef = ref(database, 'Comment');
-            const commentsQuery = query(commentsRef, orderByChild('pid'), equalTo(postId));
-            const commentsSnapshot = await get(commentsQuery);
-            
-            if (commentsSnapshot.exists()) {
-                commentsSnapshot.forEach(async (childSnapshot) => {
-                    await remove(ref(database, `Comment/${childSnapshot.key}`));
-                });
-            }
-
             alert('게시물이 삭제되었습니다.');
             window.location.href = 'findList.html';
         } catch (error) {
@@ -164,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
     function editPost() {
-        window.location.href = `findWrite.html?id=${postId}&edit=true`;
+        window.location.href = findWrite.html?id=${postId}&edit=true;
     }
 
     // 댓글 작성 버튼 클릭 이벤트 추가
