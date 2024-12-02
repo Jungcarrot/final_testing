@@ -1,10 +1,12 @@
+import { database } from './DB.js'; // DB.js에서 Firebase 연결 정보 가져오기
+import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 작성 버튼 클릭 이벤트
-    document.getElementById('submit-button').addEventListener('click', () => {
+    document.getElementById('submit-button').addEventListener('click', async () => {
         const title = document.querySelector('.title-section input').value;
         const details = document.querySelector('.detail-section textarea').value;
-        const image = document.querySelector('.photo-section input[type="file"]').files[0];
-        const nickName = localStorage.getItem('nickName') || "익명"; // 사용자 설정 닉네임 가져오기 (없으면 익명)
+        const uid = localStorage.getItem('uid'); // 사용자 ID 가져오기
         const date = new Date().toLocaleString(); // 작성일
 
         if (!title) {
@@ -17,13 +19,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const postData = { title, details, image: image?.name || '', nickName, date };
-        const posts = JSON.parse(localStorage.getItem('lostPosts')) || [];
-        posts.push(postData);
-        localStorage.setItem('lostPosts', JSON.stringify(posts)); // 로컬 스토리지에 저장
+        try {
+            // 작성자 닉네임 가져오기
+            if (!uid) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
 
-        alert('게시물이 저장되었습니다!');
-        window.location.href = 'lostList.html'; // 게시물 목록으로 이동
+            const authorSnapshot = await get(ref(database, `UserData/${uid}`));
+            if (!authorSnapshot.exists()) {
+                alert('사용자 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            const nickName = authorSnapshot.val().nickName;
+
+            // 게시물 데이터 구성
+            const postData = {
+                title,
+                category: '실종',
+                postStatus: '작성됨',
+                details,
+                authorId: uid,
+                nickName,
+                date,
+                image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
+            };
+
+            // 게시물 데이터 저장 (자동 생성된 key를 pid로 사용)
+            const newPostRef = push(ref(database, 'Post'));
+            await set(newPostRef, postData);
+
+            alert('게시물이 저장되었습니다!');
+            window.location.href = 'lostList.html'; // 게시물 목록으로 이동
+        } catch (error) {
+            console.error("Error saving post: ", error);
+            alert('게시물을 저장하는 중 오류가 발생했습니다.');
+        }
     });
 
     // 번역 데이터
