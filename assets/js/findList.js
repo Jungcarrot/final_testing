@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = `
                         <tr>
                             <td>${index + 1}</td> <!-- 번호 -->
-                            <td><a href="findPost.html?id=${post.id}">${post.title}</a></td> <!-- 제목 -->
+                            <td><a href="findPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목 수정됨 -->
                             <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
                             <td>${post.date}</td> <!-- 작성일 -->
                         </tr>
