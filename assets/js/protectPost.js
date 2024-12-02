@@ -1,3 +1,20 @@
+import { getLoggedInUsername, checkLoginStatus } from './auth.js';
+
+document.addEventListener("DOMContentLoaded", () => {
+    const postCreateButton = document.getElementById("post-create");
+
+    if (postCreateButton) {
+        const isLoggedIn = checkLoginStatus();
+
+        if (!isLoggedIn) {
+            postCreateButton.style.display = "none";  // 로그인하지 않으면 숨김
+        } else {
+            postCreateButton.style.display = "block";  // 로그인하면 표시
+        }
+    } else {
+        console.error("게시글 작성 버튼 요소를 찾을 수 없습니다. HTML에 'post-create' ID를 가진 요소가 있는지 확인하세요.");
+    }
+});
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const pid = parseInt(urlParams.get('id'), 10);
