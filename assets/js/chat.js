@@ -1,3 +1,5 @@
+// chat.js
+
 // 팝업 채팅창 닫기
 function closeChatPopup() {
     const chatPopup = document.getElementById('chat-popup');
@@ -21,7 +23,6 @@ function openChatPopup(user) {
 }
 
 // 메시지 전송
-// 채팅 메시지 추가 함수
 function sendPopupMessage() {
     const messageInput = document.getElementById('popup-message-input');
     const messageContainer = document.getElementById('popup-messages');
@@ -46,4 +47,13 @@ function sendPopupMessage() {
 
     // 스크롤을 최신 메시지로 이동
     messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+// Firebase에서 채팅 데이터 가져오기
+function loadChatMessages(chatId) {
+    // Firebase에서 채팅 메시지 로드하는 코드 추가
+    // 예시: firebase.database().ref('chats/' + chatId).on('child_added', function(snapshot) {
+    //   const messageData = snapshot.val();
+    //   // 메시지 추가 로직
+    // });
 }
