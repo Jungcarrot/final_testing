@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 언어 선택과 관련된 부분
     const translations = {
         ko: {
-            'page-title': '발견 게시물',
+            'page-title': '실종 게시물',
             'header-lost': '실종',
             'header-find': '발견',
             'header-protect': '임시보호',
