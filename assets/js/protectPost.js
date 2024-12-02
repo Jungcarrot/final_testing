@@ -1,168 +1,236 @@
+import { database } from "./DB.js";
+import { ref, get, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 import { getLoggedInUsername, checkLoginStatus } from './auth.js';
 
-document.addEventListener("DOMContentLoaded", () => {
-    const postCreateButton = document.getElementById("post-create");
-
-    if (postCreateButton) {
-        const isLoggedIn = checkLoginStatus();
-
-        if (!isLoggedIn) {
-            postCreateButton.style.display = "none";  // 로그인하지 않으면 숨김
-        } else {
-            postCreateButton.style.display = "block";  // 로그인하면 표시
-        }
-    } else {
-        console.error("게시글 작성 버튼 요소를 찾을 수 없습니다. HTML에 'post-create' ID를 가진 요소가 있는지 확인하세요.");
-    }
-});
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const pid = parseInt(urlParams.get('id'), 10);
-    const posts = JSON.parse(localStorage.getItem('protectPosts')) || [];
-    const post = posts[pid];
+    const postId = urlParams.get('pid'); // 'id' 대신 'pid'로 수정
 
-    if (!post) {
-        alert('게시물을 찾을 수 없습니다.');
+    if (!postId) {
+        alert('게시물 PID가 존재하지 않습니다.');
         window.location.href = 'protectList.html';
         return;
     }
 
-    // 번역 데이터
+    const loggedUserId = localStorage.getItem('uid'); // 로그인한 사용자 ID 가져오기
+
+    // Firebase에서 게시물 데이터를 가져와 표시
+    async function fetchPostDetails(postId) {
+        try {
+            const postRef = ref(database, `Post/${postId}`);
+            const snapshot = await get(postRef);
+
+            if (snapshot.exists()) {
+                const post = snapshot.val();
+
+                // 게시물 제목 설정
+                const postTitleElement = document.getElementById('post-title');
+                postTitleElement.textContent = post.title || '제목 없음';
+
+                // 게시물 이미지 설정 (이미지가 있을 경우만 표시)
+                const postImageElement = document.getElementById('post-image');
+                if (post.image) {
+                    postImageElement.src = `assets/images/${post.image}`;
+                    postImageElement.style.display = 'block';
+                } else {
+                    postImageElement.style.display = 'none';
+                }
+
+                // 게시물 상세 내용 설정
+                const postDetailsElement = document.getElementById('post-details');
+                postDetailsElement.textContent = post.details || '내용이 없습니다.';
+
+                // 작성자 정보 추가
+                if (post.authorId) {
+                    const authorRef = ref(database, `UserData/${post.authorId}`);
+                    const authorSnapshot = await get(authorRef);
+                    if (authorSnapshot.exists()) {
+                        const authorNickName = authorSnapshot.val().nickName;
+                        const authorElement = document.getElementById('post-author');
+                        authorElement.textContent = authorNickName || '작성자 정보 없음';
+                    } else {
+                        document.getElementById('post-author').textContent = '작성자 정보 없음';
+                    }
+                } else {
+                    document.getElementById('post-author').textContent = '작성자 정보 없음';
+                }
+
+                // 작성일 설정
+                const dateElement = document.getElementById('post-date');
+                dateElement.textContent = post.date || '작성일 없음';
+
+                // 게시물 작성자와 로그인한 사용자가 일치하면 수정/삭제 버튼 표시
+                if (loggedUserId && post.authorId === loggedUserId) {
+                    const editButtons = document.getElementById('edit-buttons');
+                    editButtons.style.display = 'block';
+                }
+            } else {
+                alert('해당 게시물이 존재하지 않습니다.');
+                window.location.href = 'protectList.html';
+            }
+        } catch (error) {
+            console.error('게시물 데이터를 가져오는 중 오류 발생:', error);
+            alert('게시물 데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 댓글 데이터를 가져와 표시
+    async function fetchComments(postId) {
+        try {
+            const commentsRef = ref(database, 'Comment');
+            const snapshot = await get(commentsRef);
+            const commentContainer = document.getElementById('comments');
+            commentContainer.innerHTML = '';
+
+            if (snapshot.exists()) {
+                snapshot.forEach(childSnapshot => {
+                    const comment = childSnapshot.val();
+                    if (comment.postID === postId) {
+                        // 댓글 작성자 정보 가져오기
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment';
+
+                        const commenterName = comment.commenterNickname || '익명';
+                        const commentContent = comment.comment || '내용 없음';
+                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+
+                        commentElement.innerHTML = commentHTML;
+                        commentContainer.appendChild(commentElement);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
+            alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 댓글 작성 처리 함수
+    async function addComment() {
+        const commentInput = document.getElementById('comment-input');
+        const commentContent = commentInput.value.trim();
+
+        if (!commentContent) {
+            alert('댓글 내용을 입력해주세요.');
+            return;
+        }
+
+        const commenterId = localStorage.getItem('uid');
+        const commenterNickname = localStorage.getItem('nickName') || '익명';
+
+        if (!commenterId) {
+            alert('로그인 후 댓글을 작성할 수 있습니다.');
+            return;
+        }
+
+        try {
+            const newCommentRef = push(ref(database, 'Comment'));
+            const newComment = {
+                postID: postId,
+                commenter: commenterId,
+                commenterNickname,
+                comment: commentContent,
+                time: new Date().toLocaleString(),
+            };
+
+            await set(newCommentRef, newComment);
+            commentInput.value = ''; // 입력 필드 초기화
+            alert('댓글이 작성되었습니다.');
+            await fetchComments(postId); // 댓글 목록 업데이트
+        } catch (error) {
+            console.error('댓글 작성 중 오류 발생:', error);
+            alert('댓글 작성 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 게시물 삭제 처리 함수
+    async function deletePost() {
+        if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            const postRef = ref(database, `Post/${postId}`);
+            await remove(postRef);
+            alert('게시물이 삭제되었습니다.');
+            window.location.href = 'protectList.html';
+        } catch (error) {
+            console.error('게시물 삭제 중 오류 발생:', error);
+            alert('게시물 삭제 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
+    function editPost() {
+        window.location.href = `protectWrite.html?pid=${postId}&edit=true`;
+    }
+
+    // 댓글 작성 버튼 클릭 이벤트 추가
+    document.getElementById('add-comment').addEventListener('click', addComment);
+
+    // 수정/삭제 버튼 클릭 이벤트 추가
+    document.getElementById('edit-post').addEventListener('click', editPost);
+    document.getElementById('delete-post').addEventListener('click', deletePost);
+
+    // 초기 게시물 및 댓글 로드
+    await fetchPostDetails(postId);
+    await fetchComments(postId);
+
+    // 언어 설정 및 번역
     const translations = {
         ko: {
             'page-title': '임시보호 게시물 보기',
-            'header-lost': '실종',
-            'header-find': '발견',
-            'header-protect': '임시보호',
-            'header-vet': '동물병원',
             'comment-section-title': '댓글',
             'add-comment-button': '댓글 작성 완료',
             'edit-post-button': '수정',
             'delete-post-button': '삭제',
-            'report-button': '신고하기',
             'login': '로그인',
             'signup': '회원가입',
-            'manual-title': '매뉴얼',
-            'manual-item-1': '매뉴얼 내용',
             'mypage': '마이페이지',
             'logout': '로그아웃',
             'chat-list-title': '채팅 목록',
             'chat-room-title': '채팅방',
             'chat-send-button': '전송',
-            'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
-            'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
-            'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
-            'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
         },
         en: {
             'page-title': 'View Temporary Protection Post',
-            'header-lost': 'Lost',
-            'header-find': 'Found',
-            'header-protect': 'Temporary Protection',
-            'header-vet': 'Vet',
             'comment-section-title': 'Comments',
             'add-comment-button': 'Add Comment',
             'edit-post-button': 'Edit',
             'delete-post-button': 'Delete',
-            'report-button': 'Report',
             'login': 'Login',
             'signup': 'Sign Up',
-            'manual-title': 'Manual',
-            'manual-item-1': 'Manual Content',
             'mypage': 'My Page',
             'logout': 'Logout',
             'chat-list-title': 'Chat List',
             'chat-room-title': 'Chat Room',
             'chat-send-button': 'Send',
-            'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
-            'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
-            'manual-item3': 'The site is composed of four main boards: Lost, Found, Vet, and Temporary Shelter.',
-            'manual-item4': 'Feel free to write posts about your questions regarding Footprint and share information with other users!'
         }
     };
 
-    // 언어 변경 함수
-    function changeLanguage(lang) {
-        const elements = document.querySelectorAll('[data-translate]');
-        elements.forEach(el => {
-            const key = el.getAttribute('data-translate');
-            el.textContent = translations[lang][key] || el.textContent;
+    function updateLanguage(lang) {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
         });
 
-        // 신고하기 버튼 번역
-        document.querySelectorAll('.report-button').forEach(button => {
-            button.textContent = translations[lang]['report-button'];
-        });
-
-        // 버튼 상태 업데이트
-        document.getElementById('lang-ko').classList.toggle('active', lang === 'ko');
-        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        // 페이지 제목 번역
+        document.querySelector('title').textContent = translations[lang]['page-title'];
     }
 
-    // 언어 버튼 이벤트 리스너 추가
-    document.getElementById('lang-ko').addEventListener('click', () => changeLanguage('ko'));
-    document.getElementById('lang-en').addEventListener('click', () => changeLanguage('en'));
-
-    // 초기화
-    changeLanguage('ko'); // 기본 언어 설정
-
-    // 게시물 데이터 로드
-    document.getElementById('post-title').textContent = post.title || '제목이 없습니다.';
-    document.getElementById('post-image').src = post.image || 'assets/img/default-image.png';
-    document.getElementById('post-details').textContent = post.details || '상세 내용이 없습니다.';
-
-    // 댓글 섹션 처리
-    const comments = post.comments || [];
-    const commentContainer = document.getElementById('comments');
-    const commentInput = document.getElementById('comment-input');
-
-    function renderComments() {
-        commentContainer.innerHTML = '';
-        comments.forEach((comment, index) => {
-            const commentDiv = document.createElement('div');
-            commentDiv.classList.add('comment-item');
-            commentDiv.innerHTML = `
-                <strong>${comment.author}</strong>: ${comment.text}
-                <button class="report-button" data-index="${index}" data-translate="report-button">${translations['ko']['report-button']}</button>
-            `;
-            commentContainer.appendChild(commentDiv);
+    document.querySelectorAll('.post-language-selector button').forEach(button => {
+        button.addEventListener('click', () => {
+            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
+            updateLanguage(lang);
+            document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
         });
-
-        // 신고하기 버튼 이벤트 추가
-        document.querySelectorAll('.report-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const commentIndex = event.target.dataset.index;
-                alert(`댓글 "${comments[commentIndex].text}"을(를) 신고했습니다.`);
-            });
-        });
-    }
-
-    document.getElementById('add-comment').addEventListener('click', () => {
-        const commentText = commentInput.value.trim();
-        const currentUser = localStorage.getItem('uid') || '익명'; // 로그인된 사용자 이름 가져오기
-        if (commentText) {
-            comments.push({ text: commentText, author: currentUser });
-            post.comments = comments; // 게시물에 댓글 저장
-            localStorage.setItem('protectPosts', JSON.stringify(posts)); // 로컬 스토리지 업데이트
-            renderComments();
-            commentInput.value = '';
-        }
     });
-    document.getElementById("add-comment").addEventListener("click", () => {
-    const commentInput = document.getElementById("comment-input").value.trim();
-    const username = getLoggedInUsername(); // 사용자 이름 가져오기
 
-    console.log("작성한 댓글:", commentInput);
-    console.log("사용자 이름:", username);
-
-    if (!commentInput || !username) {
-        alert("사용자 이름 또는 댓글 내용이 누락되었습니다.");
-        return;
-    }
-
-    // 이후 서버로 데이터를 전송하는 로직 실행
-});
-
-
-    renderComments();
+    // 초기 언어 설정
+    updateLanguage('ko');
+    document.getElementById('lang-ko').classList.add('active');
 });
