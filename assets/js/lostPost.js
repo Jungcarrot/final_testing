@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!postId) {
             alert('게시물 PID가 존재하지 않습니다.');
-            window.location.href = 'protectList.html';
+            window.location.href = 'lostList.html'; // 연결된 부분 수정: findList.html -> lostList.html
             return;
         }
 
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } else {
                     alert('해당 게시물이 존재하지 않습니다.');
-                    window.location.href = 'protectList.html';
+                    window.location.href = 'lostList.html'; // 연결된 부분 수정: findList.html -> lostList.html
                 }
             } catch (error) {
                 console.error('게시물 데이터를 가져오는 중 오류 발생:', error);
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await remove(postRef);
 
                 alert('게시물이 삭제되었습니다.');
-                window.location.href = 'protectList.html';
+                window.location.href = 'lostList.html'; // 연결된 부분 수정: findList.html -> lostList.html
             } catch (error) {
                 console.error('게시물 삭제 중 오류 발생:', error);
                 alert('게시물 삭제 중 오류가 발생했습니다.');
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
         function editPost() {
-            window.location.href = `protectWrite.html?pid=${postId}&edit=true`;
+            window.location.href = `lostWrite.html?pid=${postId}&edit=true`; // 연결된 부분 수정: findWrite.html -> lostWrite.html
         }
 
         // 댓글 작성 버튼 클릭 이벤트 추가
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 언어 설정 및 번역
         const translations = {
             ko: {
-                'page-title': '임시보호 게시물 보기',
+                'page-title': '실종 게시물 보기',
                 'comment-section-title': '댓글',
                 'add-comment-button': '댓글 작성 완료',
                 'edit-post-button': '수정',
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 'chat-send-button': '전송',
             },
             en: {
-                'page-title': 'View Temporary Protection Post',
+                'page-title': 'View Lost Post',
                 'comment-section-title': 'Comments',
                 'add-comment-button': 'Add Comment',
                 'edit-post-button': 'Edit',
