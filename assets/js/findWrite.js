@@ -1,5 +1,5 @@
 import { database } from "./DB.js";
-import { ref, set, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 // 새 게시물 작성
                 const newPostRef = push(ref(database, 'Post')); // Post 테이블에 데이터 추가
-                await set(newPostRef, postData);
+                await set(newPostRef, { pid: newPostRef.key, ...postData }); // `pid`로 고유값 저장
                 alert('게시물이 저장되었습니다!');
             }
             window.location.href = 'findList.html'; // 게시물 목록으로 이동
