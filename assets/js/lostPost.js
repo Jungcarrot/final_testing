@@ -94,12 +94,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         const commenterName = comment.commenterNickname || '익명';
                         const commentContent = comment.comment || '내용 없음';
-                        let commentHTML = `
-                            <strong>${commenterName}:</strong> ${commentContent}
-                        `;
+                        const isAuthor = comment.commenter === loggedUserId;
+
+                        let commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+
 
                         // 신고하기 버튼 추가 (본인이 작성한 댓글이 아닌 경우에만 표시)
-                        if (comment.commenter !== loggedUserId && loggedUserId) {
+                        if (!isAuthor && loggedUserId) {
                             commentHTML += `<button class="report-button" onclick="reportComment('${childSnapshot.key}')">신고하기</button>`;
                         }
 
@@ -213,8 +214,76 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
+     // 게시물 수정 처리 함수 (새로운 폼으로 이동시키기)
     function editPost() {
-        window.location.href = `lostWrite.html?pid=${postId}&edit=true`;
+        window.location.href = `protectWrite.html?pid=${postId}&edit=true`;
     }
+
+    // 댓글 작성 버튼 클릭 이벤트 추가
+    document.getElementById('add-comment').addEventListener('click', addComment);
+
+    // 수정/삭제 버튼 클릭 이벤트 추가
+    document.getElementById('edit-post').addEventListener('click', editPost);
+    document.getElementById('delete-post').addEventListener('click', deletePost);
+
+    // 초기 게시물 및 댓글 로드
+    await fetchPostDetails(postId);
+    await fetchComments(postId);
+
+    // 언어 설정 및 번역
+    const translations = {
+        ko: {
+            'page-title': '임시보호 게시물 보기',
+            'comment-section-title': '댓글',
+            'add-comment-button': '댓글 작성 완료',
+            'edit-post-button': '수정',
+            'delete-post-button': '삭제',
+            'login': '로그인',
+            'signup': '회원가입',
+            'mypage': '마이페이지',
+            'logout': '로그아웃',
+            'chat-list-title': '채팅 목록',
+            'chat-room-title': '채팅방',
+            'chat-send-button': '전송',
+        },
+        en: {
+            'page-title': 'View Temporary Protection Post',
+            'comment-section-title': 'Comments',
+            'add-comment-button': 'Add Comment',
+            'edit-post-button': 'Edit',
+            'delete-post-button': 'Delete',
+            'login': 'Login',
+            'signup': 'Sign Up',
+            'mypage': 'My Page',
+            'logout': 'Logout',
+            'chat-list-title': 'Chat List',
+            'chat-room-title': 'Chat Room',
+            'chat-send-button': 'Send',
+        }
+    };
+
+    function updateLanguage(lang) {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+
+        // 페이지 제목 번역
+        document.querySelector('title').textContent = translations[lang]['page-title'];
+    }
+
+    document.querySelectorAll('.post-language-selector button').forEach(button => {
+        button.addEventListener('click', () => {
+            const lang = button.id === 'lang-ko' ? 'ko' : 'en';
+            updateLanguage(lang);
+            document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+
+    // 초기 언어 설정
+    updateLanguage('ko');
+    document.getElementById('lang-ko').classList.add('active');
 });
