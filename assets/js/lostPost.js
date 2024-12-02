@@ -2,19 +2,36 @@ import { database } from "./DB.js";
 import { ref, get, push, set, remove, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // URL에서 게시물 PID 가져오기
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('pid');
+    try {
+        // URL에서 게시물 PID 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('pid');
 
-    if (!postId) {
-        alert('게시물 PID가 존재하지 않습니다.');
-        window.location.href = 'lostList.html';
-        return;
+        if (!postId) {
+            alert('게시물 PID가 존재하지 않습니다.');
+            window.location.href = 'lostList.html';
+            return;
+        }
+
+        const loggedUserId = localStorage.getItem('uid'); // 로그인한 사용자 ID 가져오기
+
+        // Firebase에서 게시물 데이터를 가져와 표시
+        await fetchPostDetails(postId);
+        await fetchComments(postId);
+
+        // 댓글 작성 버튼 클릭 이벤트 추가
+        document.getElementById('add-comment').addEventListener('click', addComment);
+
+        // 수정/삭제 버튼 클릭 이벤트 추가
+        document.getElementById('edit-post').addEventListener('click', editPost);
+        document.getElementById('delete-post').addEventListener('click', deletePost);
+
+    } catch (error) {
+        console.error('페이지 로드 중 오류 발생:', error);
+        alert('페이지를 로드하는 중 오류가 발생했습니다.');
     }
 
-    const loggedUserId = localStorage.getItem('uid'); // 로그인한 사용자 ID 가져오기
-
-    // Firebase에서 게시물 데이터를 가져와 표시
+    // 게시물 데이터 가져오기 함수
     async function fetchPostDetails(postId) {
         try {
             const postRef = ref(database, `Post/${postId}`);
@@ -24,10 +41,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const post = snapshot.val();
 
                 // 게시물 제목 설정
-                const postTitleElement = document.getElementById('post-title');
-                postTitleElement.textContent = post.title || '제목 없음';
+                document.getElementById('post-title').textContent = post.title || '제목 없음';
 
-                // 게시물 이미지 설정 (이미지가 있을 경우만 표시)
+                // 게시물 이미지 설정
                 const postImageElement = document.getElementById('post-image');
                 if (post.image) {
                     postImageElement.src = `assets/images/${post.image}`;
@@ -36,22 +52,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     postImageElement.style.display = 'none';
                 }
 
-                // 게시물 상세 내용 설정 (줄바꿈 반영)
-                const postDetailsElement = document.getElementById('post-details');
-                postDetailsElement.innerHTML = post.details.replace(/<br>/g, '\n') || '내용이 없습니다.';
+                // 게시물 상세 내용 설정
+                document.getElementById('post-details').innerHTML = post.details.replace(/<br>/g, '\n') || '내용이 없습니다.';
 
                 // 작성자 정보 추가
-                const authorElement = document.getElementById('post-author');
-                authorElement.textContent = post.authorNickname || '작성자 정보 없음';
+                document.getElementById('post-author').textContent = post.authorNickname || '작성자 정보 없음';
 
                 // 작성일 설정
-                const dateElement = document.getElementById('post-date');
-                dateElement.textContent = post.date || '작성일 없음';
+                document.getElementById('post-date').textContent = post.date || '작성일 없음';
 
                 // 게시물 작성자와 로그인한 사용자가 일치하면 수정/삭제 버튼 표시
                 if (loggedUserId && post.authorId === loggedUserId) {
-                    const editButtons = document.getElementById('edit-buttons');
-                    editButtons.style.display = 'block';
+                    document.getElementById('edit-buttons').style.display = 'block';
                 }
             } else {
                 alert('해당 게시물이 존재하지 않습니다.');
@@ -63,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 댓글 데이터를 가져와 표시
+    // 댓글 데이터 가져오기 함수
     async function fetchComments(postId) {
         try {
             const commentsRef = ref(database, 'Comment');
@@ -210,15 +222,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     function editPost() {
         window.location.href = `lostWrite.html?pid=${postId}&edit=true`;
     }
-
-    // 댓글 작성 버튼 클릭 이벤트 추가
-    document.getElementById('add-comment').addEventListener('click', addComment);
-
-    // 수정/삭제 버튼 클릭 이벤트 추가
-    document.getElementById('edit-post').addEventListener('click', editPost);
-    document.getElementById('delete-post').addEventListener('click', deletePost);
-
-    // 초기 게시물 및 댓글 로드
-    await fetchPostDetails(postId);
-    await fetchComments(postId);
 });
