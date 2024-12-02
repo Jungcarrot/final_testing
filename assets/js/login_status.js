@@ -20,6 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
         loggedOutUI.style.display = "block";
     }
 
+    // 로그인한 사용자의 닉네임 표시
+    const nicknameElement = document.getElementById("nickname");
+    const storedNickname = localStorage.getItem("nickName");
+    if (nicknameElement && storedNickname) {
+        nicknameElement.textContent = storedNickname;  // 닉네임 표시
+    }
+
     // 로그아웃 이벤트 리스너 등록
     const logoutButton = document.getElementById("logout");
     if (logoutButton) {
