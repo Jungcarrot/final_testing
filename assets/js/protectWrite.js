@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // 기존 데이터로 폼 채우기
                 document.querySelector('.title-section input').value = post.title || '';
-                document.querySelector('.detail-section textarea').value = post.details || '';
+                document.querySelector('.detail-section textarea').value = post.details.replace(/<br>/g, '\n') || '';
 
                 const postImageElement = document.getElementById('photo-upload');
                 if (post.image) {
@@ -38,82 +38,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 게시물 작성 버튼 클릭 이벤트
-    const submitButton = document.getElementById('submit-button');
-    submitButton.addEventListener('click', handleSubmit);
+    // 작성 완료 버튼 클릭 이벤트
+    document.getElementById('submit-button').addEventListener('click', async () => {
+        const title = document.querySelector('.title-section input').value.trim();
+        const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>');
+        const uid = localStorage.getItem('uid');
+        const date = new Date().toLocaleString();
 
-    // 초기 언어 설정 및 번역 처리
-    updateLanguage('ko');
-    document.getElementById('lang-ko').classList.add('active');
-
-    // 언어 변경 이벤트 리스너 설정
-    document.getElementById('lang-ko').addEventListener('click', () => {
-        updateLanguage('ko');
-        document.getElementById('lang-ko').classList.add('active');
-        document.getElementById('lang-en').classList.remove('active');
-    });
-    document.getElementById('lang-en').addEventListener('click', () => {
-        updateLanguage('en');
-        document.getElementById('lang-en').classList.add('active');
-        document.getElementById('lang-ko').classList.remove('active');
-    });
-});
-
-// 게시물 작성 처리 함수
-async function handleSubmit() {
-    const title = document.querySelector('.title-section input').value.trim();
-    const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>'); // 줄바꿈을 HTML <br> 태그로 변환
-    const uid = localStorage.getItem('uid'); // 작성자 ID 가져오기
-    const date = new Date().toLocaleString(); // 작성일
-
-    // 데이터 검증
-    if (!title) {
-        alert('제목을 입력해주세요!');
-        return;
-    }
-    if (!details) {
-        alert('상세 내용을 입력해주세요!');
-        return;
-    }
-    if (!uid) {
-        alert('로그인 후 게시물을 작성할 수 있습니다.');
-        return;
-    }
-
-    try {
-        // 작성자 닉네임 가져오기
-        const authorSnapshot = await get(ref(database, `UserData/${uid}`));
-        if (!authorSnapshot.exists()) {
-            alert('사용자 정보를 찾을 수 없습니다.');
+        if (!title || !details) {
+            alert('제목과 상세 내용을 모두 입력해주세요.');
             return;
         }
-        const nickName = authorSnapshot.val().nickName;
 
-        // Firebase에 게시물 데이터 저장
-        const newPostRef = isEditMode && postId ? ref(database, `Post/${postId}`) : push(ref(database, 'Post')); // 수정 모드라면 해당 게시물 참조
-        const pid = newPostRef.key; // 고유 ID를 pid로 사용
-        const postData = {
-            pid,
-            title,
-            details,
-            category: '임시보호',
-            postStatus: '작성됨',
-            authorId: uid,
-            nickName,
-            date,
-            image: '' // 이미지 부분은 향후 구현 가능
-        };
+        if (!uid) {
+            alert('로그인 후 게시물을 작성할 수 있습니다.');
+            return;
+        }
 
-        await set(newPostRef, postData);
+        try {
+            if (isEditMode && postId) {
+                // 수정 모드인 경우, 기존 게시물 업데이트
+                const postRef = ref(database, `Post/${postId}`);
+                await set(postRef, {
+                    pid: postId,
+                    title,
+                    details,
+                    category: '임시보호', // 카테고리를 반드시 설정해야 함
+                    postStatus: '작성됨', // 기본 상태 설정
+                    authorId: uid,
+                    date,
+                    image: '' // 이미지 추가 부분은 향후 구현 가능
+                });
+                alert('게시물이 수정되었습니다.');
+                window.location.href = `protectPost.html?pid=${postId}`; // 수정 후 해당 게시물 보기 페이지로 이동
+            } else {
+                // 새 게시물 작성
+                const newPostRef = push(ref(database, 'Post'));
+                const pid = newPostRef.key;
 
-        alert(isEditMode ? '게시물이 수정되었습니다!' : '게시물이 저장되었습니다!');
-        // 게시물 작성 후 해당 게시물 보기 페이지로 이동 (pid 포함)
-        window.location.href = `protectPost.html?pid=${pid}`;
-    } catch (error) {
-        console.error('게시물 저장 중 오류 발생:', error);
-        alert('게시물 저장 중 오류가 발생했습니다.');
-    }
-}
+                await set(newPostRef, {
+                    pid,
+                    title,
+                    details,
+                    category: '임시보호', // 카테고리를 반드시 설정해야 함
+                    postStatus: '작성됨', // 기본 상태 설정
+                    authorId: uid,
+                    date,
+                    image: '' // 이미지 부분은 향후 구현 가능
+                });
+                alert('게시물이 저장되었습니다.');
+                window.location.href = `protectPost.html?pid=${pid}`; // 작성 후 해당 게시물 보기 페이지로 이동
+            }
+
+        } catch (error) {
+            console.error('게시물 저장 중 오류 발생:', error);
+            alert('게시물 저장 중 오류가 발생했습니다.');
+        }
+    });
+});
 
 // 언어 번역 데이터
 const translations = {
