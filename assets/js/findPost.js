@@ -74,32 +74,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-   // 댓글 데이터를 가져와 표시
    async function fetchComments(postId) {
-        try {
-            const commentsRef = ref(database, 'Comment');
-            const snapshot = await get(commentsRef);
-            const commentContainer = document.getElementById('comments');
-            commentContainer.innerHTML = '';
+    try {
+        const commentsRef = ref(database, 'Comment');
+        const snapshot = await get(commentsRef);
+        const commentContainer = document.getElementById('comments');
+        commentContainer.innerHTML = '';
 
-            if (snapshot.exists()) {
-                snapshot.forEach(childSnapshot => {
-                    const comment = childSnapshot.val();
-                    if (comment.pid === postId) {  // postID -> pid 로 수정하여 일관성 유지
-                        // 댓글 작성자 정보 가져오기 (줄바꿈 적용)
-                        const commentElement = document.createElement('div');
-                        commentElement.className = 'comment';
+        if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+                const comment = childSnapshot.val();
+                if (comment.postID === postId) {
+                    // 댓글 작성자 정보 가져오기 (줄바꿈 적용)
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
 
-                        const commenterName = comment.commenterNickname || '익명';
-                        const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+                    const commenterName = comment.commenterNickname || '익명';
+                    const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
+                    const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
 
-                        // 댓글 작성자가 로그인한 사용자와 동일한지 확인
-                        const loggedUserId = localStorage.getItem('uid');
-                        const isOwnComment = loggedUserId === comment.commenter;
-                        
-                        // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
-                        if (!isOwnComment) {
+                    // 댓글 작성자가 로그인한 사용자와 동일한지 확인
+                    const loggedUserId = localStorage.getItem('uid');
+                    const isOwnComment = loggedUserId === comment.commenter;
+
+                    // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
+                    if (!isOwnComment) {
                         const reportButton = document.createElement('button');
                         reportButton.textContent = '신고하기';
                         reportButton.className = 'report-button';
@@ -110,15 +109,73 @@ document.addEventListener('DOMContentLoaded', async () => {
                         // 댓글 HTML 구성
                         commentElement.innerHTML = commentHTML;
                         commentElement.appendChild(reportButton);  // 신고하기 버튼 추가
-                        commentContainer.appendChild(commentElement);
+                    } else {
+                        // 자신의 댓글에는 신고 버튼을 추가하지 않음
+                        commentElement.innerHTML = commentHTML;
                     }
-                });
-            }
-        } catch (error) {
-            console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
-            alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+
+                    commentContainer.appendChild(commentElement);
+                }
+            });
         }
+    } catch (error) {
+        console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
+        alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
     }
+}
+
+// 신고 사유를 묻는 모달 띄우기
+function showReportModal(commentId) {
+    const reportModal = document.createElement('div');
+    reportModal.className = 'report-modal';
+    reportModal.innerHTML = `
+        <div class="modal-content">
+            <h3>신고 사유를 작성해주세요</h3>
+            <textarea id="report-reason" placeholder="신고 사유"></textarea>
+            <button id="submit-report">확인</button>
+            <button id="close-modal">닫기</button>
+        </div>
+    `;
+    document.body.appendChild(reportModal);
+
+    document.getElementById('close-modal').addEventListener('click', () => {
+        document.body.removeChild(reportModal);
+    });
+
+    document.getElementById('submit-report').addEventListener('click', () => {
+        const reason = document.getElementById('report-reason').value.trim();
+        if (!reason) {
+            alert('신고 사유를 입력해주세요.');
+            return;
+        }
+        handleReport(commentId, reason);
+        document.body.removeChild(reportModal); // 모달 닫기
+    });
+}
+
+// 신고 처리 및 댓글 삭제
+async function handleReport(commentId, reason) {
+    try {
+        // 신고된 댓글을 'ReportedComments'에 저장
+        const reportRef = ref(database, `ReportedComments/${commentId}`);
+        await set(reportRef, {
+            reported: true,
+            reason: reason,
+            time: new Date().toLocaleString(),
+        });
+
+        // 댓글 삭제 처리
+        const commentRef = ref(database, `Comment/${commentId}`);
+        await remove(commentRef);
+
+        alert('댓글이 신고되어 삭제되었습니다.');
+        // 댓글 목록 업데이트
+        await fetchComments(postId);
+    } catch (error) {
+        console.error('댓글 신고 중 오류 발생:', error);
+        alert('댓글 신고 중 오류가 발생했습니다.');
+    }
+}
 
     // 댓글 작성 처리 함수
     async function addComment() {
