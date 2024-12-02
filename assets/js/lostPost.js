@@ -94,18 +94,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         const commenterName = comment.commenterNickname || '익명';
                         const commentContent = comment.comment || '내용 없음';
-                        const commentHTML = `
+                        let commentHTML = `
                             <strong>${commenterName}:</strong> ${commentContent}
-                            <button class="report-button" data-comment-id="${commentId}" data-translate="report-button">신고하기</button>
                         `;
+
+                        // 신고하기 버튼 추가 (본인이 작성한 댓글이 아닌 경우에만 표시)
+                        if (comment.commenter !== loggedUserId && loggedUserId) {
+                            commentHTML += `<button class="report-button" onclick="reportComment('${childSnapshot.key}')">신고하기</button>`;
+                        }
 
                         commentElement.innerHTML = commentHTML;
                         commentContainer.appendChild(commentElement);
                     }
                 });
-
-                // 신고하기 버튼 이벤트 추가
-                addReportButtonListeners();
             }
         } catch (error) {
             console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
@@ -113,18 +114,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 신고하기 버튼 이벤트 리스너 추가 함수
-    function addReportButtonListeners() {
-        document.querySelectorAll('.report-button').forEach(button => {
-            button.addEventListener('click', async (event) => {
-                const commentId = event.target.dataset.commentId;
-                await reportComment(commentId);
-            });
-        });
+    // 댓글 작성 처리 함수 추가
+    async function addComment() {
+        const commentInput = document.getElementById('comment-input');
+        const commentContent = commentInput.value.trim();
+
+        if (!commentContent) {
+            alert('댓글 내용을 입력해주세요.');
+            return;
+        }
+
+        const commenterId = localStorage.getItem('uid');
+        const commenterNickname = localStorage.getItem('nickName') || '익명';
+
+        if (!commenterId) {
+            alert('로그인 후 댓글을 작성할 수 있습니다.');
+            return;
+        }
+
+        try {
+            const newCommentRef = push(ref(database, 'Comment'));
+            const newComment = {
+                postID: postId,
+                commenter: commenterId,
+                commenterNickname,
+                comment: commentContent,
+                time: new Date().toLocaleString(),
+            };
+
+            await set(newCommentRef, newComment);
+            commentInput.value = ''; // 입력 필드 초기화
+            alert('댓글이 작성되었습니다.');
+            await fetchComments(postId); // 댓글 목록 업데이트
+        } catch (error) {
+            console.error('댓글 작성 중 오류 발생:', error);
+            alert('댓글 작성 중 오류가 발생했습니다.');
+        }
     }
 
     // 댓글 신고 처리 함수
-    async function reportComment(commentId) {
+    window.reportComment = async function (commentId) {
         if (!confirm('정말로 이 댓글을 신고하시겠습니까?')) {
             return;
         }
@@ -165,56 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('댓글 신고 중 오류 발생:', error);
             alert('댓글 신고 중 오류가 발생했습니다.');
         }
-    }
-
-    // 댓글 작성 처리 함수
-    let isSubmitting = false; // 중복 제출 방지 플래그
-
-    async function addComment() {
-        if (isSubmitting) return; // 중복 호출 방지
-        isSubmitting = true;
-
-        const commentInput = document.getElementById('comment-input');
-        const commentContent = commentInput.value.trim();
-
-        if (!commentContent) {
-            alert('댓글 내용을 입력해주세요.');
-            isSubmitting = false;
-            return;
-        }
-
-        const commenterId = localStorage.getItem('uid');
-        const commenterNickname = localStorage.getItem('nickName') || '익명';
-
-        if (!commenterId) {
-            alert('로그인 후 댓글을 작성할 수 있습니다.');
-            isSubmitting = false;
-            return;
-        }
-
-        try {
-            const newCommentRef = push(ref(database, 'Comment'));
-            const newComment = {
-                postID: postId,
-                commenter: commenterId,
-                commenterNickname,
-                comment: commentContent.replace(/\n/g, '<br>'), // 줄바꿈 처리
-                time: new Date().toLocaleString(),
-                reports: 0, // 신고 수 초기화
-                status: 'visible' // 상태 초기화 (숨겨지지 않음)
-            };
-
-            await set(newCommentRef, newComment);
-            commentInput.value = ''; // 입력 필드 초기화
-            alert('댓글이 작성되었습니다.');
-            await fetchComments(postId); // 댓글 목록 업데이트
-        } catch (error) {
-            console.error('댓글 작성 중 오류 발생:', error);
-            alert('댓글 작성 중 오류가 발생했습니다.');
-        } finally {
-            isSubmitting = false;
-        }
-    }
+    };
 
     // 게시물 삭제 처리 함수
     async function deletePost() {
