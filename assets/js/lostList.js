@@ -1,5 +1,5 @@
-import { database } from "./DB.js";
-import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { database } from "./DB.js"; // Firebase 데이터베이스 객체 import
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"; // Firebase에서 제공하는 메서드들 import
 
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 관련 변수
@@ -11,32 +11,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Firebase에서 게시물 가져오기
     const postsRef = ref(database, 'Post');
     onValue(postsRef, async (snapshot) => {
-        const posts = [];
-        const userPromises = [];
+        let posts = [];
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
-            if (post.category === '실종') { // "실종" 카테고리의 게시물만 필터링
+            if (post.category === '발견') { // "발견" 카테고리의 게시물만 필터링
                 posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
-                userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
         });
 
-        const userSnapshots = await Promise.all(userPromises);
+        // 작성일을 기준으로 게시물을 내림차순 정렬
+        posts.sort((a, b) => {
+            const dateA = parseKoreanDate(a.date);
+            const dateB = parseKoreanDate(b.date);
+            return dateB - dateA; // 최신순으로 정렬 (내림차순)
+        });
+
+        // 작성자 정보를 비동기적으로 가져오고 posts 배열에 추가
+        const userSnapshots = await Promise.all(posts.map(post => get(ref(database, `UserData/${post.authorId}`))));
+        userSnapshots.forEach((snapshot, index) => {
+            if (snapshot.exists()) {
+                posts[index].authorNickname = snapshot.val().nickName || 'Unknown';
+            } else {
+                posts[index].authorNickname = 'Unknown';
+            }
+        });
 
         // 게시물 렌더링 함수
-        function renderPosts(filteredPosts, authorNicknames) {
+        function renderPosts(filteredPosts) {
             tableBody.innerHTML = ''; // 기존 목록 초기화
             if (filteredPosts.length === 0) {
                 noPostsMessage.style.display = 'block'; // 게시물이 없을 경우 메시지 표시
             } else {
                 noPostsMessage.style.display = 'none'; // 게시물이 있을 경우 메시지 숨김
                 filteredPosts.forEach((post, index) => {
-                    const authorNickname = authorNicknames[index] || 'Unknown'; // 작성자 닉네임이 없을 경우 'Unknown'
                     const row = `
                         <tr>
                             <td>${index + 1}</td> <!-- 번호 -->
-                            <td><a href="lostPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목 수정됨 -->
-                            <td>${authorNickname}</td> <!-- 작성자 닉네임 -->
+                            <td><a href="findPost.html?pid=${post.id}">${post.title}</a></td> <!-- 제목 수정됨 -->
+                            <td>${post.authorNickname}</td> <!-- 작성자 닉네임 -->
                             <td>${post.date}</td> <!-- 작성일 -->
                         </tr>
                     `;
@@ -45,9 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 작성자 닉네임과 함께 게시물 렌더링
-        const authorNicknames = userSnapshots.map((snapshot) => snapshot.exists() ? snapshot.val().nickName : 'Unknown');
-        renderPosts(posts, authorNicknames);
+        // 게시물 렌더링 호출
+        renderPosts(posts);
 
         // 검색 이벤트
         function filterPosts() {
@@ -55,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const filteredPosts = posts.filter(post =>
                 post.title.toLowerCase().includes(query) // 제목에 검색어가 포함된 게시물만 필터링
             );
-            renderPosts(filteredPosts, authorNicknames); // 필터링된 게시물 렌더링
+            renderPosts(filteredPosts); // 필터링된 게시물 렌더링
         }
 
         searchButton.addEventListener('click', filterPosts); // 검색 버튼 클릭 시 필터링
@@ -69,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 언어 선택과 관련된 부분
     const translations = {
         ko: {
-            'page-title': '실종 게시물',
+            'page-title': '발견 게시물',
             'header-lost': '실종',
             'header-find': '발견',
             'header-protect': '임시보호',
@@ -91,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
         },
         en: {
-            'page-title': 'Lost Posts',
+            'page-title': 'Found Posts',
             'header-lost': 'Lost',
             'header-find': 'Found',
             'header-protect': 'Temporary Protection',
@@ -141,4 +152,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateLanguage('ko'); // 초기 언어 설정
     document.getElementById('lang-ko').classList.add('active');
+
+    // 작성일 파싱 함수
+    function parseKoreanDate(koreanDateStr) {
+        // 예: "2024. 12. 3. 오전 2:13:12"
+        const regex = /(\d{4})\.\s(\d{1,2})\.\s(\d{1,2})\.\s(오전|오후)\s(\d{1,2}):(\d{2}):(\d{2})/;
+        const match = koreanDateStr.match(regex);
+        if (!match) return new Date(0); // 매칭되지 않으면 아주 이전 날짜로 반환하여 정렬에서 밀리게 함
+
+        let [_, year, month, day, meridiem, hour, minute, second] = match;
+        year = parseInt(year);
+        month = parseInt(month) - 1; // 월은 0부터 시작 (0 = 1월)
+        day = parseInt(day);
+        hour = parseInt(hour);
+        minute = parseInt(minute);
+        second = parseInt(second);
+
+        // 오전/오후 처리
+        if (meridiem === '오후' && hour !== 12) {
+            hour += 12;
+        } else if (meridiem === '오전' && hour === 12) {
+            hour = 0;
+        }
+
+        return new Date(year, month, day, hour, minute, second);
+    }
 });
