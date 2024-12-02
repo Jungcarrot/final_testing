@@ -1,3 +1,6 @@
+//그다음
+//원래 파인드포스트.js
+
 import { database } from "./DB.js";
 import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
@@ -74,26 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-   async function fetchComments(postId) {
-    try {
-        const commentsRef = ref(database, 'Comment');
-        const snapshot = await get(commentsRef);
-        const commentContainer = document.getElementById('comments');
-        commentContainer.innerHTML = '';
-
-        if (snapshot.exists()) {
-            snapshot.forEach(childSnapshot => {
-                const comment = childSnapshot.val();
-                if (comment.postID === postId) {
-                    // 댓글 작성자 정보 가져오기 (줄바꿈 적용)
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'comment';
-
-                    const commenterName = comment.commenterNickname || '익명';
-                    const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                    const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
-
-                       // 댓글 데이터를 가져와 표시
+   // 댓글 데이터를 가져와 표시
 async function fetchComments(postId) {
     try {
         const commentsRef = ref(database, 'Comment');
@@ -130,6 +114,7 @@ async function fetchComments(postId) {
         console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
         alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
     }
+}
 
     // 댓글 작성 처리 함수
     async function addComment() {
@@ -152,7 +137,7 @@ async function fetchComments(postId) {
         try {
             const newCommentRef = push(ref(database, 'Comment'));
             const newComment = {
-                pid: postId,  // postID -> pid로 수정하여 일관성 유지
+                postID: postId,
                 commenter: commenterId,
                 commenterNickname,
                 comment: commentContent,
@@ -168,21 +153,20 @@ async function fetchComments(postId) {
             alert('댓글 작성 중 오류가 발생했습니다.');
         }
     }
-
     // 댓글 신고 처리 함수
-    async function reportComment(commentId) {
-        const reportRef = ref(database, `ReportedComments/${commentId}`);
-        try {
-            await set(reportRef, {
-                reported: true,
-                time: new Date().toLocaleString(),
-            });
-            alert('댓글이 신고되었습니다.');
-        } catch (error) {
-            console.error('댓글 신고 중 오류 발생:', error);
-            alert('댓글 신고 중 오류가 발생했습니다.');
-        }
+async function reportComment(commentId) {
+    const reportRef = ref(database, `ReportedComments/${commentId}`);
+    try {
+        await set(reportRef, {
+            reported: true,
+            time: new Date().toLocaleString(),
+        });
+        alert('댓글이 신고되었습니다.');
+    } catch (error) {
+        console.error('댓글 신고 중 오류 발생:', error);
+        alert('댓글 신고 중 오류가 발생했습니다.');
     }
+}
 
     // 게시물 삭제 처리 함수
     async function deletePost() {
