@@ -4,7 +4,7 @@ import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('pid');
+    const postId = urlParams.get('pid');  // 'id' 대신 'pid'로 수정
     
     if (!postId) {
         alert('게시물 PID가 존재하지 않습니다.');
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 snapshot.forEach(childSnapshot => {
                     const comment = childSnapshot.val();
-                    if (comment.pid === postId) { // pid로 변경
+                    if (comment.postID === postId) {
                         // 댓글 작성자 정보 가져오기
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment';
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const newCommentRef = push(ref(database, 'Comment'));
             const newComment = {
-                pid: postId, // pid로 변경
+                postID: postId,
                 commenter: commenterId,
                 commenterNickname,
                 comment: commentContent,
@@ -142,20 +142,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const postRef = ref(database, `Post/${postId}`);
             await remove(postRef);
             alert('게시물이 삭제되었습니다.');
-
-            // 해당 게시물에 달린 댓글도 삭제
-            const commentsRef = ref(database, 'Comment');
-            const commentsSnapshot = await get(commentsRef);
-            if (commentsSnapshot.exists()) {
-                commentsSnapshot.forEach(async (childSnapshot) => {
-                    const comment = childSnapshot.val();
-                    if (comment.pid === postId) {
-                        const commentRef = ref(database, `Comment/${childSnapshot.key}`);
-                        await remove(commentRef);
-                    }
-                });
-            }
-
             window.location.href = 'findList.html';
         } catch (error) {
             console.error('게시물 삭제 중 오류 발생:', error);
