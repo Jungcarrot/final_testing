@@ -1,5 +1,5 @@
-import { database } from "./DB.js";
-import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { database } from "./DB.js"; // Firebase 데이터베이스 객체 import
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"; // Firebase에서 제공하는 메서드들 import
 
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 관련 변수
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Firebase에서 임시보호 카테고리의 게시물 가져오기
     const postsRef = ref(database, 'Post');
     onValue(postsRef, async (snapshot) => {
-        const posts = [];
+        let posts = [];
         const userPromises = [];
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 posts.push({ ...post, id: childSnapshot.key }); // 게시물 데이터에 고유 ID 추가
                 userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
+        });
+
+        // 작성일을 기준으로 게시물을 내림차순 정렬
+        posts.sort((a, b) => {
+            const dateA = parseKoreanDate(a.date);
+            const dateB = parseKoreanDate(b.date);
+            return dateB - dateA; // 최신순으로 정렬 (내림차순)
         });
 
         const userSnapshots = await Promise.all(userPromises);
@@ -141,4 +148,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateLanguage('ko'); // 초기 언어 설정
     document.getElementById('lang-ko').classList.add('active');
+
+    // 작성일 파싱 함수
+    function parseKoreanDate(koreanDateStr) {
+        // 예: "2024. 12. 3. 오전 2:13:12"
+        const regex = /(\d{4})\.\s(\d{1,2})\.\s(\d{1,2})\.\s(오전|오후)\s(\d{1,2}):(\d{2}):(\d{2})/;
+        const match = koreanDateStr.match(regex);
+        if (!match) return new Date(0); // 매칭되지 않으면 아주 이전 날짜로 반환하여 정렬에서 밀리게 함
+
+        let [_, year, month, day, meridiem, hour, minute, second] = match;
+        year = parseInt(year);
+        month = parseInt(month) - 1; // 월은 0부터 시작 (0 = 1월)
+        day = parseInt(day);
+        hour = parseInt(hour);
+        minute = parseInt(minute);
+        second = parseInt(second);
+
+        // 오전/오후 처리
+        if (meridiem === '오후' && hour !== 12) {
+            hour += 12;
+        } else if (meridiem === '오전' && hour === 12) {
+            hour = 0;
+        }
+
+        return new Date(year, month, day, hour, minute, second);
+    }
 });
