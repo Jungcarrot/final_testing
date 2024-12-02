@@ -230,8 +230,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         };
 
            function updateLanguage(lang) {
-        document.querySelectorAll('[data-translate]').forEach(element => {
-            const key = element.getAttribute('data-translate');
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
             if (translations[lang][key]) {
                 element.textContent = translations[lang][key];
             }
