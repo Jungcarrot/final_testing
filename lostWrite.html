@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>발견 게시물 작성</title>
+    <title data-translate="page-title">실종 게시물 작성</title>
     <link rel="stylesheet" href="assets/css/postList.css">
     <link rel="stylesheet" href="assets/css/postWrite.css">
     <link rel="stylesheet" href="assets/css/style_main.css">
@@ -12,12 +12,11 @@
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script src="assets/js/postList.js" defer></script>
-    <script src="assets/js/lostWrite.js" defer></script>
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
     <script type="module" src="assets/js/DB.js"></script>
+    <script type="module" src="assets/js/lostWrite.js" defer></script> <!-- 연결된 JS 파일 -->
 </head>
 
 <body>
@@ -41,17 +40,17 @@
         <h1 data-translate="page-title">실종 게시물 작성</h1>
         <div class="form-container">
             <div class="section title-section">
-                <input type="text" id="title" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder" data-db-field="title">
+                <input type="text" id="title" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
             </div>
 
             <div class="content-wrapper">
                 <div class="section photo-section">
                     <label for="photo-upload" data-translate="photoLabel">사진 첨부</label>
-                    <input type="file" id="photo-upload" name="image" accept="image/*" data-db-field="image">
+                    <input type="file" id="photo-upload" name="image" accept="image/*">
                 </div>
 
                 <div class="section detail-section">
-                    <textarea id="details" name="details" placeholder="실종된 동물의 이름, 특징, 성별, 종, 실종 위치, 실종 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder" data-db-field="details"></textarea>
+                    <textarea id="details" name="details" placeholder="실종된 동물의 이름, 특징, 성별, 종, 실종 위치, 실종 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
                 </div>
             </div>
 
@@ -67,9 +66,9 @@
                 <a href="login.html" data-translate="login">로그인</a> | <a href="signup.html" data-translate="signup">회원가입</a>
             </div>
             <div class="manual">
-                <h2>MANUAL</h2>
+                <h2 data-translate="manual-title">MANUAL</h2>
                 <ul>
-                    <li>매뉴얼 내용</li>
+                    <li data-translate="manual-item1">매뉴얼 내용</li>
                     <li>-</li>
                     <li>-</li>
                 </ul>
@@ -95,7 +94,7 @@
                     <button onclick="closeChatPopup()">X</button>
                 </div>
                 <div id="popup-messages" class="messages"></div>
-                <textarea id="popup-message-input" name="messageContent" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
+                <textarea id="popup-message-input" name="messageContent" placeholder="메시지를 입력하세요"></textarea>
                 <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
             </div>
         </div>
