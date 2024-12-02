@@ -29,7 +29,7 @@ onValue(connectedRef, (snapshot) => {
 });
 
     export { database };  // 데이터베이스 객체를 export
-chat.js
+
 // 팝업 채팅창 닫기
 function closeChatPopup() {
     const chatPopup = document.getElementById('chat-popup');
