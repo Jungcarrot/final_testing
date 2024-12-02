@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         myPostsTable.innerHTML = ''; // 기존 게시물 초기화
 
         const myPosts = [];
+        const userPromises = []; // 작성자 정보를 가져오기 위한 Promise 배열 초기화
 
         snapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
@@ -36,8 +37,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             // 로그인한 사용자가 작성한 게시글만 필터링
             if (post.authorId === uid) {
                 myPosts.push({ ...post, postId });
+                userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
             }
         });
+
+        const userSnapshots = await Promise.all(userPromises);
 
         if (myPosts.length === 0) {
             // 게시물이 없으면 안내 메시지 표시
@@ -49,46 +53,38 @@ document.addEventListener("DOMContentLoaded", async () => {
             myPostsTable.appendChild(emptyRow);
         } else {
             // 게시물이 있으면 테이블에 추가
-            for (const [index, post] of myPosts.entries()) {
-                try {
-                    // 작성자 닉네임 가져오기
-                    const authorRef = ref(database, `UserData/${post.authorId}`);
-                    const authorSnapshot = await get(authorRef);
-                    const authorNickname = authorSnapshot.exists() ? authorSnapshot.val().nickName : '알 수 없음';
+            myPosts.forEach((post, index) => {
+                const userSnapshot = userSnapshots[index];
+                const authorNickname = userSnapshot.exists() ? userSnapshot.val().nickName : '알 수 없음';
 
-                    // 테이블에 행 추가
-                    const rowElement = document.createElement('tr');
-                    
-                    // 번호 셀
-                    const numberCell = document.createElement('td');
-                    numberCell.textContent = index + 1;
-                    rowElement.appendChild(numberCell);
+                const rowElement = document.createElement('tr');
+                
+                // 번호 셀
+                const numberCell = document.createElement('td');
+                numberCell.textContent = index + 1;
+                rowElement.appendChild(numberCell);
 
-                    // 제목 셀
-                    const titleCell = document.createElement('td');
-                    const titleLink = document.createElement('a');
-                    titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정
-                    titleLink.textContent = post.title;
-                    titleCell.appendChild(titleLink);
-                    rowElement.appendChild(titleCell);
+                // 제목 셀
+                const titleCell = document.createElement('td');
+                const titleLink = document.createElement('a');
+                titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정
+                titleLink.textContent = post.title;
+                titleCell.appendChild(titleLink);
+                rowElement.appendChild(titleCell);
 
-                    // 작성자 닉네임 셀
-                    const authorCell = document.createElement('td');
-                    authorCell.textContent = authorNickname;
-                    rowElement.appendChild(authorCell);
+                // 작성자 닉네임 셀
+                const authorCell = document.createElement('td');
+                authorCell.textContent = authorNickname;
+                rowElement.appendChild(authorCell);
 
-                    // 작성일 셀
-                    const dateCell = document.createElement('td');
-                    dateCell.textContent = post.createdAt || 'N/A';
-                    rowElement.appendChild(dateCell);
+                // 작성일 셀
+                const dateCell = document.createElement('td');
+                dateCell.textContent = post.date || 'N/A';
+                rowElement.appendChild(dateCell);
 
-                    // 테이블에 행 추가
-                    myPostsTable.appendChild(rowElement);
-
-                } catch (error) {
-                    console.error("작성자 정보를 가져오는 중 오류가 발생했습니다:", error);
-                }
-            }
+                // 테이블에 행 추가
+                myPostsTable.appendChild(rowElement);
+            });
         }
     } catch (error) {
         console.error("데이터 가져오기 오류:", error);
