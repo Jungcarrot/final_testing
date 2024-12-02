@@ -35,7 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const nickName = authorSnapshot.val().nickName;
 
             // 게시물 데이터 구성
+            const newPostRef = push(ref(database, 'Post'));
+            const pid = newPostRef.key; // 자동 생성된 키를 pid로 사용
+
             const postData = {
+                pid,
                 title,
                 category: '실종',
                 postStatus: '작성됨',
@@ -46,8 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
             };
 
-            // 게시물 데이터 저장 (자동 생성된 key를 pid로 사용)
-            const newPostRef = push(ref(database, 'Post'));
+            // 게시물 데이터 저장
             await set(newPostRef, postData);
 
             alert('게시물이 저장되었습니다!');
