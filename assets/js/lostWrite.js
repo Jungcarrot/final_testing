@@ -4,8 +4,8 @@ import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/f
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 작성 버튼 클릭 이벤트
     document.getElementById('submit-button').addEventListener('click', async () => {
-        const title = document.querySelector('.title-section input').value;
-        const details = document.querySelector('.detail-section textarea').value;
+        const title = document.querySelector('.title-section input').value.trim();
+        const details = document.querySelector('.detail-section textarea').value.trim();
         const uid = localStorage.getItem('uid'); // 사용자 ID 가져오기
         const date = new Date().toLocaleString(); // 작성일
 
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('게시물이 저장되었습니다!');
             window.location.href = 'lostList.html'; // 게시물 목록으로 이동
         } catch (error) {
-            console.error("Error saving post: ", error);
+            console.error("게시물을 저장하는 중 오류가 발생했습니다:", error);
             alert('게시물을 저장하는 중 오류가 발생했습니다.');
         }
     });
