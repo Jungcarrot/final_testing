@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 언어 설정 및 번역
         const translations = {
             ko: {
-                'page-title': '임시보호 게시물 보기',
+                'page-title': '실종 게시물 보기',
                 'comment-section-title': '댓글',
                 'add-comment-button': '댓글 작성 완료',
                 'edit-post-button': '수정',
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 'chat-send-button': '전송',
             },
             en: {
-                'page-title': 'View Temporary Protection Post',
+                'page-title': 'View Temporary lost Post',
                 'comment-section-title': 'Comments',
                 'add-comment-button': 'Add Comment',
                 'edit-post-button': 'Edit',
