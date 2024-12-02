@@ -1,10 +1,7 @@
-//원래 파인드포스트.js
-
 import { database } from "./DB.js";
 import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('pid');  // 'id' 대신 'pid'로 수정
     
@@ -25,11 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 const post = snapshot.val();
 
-                // 게시물 제목 설정
                 const postTitleElement = document.getElementById('post-title');
                 postTitleElement.textContent = post.title || '제목 없음';
 
-                // 게시물 이미지 설정 (이미지가 있을 경우만 표시)
                 const postImageElement = document.getElementById('post-image');
                 if (post.image) {
                     postImageElement.src = `assets/images/${post.image}`;
@@ -38,11 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     postImageElement.style.display = 'none';
                 }
 
-                // 게시물 상세 내용 설정 (줄바꿈 처리)
                 const postDetailsElement = document.getElementById('post-details');
                 postDetailsElement.innerHTML = (post.details || '내용이 없습니다.').replace(/\n/g, '<br>');
 
-                // 작성자 정보 추가
                 if (post.authorId) {
                     const authorRef = ref(database, `UserData/${post.authorId}`);
                     const authorSnapshot = await get(authorRef);
@@ -57,11 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('post-author').textContent = '작성자 정보 없음';
                 }
                 
-                // 작성일 설정
                 const dateElement = document.getElementById('post-date');
                 dateElement.textContent = post.date || '작성일 없음';
 
-                // 게시물 작성자와 로그인한 사용자가 일치하면 수정/삭제 버튼 표시
                 if (loggedUserId && post.authorId === loggedUserId) {
                     const editButtons = document.getElementById('edit-buttons');
                     editButtons.style.display = 'block';
@@ -76,44 +67,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-   // 댓글 데이터를 가져와 표시
-async function fetchComments(postId) {
-    try {
-        const commentsRef = ref(database, 'Comment');
-        const snapshot = await get(commentsRef);
-        const commentContainer = document.getElementById('comments');
-        commentContainer.innerHTML = '';
+    // 댓글 데이터를 가져와 표시
+    async function fetchComments(postId) {
+        try {
+            const commentsRef = ref(database, 'Comment');
+            const snapshot = await get(commentsRef);
+            const commentContainer = document.getElementById('comments');
+            commentContainer.innerHTML = '';
 
-        if (snapshot.exists()) {
-            snapshot.forEach(childSnapshot => {
-                const comment = childSnapshot.val();
-                if (comment.postID === postId) {
-                    // 댓글 작성자 정보 가져오기 (줄바꿈 적용)
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'comment';
+            if (snapshot.exists()) {
+                snapshot.forEach(childSnapshot => {
+                    const comment = childSnapshot.val();
+                    if (comment.postID === postId) {
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment';
 
-                    const commenterName = comment.commenterNickname || '익명';
-                    const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                    const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+                        const commenterName = comment.commenterNickname || '익명';
+                        const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
+                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
 
-                    // 신고하기 버튼 추가
-                    const reportButton = document.createElement('button');
-                    reportButton.textContent = '신고하기';
-                    reportButton.className = 'report-button';
-                    reportButton.addEventListener('click', () => reportComment(childSnapshot.key));
+                        const reportButton = document.createElement('button');
+                        reportButton.textContent = '신고하기';
+                        reportButton.className = 'report-button';
+                        reportButton.addEventListener('click', () => reportComment(childSnapshot.key));
 
-                    // 댓글 HTML 구성
-                    commentElement.innerHTML = commentHTML;
-                    commentElement.appendChild(reportButton);  // 신고하기 버튼 추가
-                    commentContainer.appendChild(commentElement);
-                }
-            });
+                        commentElement.innerHTML = commentHTML;
+                        commentElement.appendChild(reportButton);
+                        commentContainer.appendChild(commentElement);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
+            alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
         }
-    } catch (error) {
-        console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
-        alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
     }
-}
 
     // 댓글 작성 처리 함수
     async function addComment() {
@@ -152,20 +140,21 @@ async function fetchComments(postId) {
             alert('댓글 작성 중 오류가 발생했습니다.');
         }
     }
+
     // 댓글 신고 처리 함수
-async function reportComment(commentId) {
-    const reportRef = ref(database, `ReportedComments/${commentId}`);
-    try {
-        await set(reportRef, {
-            reported: true,
-            time: new Date().toLocaleString(),
-        });
-        alert('댓글이 신고되었습니다.');
-    } catch (error) {
-        console.error('댓글 신고 중 오류 발생:', error);
-        alert('댓글 신고 중 오류가 발생했습니다.');
+    async function reportComment(commentId) {
+        const reportRef = ref(database, `ReportedComments/${commentId}`);
+        try {
+            await set(reportRef, {
+                reported: true,
+                time: new Date().toLocaleString(),
+            });
+            alert('댓글이 신고되었습니다.');
+        } catch (error) {
+            console.error('댓글 신고 중 오류 발생:', error);
+            alert('댓글 신고 중 오류가 발생했습니다.');
+        }
     }
-}
 
     // 게시물 삭제 처리 함수
     async function deletePost() {
@@ -200,6 +189,64 @@ async function reportComment(commentId) {
     await fetchPostDetails(postId);
     await fetchComments(postId);
 
+    // --- Chat Popup 기능 추가 ---
+    const chatPopup = document.getElementById('chat-popup');
+    const chatTitle = document.getElementById('popup-chat-title');
+    const messages = document.getElementById('popup-messages');
+    const popupMessageInput = document.getElementById('popup-message-input');
+
+    function closeChatPopup() {
+        chatPopup.classList.add('hidden');
+    }
+
+    function openChatPopup(user) {
+        chatTitle.textContent = `${user}와의 채팅`;
+        messages.innerHTML = '';
+        const storedMessages = getStoredMessages(user);
+        storedMessages.forEach((messageData) => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message');
+            messageElement.textContent = messageData.message;
+            messages.appendChild(messageElement);
+        });
+        chatPopup.classList.remove('hidden');
+    }
+
+    function sendPopupMessage() {
+        const message = popupMessageInput.value.trim();
+        if (message === '') {
+            alert('메시지를 입력하세요!');
+            return;
+        }
+        const user = chatTitle.textContent.split('와의 채팅')[0];
+        saveMessageToLocal(user, message);
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message');
+        messageElement.textContent = message;
+        messages.appendChild(messageElement);
+        popupMessageInput.value = '';
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function saveMessageToLocal(user, message) {
+        const chatKey = 'chat_' + user;
+        let chatMessages = JSON.parse(localStorage.getItem(chatKey)) || [];
+        chatMessages.push({ message: message, timestamp: Date.now() });
+        localStorage.setItem(chatKey, JSON.stringify(chatMessages));
+    }
+
+    function getStoredMessages(user) {
+        const chatKey = 'chat_' + user;
+        return JSON.parse(localStorage.getItem(chatKey)) || [];
+    }
+
+    document.getElementById('open-chat-button').addEventListener('click', () => {
+        openChatPopup('User123'); // 예시로 'User123' 사용자와 채팅
+    });
+
+    document.getElementById('close-chat-button').addEventListener('click', closeChatPopup);
+    document.getElementById('send-message-button').addEventListener('click', sendPopupMessage);
+    
     // 언어 설정 및 번역
     const translations = {
         ko: {
@@ -239,8 +286,6 @@ async function reportComment(commentId) {
                 element.textContent = translations[lang][key];
             }
         });
-
-        // 페이지 제목 번역
         document.querySelector('title').textContent = translations[lang]['page-title'];
     }
 
@@ -253,7 +298,6 @@ async function reportComment(commentId) {
         });
     });
 
-    // 초기 언어 설정
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
