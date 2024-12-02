@@ -1,5 +1,5 @@
-import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-import { db } from "./DB.js";
+import { ref, get, onValue, push, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { database } from "./DB.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 게시물 가져오기
-    const postRef = ref(db, `Post/${pid}`);
+    const postRef = ref(database, `Post/${pid}`);
     get(postRef).then(async (snapshot) => {
         if (!snapshot.exists()) {
             alert('게시물이 존재하지 않습니다.');
@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('post-image').src = post.image || 'assets/img/default-image.png';
         document.getElementById('post-details').textContent = post.details || '상세 내용이 없습니다.';
 
-        const authorSnapshot = await get(ref(db, `UserData/${post.authorId}`));
+        const authorSnapshot = await get(ref(database, `UserData/${post.authorId}`));
         const authorNickName = authorSnapshot.exists() ? authorSnapshot.val().nickName : '알 수 없음';
         document.getElementById('post-author').textContent = authorNickName;
 
         // 댓글 가져오기
-        const commentsRef = ref(db, `Comment`);
+        const commentsRef = ref(database, `Comment`);
         onValue(commentsRef, async (commentsSnapshot) => {
             const comments = [];
             const userPromises = [];
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const comment = childSnapshot.val();
                 if (comment.postId === pid) {
                     comments.push(comment);
-                    userPromises.push(get(ref(db, `UserData/${comment.commenter}`))); // 댓글 작성자 정보 가져오기
+                    userPromises.push(get(ref(database, `UserData/${comment.commenter}`))); // 댓글 작성자 정보 가져오기
                 }
             });
 
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (commentText) {
-            const newCommentRef = push(ref(db, 'Comment'));
+            const newCommentRef = push(ref(database, 'Comment'));
             set(newCommentRef, {
                 postId: pid,
                 commenter: commenterId,
@@ -155,3 +155,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 });
+
