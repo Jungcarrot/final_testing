@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             myPostsTable.appendChild(emptyRow);
         } else {
             // 게시물이 있으면 테이블에 추가
-            myPosts.forEach((post, index) => {
+            for (const [index, post] of myPosts.entries()) {
                 const rowElement = document.createElement('tr');
                 
                 // 번호 셀
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const titleCell = document.createElement('td');
                 const titleLink = document.createElement('a');
 
-                // 각 게시물의 게시판에 맞는 링크 설정
+                // 게시판에 맞는 링크 설정
                 let boardUrl = '';
                 switch (post.category) {
                     case '임시보호':
@@ -73,21 +73,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                     case '발견':
                         boardUrl = 'findPost.html';
                         break;
-                    case '동물병원':
-                        boardUrl = 'vetPost.html';
-                        break;
                     default:
-                        boardUrl = 'generalPost.html'; // 기본 게시판 경로 설정 (필요시 변경)
+                        boardUrl = 'generalPost.html'; // 기본 게시판 경로 설정
                 }
 
-                titleLink.href = `${boardUrl}?pid=${post.postId}`; // 게시물 링크 설정 (카테고리 포함)
+                titleLink.href = `${boardUrl}?pid=${post.postId}`; // 게시물 링크 설정
                 titleLink.textContent = post.title;
                 titleCell.appendChild(titleLink);
                 rowElement.appendChild(titleCell);
 
-                // 작성자 닉네임 셀
+                // 작성자 닉네임 셀 (비동기적으로 가져오기)
+                const authorSnapshot = await get(ref(database, `UserData/${post.authorId}`));
+                const authorNickname = authorSnapshot.exists() ? authorSnapshot.val().nickName : '알 수 없음';
                 const authorCell = document.createElement('td');
-                authorCell.textContent = post.authorNickname || '알 수 없음';
+                authorCell.textContent = authorNickname;
                 rowElement.appendChild(authorCell);
 
                 // 작성일 셀
@@ -97,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // 테이블에 행 추가
                 myPostsTable.appendChild(rowElement);
-            });
+            }
         }
     } catch (error) {
         console.error("데이터 가져오기 오류:", error);
