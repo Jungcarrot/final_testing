@@ -134,7 +134,7 @@
         </div>
     </footer>
 
-    <!-- 스크립트 추가 (Firebase 관련 스크립트 포함) -->
+    <!-- Firebase와의 연동 관련 스크립트 -->
     <script type="module">
         import { database } from './DB.js';
         import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
@@ -142,13 +142,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             const tableBody = document.getElementById('post-list');
             const noPostsMessage = document.querySelector('.no-posts');
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
 
-            // Firebase에서 게시물 가져오기
+            // Firebase에서 실종 게시물 가져오기
             const postsRef = ref(database, 'Post');
             onValue(postsRef, (snapshot) => {
-                tableBody.innerHTML = ''; // 기존 목록 초기화
                 const posts = [];
-
                 snapshot.forEach(childSnapshot => {
                     const post = childSnapshot.val();
                     if (post.category === '실종') {
@@ -159,7 +159,13 @@
                     }
                 });
 
-                // 게시물 렌더링
+                // 게시물 렌더링 함수
+                renderPosts(posts);
+            });
+
+            // 게시물 렌더링 함수
+            function renderPosts(posts) {
+                tableBody.innerHTML = ''; // 기존 목록 초기화
                 if (posts.length === 0) {
                     noPostsMessage.style.display = 'block';
                 } else {
@@ -176,7 +182,38 @@
                         tableBody.innerHTML += row;
                     });
                 }
+            }
+
+            // 검색 이벤트
+            searchButton.addEventListener('click', () => {
+                const query = searchInput.value.trim().toLowerCase();
+                filterPosts(query);
             });
+
+            searchInput.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') {
+                    const query = searchInput.value.trim().toLowerCase();
+                    filterPosts(query);
+                }
+            });
+
+            // 검색된 게시물 필터링 함수
+            function filterPosts(query) {
+                const filteredPosts = [];
+                const postsRef = ref(database, 'Post');
+                onValue(postsRef, (snapshot) => {
+                    snapshot.forEach(childSnapshot => {
+                        const post = childSnapshot.val();
+                        if (post.category === '실종' && post.title.toLowerCase().includes(query)) {
+                            filteredPosts.push({
+                                ...post,
+                                id: childSnapshot.key
+                            });
+                        }
+                    });
+                    renderPosts(filteredPosts);
+                });
+            }
         });
     </script>
 </body>
