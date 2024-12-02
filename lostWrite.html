@@ -24,8 +24,8 @@
             const submitButton = document.getElementById('submit-button');
 
             submitButton.addEventListener('click', async () => {
-                const title = document.getElementById('title').value.trim();
-                const details = document.getElementById('details').value.trim();
+                const title = document.getElementById('post-title').value.trim();
+                const details = document.getElementById('post-details').value.trim();
                 const authorId = localStorage.getItem('uid'); // 작성자 ID 가져오기
                 const date = new Date().toLocaleString(); // 작성일
 
@@ -96,7 +96,7 @@
         <h1 data-translate="page-title">실종 게시물 작성</h1>
         <div class="form-container">
             <div class="section title-section">
-                <input type="text" id="title" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
+                <input type="text" id="post-title" name="title" placeholder="제목을 입력해 주세요." data-translate="titlePlaceholder">
             </div>
 
             <div class="content-wrapper">
@@ -106,7 +106,7 @@
                 </div>
 
                 <div class="section detail-section">
-                    <textarea id="details" name="details" placeholder="실종된 동물의 이름, 특징, 성별, 종, 실종 위치, 실종 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
+                    <textarea id="post-details" name="details" placeholder="실종된 동물의 이름, 특징, 성별, 종, 실종 위치, 실종 시간 등을 상세하게 적어 주세요." data-translate="detailPlaceholder"></textarea>
                 </div>
             </div>
 
@@ -124,9 +124,11 @@
             <div class="manual">
                 <h2 data-translate="manual-title">MANUAL</h2>
                 <ul>
-                    <li data-translate="manual-item1">매뉴얼 내용</li>
+                    <li data-translate="manual-item1">발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.</li>
                     <li>-</li>
+                    <li data-translate="manual-item2">주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.</li>
                     <li>-</li>
+                    <li data-translate="manual-item3">게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.</li>
                 </ul>
             </div>
         </div>
