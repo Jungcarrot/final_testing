@@ -1,5 +1,7 @@
+//프로텍트포스트 오리지널
+
 import { database } from "./DB.js";
-import { ref, get, push, set, remove, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 import { getLoggedInUsername, checkLoginStatus } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -106,6 +108,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // 댓글 작성 처리 함수 추가
+    async function addComment() {
+        const commentInput = document.getElementById('comment-input');
+        const commentContent = commentInput.value.trim();
+
+        if (!commentContent) {
+            alert('댓글 내용을 입력해주세요.');
+            return;
+        }
+
+        const commenterId = localStorage.getItem('uid');
+        const commenterNickname = localStorage.getItem('nickName') || '익명';
+
+        if (!commenterId) {
+            alert('로그인 후 댓글을 작성할 수 있습니다.');
+            return;
+        }
+
+        try {
+            const newCommentRef = push(ref(database, 'Comment'));
+            const newComment = {
+                pid: postId, // postID 대신 pid로 수정
+                commenter: commenterId,
+                commenterNickname,
+                comment: commentContent,
+                time: new Date().toLocaleString(),
+            };
+
+            await set(newCommentRef, newComment);
+            commentInput.value = ''; // 입력 필드 초기화
+            alert('댓글이 작성되었습니다.');
+            await fetchComments(postId); // 댓글 목록 업데이트
+        } catch (error) {
+            console.error('댓글 작성 중 오류 발생:', error);
+            alert('댓글 작성 중 오류가 발생했습니다.');
+        }
+    }
+
     // 댓글 신고 처리 함수
     window.reportComment = async function (commentId) {
         if (!confirm('정말로 이 댓글을 신고하시겠습니까?')) {
@@ -143,90 +183,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await remove(commentRef); // 신고된 댓글 삭제
                 alert('댓글이 신고되었습니다.');
                 await fetchComments(postId); // 댓글 목록 업데이트
-
-                // 피신고자 제재 처리
-                await penalizeReportedUser(reportedUserID);
             }
         } catch (error) {
             console.error('댓글 신고 중 오류 발생:', error);
             alert('댓글 신고 중 오류가 발생했습니다.');
         }
     };
-
-    // 피신고자에 대한 제재 조치 함수
-    async function penalizeReportedUser(reportedUserID) {
-        try {
-            // 피신고자의 신고 횟수를 가져오기 위해 신고 데이터 조회
-            const reportsRef = ref(database, "CommentReport");
-            const reportsSnapshot = await get(reportsRef);
-
-            let reportCount = 0;
-
-            if (reportsSnapshot.exists()) {
-                reportsSnapshot.forEach((childSnapshot) => {
-                    const report = childSnapshot.val();
-                    if (report.reportedUserID === reportedUserID) {
-                        reportCount++;
-                    }
-                });
-            }
-
-            // 피신고자에 대한 제재 단계 설정
-            let actionMessage = "";
-            let suspensionDuration = null;
-
-            if (reportCount === 1) {
-                actionMessage = "신고로 인한 경고를 받았습니다. 한 번 더 신고 당할 시 정지됩니다.";
-            } else if (reportCount === 2) {
-                actionMessage = "신고 2회 누적으로 인해 1개월 정지되었습니다.";
-                suspensionDuration = 1; // 1개월 정지
-            } else if (reportCount === 3) {
-                actionMessage = "신고 3회 누적으로 인해 3개월 정지되었습니다.";
-                suspensionDuration = 3; // 3개월 정지
-            } else if (reportCount === 4) {
-                actionMessage = "신고 4회 누적으로 인해 6개월 정지되었습니다.";
-                suspensionDuration = 6; // 6개월 정지
-            } else if (reportCount >= 5) {
-                actionMessage = "신고 5회 누적으로 인해 영구 정지되었습니다.";
-                suspensionDuration = "permanent"; // 영구 정지
-            }
-
-            // 제재 조치 업데이트
-            if (actionMessage) {
-                // 관리자 채팅으로 경고 메시지 전송
-                const newMessageRef = push(ref(database, "Message"));
-                const adminChatID = "admin_chat"; // 관리자 채팅 ID
-                const messageContent = {
-                    chatID: adminChatID,
-                    senderID: "admin", // 관리자 ID
-                    receiverID: reportedUserID,
-                    messageContent: actionMessage,
-                    timeStamp: new Date().toISOString(),
-                };
-                await set(newMessageRef, messageContent);
-            }
-
-            if (suspensionDuration) {
-                // 피신고자에 대한 정지 조치 업데이트
-                const userRef = ref(database, `UserData/${reportedUserID}`);
-                const updateData = {};
-
-                if (suspensionDuration === "permanent") {
-                    updateData.accountStatus = "suspended_permanently";
-                } else {
-                    const currentDate = new Date();
-                    currentDate.setMonth(currentDate.getMonth() + suspensionDuration);
-                    updateData.suspensionEndDate = currentDate.toISOString(); // 정지 종료일 설정
-                    updateData.accountStatus = "suspended";
-                }
-
-                await update(userRef, updateData);
-            }
-
-        } catch (error) {
-            console.error("피신고자 제재 처리 중 오류 발생:", error);
-        }
-    }
 
     // 게시물 삭제 처리 함수
     async function deletePost() {
