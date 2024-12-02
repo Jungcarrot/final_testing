@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     postImageElement.style.display = 'none';
                 }
 
-                // 게시물 상세 내용 설정
+                // 게시물 상세 내용 설정 (줄바꿈 반영)
                 const postDetailsElement = document.getElementById('post-details');
-                postDetailsElement.textContent = post.details || '내용이 없습니다.';
+                postDetailsElement.innerHTML = post.details.replace(/<br>/g, '\n') || '내용이 없습니다.';
 
                 // 작성자 정보 추가
                 const authorElement = document.getElementById('post-author');
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 postID: postId,
                 commenter: commenterId,
                 commenterNickname,
-                comment: commentContent,
+                comment: commentContent.replace(/\n/g, '<br>'), // 줄바꿈 처리
                 time: new Date().toLocaleString(),
             };
 
