@@ -1,36 +1,51 @@
+import { database } from "./DB.js";
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
 document.addEventListener('DOMContentLoaded', () => {
-    const posts = JSON.parse(localStorage.getItem('lostPosts')) || [];
+    // 게시물 테이블 관련 요소
     const tableBody = document.querySelector('.post-table tbody');
     const noPostsMessage = document.querySelector('.no-posts');
     const searchInput = document.querySelector('.search-bar input');
     const searchButton = document.querySelector('.search-bar button');
-    const manualContent = document.querySelector('.manual p');
 
-    function renderPosts(filteredPosts) {
-        tableBody.innerHTML = ''; // 기존 목록 초기화
-        if (filteredPosts.length === 0) {
-            noPostsMessage.style.display = 'block';
+    // Firebase에서 게시물 가져오기
+    const postsRef = ref(database, 'Post');
+    onValue(postsRef, async (snapshot) => {
+        const posts = [];
+        const userPromises = [];
+        snapshot.forEach((childSnapshot) => {
+            const post = childSnapshot.val();
+            if (post.category === '실종') { // 특정 카테고리 필터링 (실종)
+                posts.push({ ...post, pid: childSnapshot.key }); // pid 추가
+                userPromises.push(get(ref(database, `UserData/${post.authorId}`))); // 작성자 정보 가져오기
+            }
+        });
+
+        const userSnapshots = await Promise.all(userPromises);
+
+        if (posts.length === 0) {
+            noPostsMessage.style.display = 'block'; // 게시물이 없으면 메시지 표시
         } else {
-            noPostsMessage.style.display = 'none';
-            filteredPosts.forEach((post, index) => {
+            noPostsMessage.style.display = 'none'; // 게시물이 있으면 메시지 숨김
+            tableBody.innerHTML = ''; // 기존 내용 초기화
+            posts.forEach((post, index) => {
+                const userSnapshot = userSnapshots[index];
+                const nickName = userSnapshot.exists() ? userSnapshot.val().nickName : '알 수 없음';
                 const row = `
                     <tr>
-                        <td>${index + 1}</td>
-                        <td><a href="lostPost.html?id=${posts.indexOf(post)}">${post.title}</a></td>
-                        <td>${post.nickName}</td> <!-- 변수명 변경 -->
-                        <td>${post.date}</td>
+                        <td>${index + 1}</td> <!-- 번호 -->
+                        <td><a href="lostPost.html?id=${post.pid}">${post.title}</a></td> <!-- 제목 -->
+                        <td>${nickName}</td> <!-- 작성자 닉네임 -->
+                        <td>${post.date}</td> <!-- 작성일 -->
                     </tr>
                 `;
-                tableBody.innerHTML += row;
+                tableBody.innerHTML += row; // 게시물 테이블에 새로운 행 추가
             });
         }
-    }
-
-    // 초기 렌더링
-    renderPosts(posts);
+    });
 
     // 검색 이벤트
-    function filterPosts() {
+    function filterPosts(posts) {
         const query = searchInput.value.trim().toLowerCase();
         const filteredPosts = posts.filter(post =>
             post.title.toLowerCase().includes(query)
@@ -45,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 번역 관련 데이터 및 언어 변경 함수
     const translations = {
         ko: {
             'page-title': '실종 게시물',
@@ -63,11 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'login': '로그인',
             'signup': '회원가입',
             'manual-title': 'MANUAL',
-            'manual-item1': '매뉴얼 내용',
-            'chat-list-title': '채팅 목록',
-            'mypage': '마이페이지',
-            'logout': '로그아웃',
-            'manual-title': '매뉴얼',
             'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
             'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
             'manual-item3': '이에 해당하는 게시판이 4개로 구성되어 있으며, 실종, 발견, 동물병원, 임시보호 카테고리로 구성되어 있습니다.',
@@ -89,11 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': 'No posts available.',
             'login': 'Login',
             'signup': 'Sign Up',
-            'manual-title': 'MANUAL',
-            'manual-item1': 'Manual Content',
-            'chat-list-title': 'Chat List',
-            'mypage': 'My Page',
-            'logout': 'Logout',
             'manual-title': 'MANUAL',
             'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
             'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
@@ -124,5 +130,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    updateLanguage('ko');
+    updateLanguage('ko'); // 초기 언어 설정
 });
