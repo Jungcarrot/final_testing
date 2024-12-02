@@ -94,11 +94,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
                         const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
 
-                        // 신고하기 버튼 추가
+                        // 댓글 작성자가 로그인한 사용자와 동일한지 확인
+                        const loggedUserId = localStorage.getItem('uid');
+                        const isOwnComment = loggedUserId === comment.commenter;
+                        
+                        // 신고 버튼 추가 (자신의 댓글에는 버튼을 표시하지 않음)
+                        if (!isOwnComment) {
                         const reportButton = document.createElement('button');
                         reportButton.textContent = '신고하기';
                         reportButton.className = 'report-button';
-                        reportButton.addEventListener('click', () => reportComment(childSnapshot.key));
+                        reportButton.addEventListener('click', () => {
+                            showReportModal(childSnapshot.key);
+                        });
 
                         // 댓글 HTML 구성
                         commentElement.innerHTML = commentHTML;
