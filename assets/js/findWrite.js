@@ -60,8 +60,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 수정 모드인 경우, 기존 게시물 업데이트
                 const postRef = ref(database, `Post/${postId}`);
                 await set(postRef, {
+                    pid: postId,
                     title,
                     details,
+                    category: '발견', // 카테고리를 반드시 설정해야 함
+                    postStatus: '작성됨', // 기본 상태 설정
                     authorId: uid,
                     date,
                     image: '' // 이미지 추가 부분은 향후 구현 가능
@@ -77,6 +80,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     pid,
                     title,
                     details,
+                    category: '발견', // 카테고리를 반드시 설정해야 함
+                    postStatus: '작성됨', // 기본 상태 설정
                     authorId: uid,
                     date,
                     image: '' // 이미지 부분은 향후 구현 가능
