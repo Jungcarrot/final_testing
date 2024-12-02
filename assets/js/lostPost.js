@@ -40,6 +40,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const loggedInUserId = localStorage.getItem('uid');
                 if (loggedInUserId && post.authorId === loggedInUserId) {
                     document.getElementById('edit-buttons').style.display = 'block';
+
+                    // 삭제 버튼 클릭 이벤트 등록 (중복 방지)
+                    document.getElementById('delete-post').addEventListener('click', async () => {
+                        if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+                            try {
+                                await remove(ref(database, `Post/${postId}`));
+                                alert('게시물이 삭제되었습니다.');
+                                window.location.href = 'lostList.html';
+                            } catch (error) {
+                                console.error('게시물 삭제 중 오류 발생:', error);
+                                alert('게시물 삭제 중 오류가 발생했습니다.');
+                            }
+                        }
+                    });
+
+                    // 수정 버튼 클릭 이벤트 등록
+                    document.getElementById('edit-post').addEventListener('click', () => {
+                        window.location.href = `lostWrite.html?pid=${postId}&edit=true`;
+                    });
                 }
             } else {
                 alert('해당 게시물이 존재하지 않습니다.');
@@ -50,32 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('게시물 데이터를 불러오는 중 오류가 발생했습니다.');
         }
     }
-
-    // 게시물 삭제 처리
-    function deletePost(postId) {
-        if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
-            return;
-        }
-
-        const postRef = ref(database, `Post/${postId}`);
-        remove(postRef)
-            .then(() => {
-                alert('게시물이 삭제되었습니다.');
-                window.location.href = 'lostList.html';
-            })
-            .catch((error) => {
-                console.error('게시물 삭제 중 오류 발생:', error);
-                alert('게시물 삭제 중 오류가 발생했습니다.');
-            });
-    }
-
-    // 삭제 버튼 클릭 이벤트 등록
-    document.getElementById('delete-post').addEventListener('click', () => deletePost(postId));
-
-    // 수정 버튼 클릭 이벤트 등록
-    document.getElementById('edit-post').addEventListener('click', () => {
-        window.location.href = `lostWrite.html?pid=${postId}&edit=true`;
-    });
 
     // 게시물 및 댓글 로드
     await fetchPostDetails(postId);
