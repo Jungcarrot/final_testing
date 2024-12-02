@@ -13,7 +13,6 @@
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
     <script src="assets/js/postList.js" defer></script>
-    <script src="assets/js/lostPost.js" defer></script>
     <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
@@ -121,5 +120,124 @@
             <button onclick="changeLanguage('en')" id="lang-en">ENGLISH</button>
         </div>
     </footer>
+
+    <!-- Firebase 연동 관련 스크립트 -->
+    <script type="module">
+        import { database } from './DB.js';
+        import { ref, get, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            if (!postId) {
+                alert('게시물 ID가 존재하지 않습니다.');
+                window.location.href = 'lostList.html';
+                return;
+            }
+
+            // 게시물 데이터 가져오기
+            const postRef = ref(database, `Post/${postId}`);
+            const snapshot = await get(postRef);
+
+            if (!snapshot.exists()) {
+                alert('게시물이 존재하지 않습니다.');
+                window.location.href = 'lostList.html';
+                return;
+            }
+
+            const post = snapshot.val();
+            const postTitleElement = document.getElementById('post-title');
+            const postImageElement = document.getElementById('post-image');
+            const postDetailsElement = document.getElementById('post-details');
+
+            postTitleElement.textContent = post.title || '제목 없음';
+            postDetailsElement.textContent = post.details || '내용이 없습니다.';
+            if (post.image) {
+                postImageElement.src = post.image;
+                postImageElement.style.display = 'block';
+            } else {
+                postImageElement.style.display = 'none';
+            }
+
+            // 본인 게시물인지 확인하여 수정/삭제 버튼 표시
+            const currentUserId = localStorage.getItem('uid');
+            if (currentUserId && post.authorId === currentUserId) {
+                document.getElementById('edit-buttons').style.display = 'block';
+
+                document.getElementById('edit-post').addEventListener('click', () => {
+                    // 수정 페이지로 이동하거나 수정 기능 구현
+                    window.location.href = `lostWrite.html?id=${postId}`;
+                });
+
+                document.getElementById('delete-post').addEventListener('click', async () => {
+                    const confirmDelete = confirm('정말로 이 게시물을 삭제하시겠습니까?');
+                    if (confirmDelete) {
+                        await remove(postRef);
+                        alert('게시물이 삭제되었습니다.');
+                        window.location.href = 'lostList.html';
+                    }
+                });
+            }
+
+            // 댓글 가져오기
+            const commentsRef = ref(database, `Comment`);
+            onValue(commentsRef, async (commentsSnapshot) => {
+                const comments = [];
+                commentsSnapshot.forEach((childSnapshot) => {
+                    const comment = childSnapshot.val();
+                    if (comment.postId === postId) {
+                        comments.push(comment);
+                    }
+                });
+
+                // 댓글 표시
+                const commentContainer = document.getElementById('comments');
+                commentContainer.innerHTML = '';
+                comments.forEach((commentObj) => {
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment-item');
+                    commentElement.innerHTML = `
+                        <strong>${commentObj.nickName}</strong>: ${commentObj.comment}
+                    `;
+                    commentContainer.appendChild(commentElement);
+                });
+            });
+
+            // 댓글 작성하기
+            document.getElementById('add-comment').addEventListener('click', async () => {
+                const commentInput = document.getElementById('comment-input');
+                const commentContent = commentInput.value.trim();
+                if (!commentContent) {
+                    alert('댓글 내용을 입력해주세요.');
+                    return;
+                }
+
+                if (!currentUserId) {
+                    alert('로그인 후 댓글을 작성할 수 있습니다.');
+                    return;
+                }
+
+                const authorSnapshot = await get(ref(database, `UserData/${currentUserId}`));
+                if (!authorSnapshot.exists()) {
+                    alert('사용자 정보를 찾을 수 없습니다.');
+                    return;
+                }
+
+                const nickName = authorSnapshot.val().nickName;
+
+                const newComment = {
+                    postId,
+                    commenter: currentUserId,
+                    nickName,
+                    comment: commentContent,
+                    time: new Date().toLocaleString()
+                };
+
+                await push(ref(database, 'Comment'), newComment);
+                commentInput.value = '';
+                alert('댓글이 작성되었습니다.');
+            });
+        });
+    </script>
 </body>
 </html>
