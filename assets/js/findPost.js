@@ -101,11 +101,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const reportButton = document.createElement('button');
                         reportButton.textContent = '신고하기';
                         reportButton.className = 'report-button';
-                        // 신고 버튼 클릭 시 모달 띄우기
-                        reportButton.addEventListener('click', () => {
-                            showReportModal(childSnapshot.key); // childSnapshot.key를 전달
-                        });
-                        commentElement.innerHTML = commentHTML;
                         commentElement.appendChild(reportButton);  // 신고하기 버튼 추가
                     } else {
                         commentElement.innerHTML = commentHTML;
