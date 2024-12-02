@@ -1,7 +1,6 @@
 import { database } from "./DB.js"; // Firebase 데이터베이스 객체 import
 import { ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-// 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
 document.addEventListener("DOMContentLoaded", async () => {
     const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UID 가져오기
 
@@ -12,13 +11,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 사용자의 게시물 가져오기
     try {
-        // 'Post' 경로에서 게시물 데이터 가져오기
         const postsRef = ref(database, "Post");
         const snapshot = await get(postsRef);
 
-        // HTML의 'myposts-list' 요소 가져오기
         const myPostsTable = document.getElementById("myposts-list");
         if (!myPostsTable) {
             console.error("게시물 목록을 표시할 요소를 찾을 수 없습니다.");
@@ -41,19 +37,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-        // 작성자 정보를 모두 가져옴
         const userSnapshots = await Promise.all(userPromises);
 
         if (myPosts.length === 0) {
-            // 게시물이 없으면 안내 메시지 표시
             const emptyRow = document.createElement('tr');
             const emptyCell = document.createElement('td');
-            emptyCell.colSpan = 4; // 4개의 열을 차지하도록 설정
+            emptyCell.colSpan = 4;
             emptyCell.textContent = "작성한 게시물이 없습니다.";
             emptyRow.appendChild(emptyCell);
             myPostsTable.appendChild(emptyRow);
         } else {
-            // 게시물이 있으면 테이블에 추가
             myPosts.forEach((post, index) => {
                 const userSnapshot = userSnapshots[index];
                 const authorNickname = userSnapshot.exists() ? userSnapshot.val().nickName : '알 수 없음';
@@ -68,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // 제목 셀
                 const titleCell = document.createElement('td');
                 const titleLink = document.createElement('a');
-                titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정
+                titleLink.href = `protectPost.html?pid=${post.postId}`;
                 titleLink.textContent = post.title;
                 titleCell.appendChild(titleLink);
                 rowElement.appendChild(titleCell);
@@ -80,13 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // 작성일 셀
                 const dateCell = document.createElement('td');
-                if (post.createdAt) {
-                    // 작성 시간이 존재할 경우 사람이 읽기 쉬운 형식으로 변환하여 표시
-                    dateCell.textContent = new Date(post.createdAt).toLocaleString(); 
-                } else {
-                    // 작성 시간이 존재하지 않을 경우 'N/A' 표시
-                    dateCell.textContent = 'N/A';
-                }
+                dateCell.textContent = post.date || '작성일 없음'; // 작성일 설정 수정
                 rowElement.appendChild(dateCell);
 
                 // 테이블에 행 추가
