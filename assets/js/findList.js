@@ -1,3 +1,6 @@
+import { database } from "./DB.js"; // Firebase 데이터베이스 객체 import
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"; // Firebase에서 제공하는 메서드들 import
+
 document.addEventListener('DOMContentLoaded', () => {
     // 게시물 관련 변수
     const tableBody = document.querySelector('.post-table tbody'); // 게시물 테이블 tbody 요소
