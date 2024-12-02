@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     commentContainer.appendChild(commentElement);
                 }
-            });
+            };
         }
     } catch (error) {
         console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
