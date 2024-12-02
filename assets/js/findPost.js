@@ -41,8 +41,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 postDetailsElement.textContent = post.details || '내용이 없습니다.';
 
                 // 작성자 정보 추가
-                const authorElement = document.getElementById('post-author');
-                authorElement.textContent = post.authorNickname || '작성자 정보 없음';
+                if (post.authorId) {
+                    const authorRef = ref(database, `UserData/${post.authorId}`);
+                    const authorSnapshot = await get(authorRef);
+                    if (authorSnapshot.exists()) {
+                        const authorNickName = authorSnapshot.val().nickName;
+                        const authorElement = document.getElementById('post-author');
+                        authorElement.textContent = authorNickName || '작성자 정보 없음';
+                    } else {
+                        document.getElementById('post-author').textContent = '작성자 정보 없음';
+                    }
+                } else {
+                    document.getElementById('post-author').textContent = '작성자 정보 없음';
+                }
                 
                 // 작성일 설정
                 const dateElement = document.getElementById('post-date');
