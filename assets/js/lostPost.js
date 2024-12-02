@@ -1,10 +1,10 @@
 import { database } from "./DB.js";
-import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get, push, set, remove, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('pid'); // 'id' 대신 'pid'로 수정
+    const postId = urlParams.get('pid');
 
     if (!postId) {
         alert('게시물 PID가 존재하지 않습니다.');
@@ -74,22 +74,64 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 snapshot.forEach(childSnapshot => {
                     const comment = childSnapshot.val();
+                    const commentId = childSnapshot.key;
+
                     if (comment.postID === postId) {
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment';
 
                         const commenterName = comment.commenterNickname || '익명';
                         const commentContent = comment.comment || '내용 없음';
-                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
+                        const commentHTML = `
+                            <strong>${commenterName}:</strong> ${commentContent}
+                            <button class="report-button" data-comment-id="${commentId}" data-translate="report-button">신고하기</button>
+                        `;
 
                         commentElement.innerHTML = commentHTML;
                         commentContainer.appendChild(commentElement);
                     }
                 });
+
+                // 신고하기 버튼 이벤트 추가
+                document.querySelectorAll('.report-button').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const commentId = event.target.dataset.commentId;
+                        await reportComment(commentId);
+                    });
+                });
             }
         } catch (error) {
             console.error('댓글 데이터를 가져오는 중 오류 발생:', error);
             alert('댓글 데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 댓글 신고 처리 함수
+    async function reportComment(commentId) {
+        try {
+            const commentRef = ref(database, `Comment/${commentId}`);
+            const snapshot = await get(commentRef);
+
+            if (snapshot.exists()) {
+                const comment = snapshot.val();
+                const reports = comment.reports ? comment.reports + 1 : 1;
+
+                // 신고 수 업데이트
+                await update(commentRef, { reports });
+
+                // 신고 수가 일정 수 이상이면 제재 조치
+                if (reports >= 3) {
+                    await update(commentRef, { status: 'hidden' }); // 신고 수가 3 이상이면 숨김 처리
+                    alert('해당 댓글은 여러 번 신고되어 숨겨졌습니다.');
+                } else {
+                    alert('댓글이 신고되었습니다.');
+                }
+            } else {
+                alert('신고하려는 댓글을 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('댓글 신고 중 오류 발생:', error);
+            alert('댓글 신고 중 오류가 발생했습니다.');
         }
     }
 
@@ -126,6 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 commenterNickname,
                 comment: commentContent.replace(/\n/g, '<br>'), // 줄바꿈 처리
                 time: new Date().toLocaleString(),
+                reports: 0, // 신고 수 초기화
+                status: 'visible' // 상태 초기화 (숨겨지지 않음)
             };
 
             await set(newCommentRef, newComment);
