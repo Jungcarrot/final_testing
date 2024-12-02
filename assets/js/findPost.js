@@ -4,8 +4,8 @@ import { ref, get, push, set, remove } from "https://www.gstatic.com/firebasejs/
 document.addEventListener('DOMContentLoaded', async () => {
     // URL에서 게시물 PID 가져오기
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('pid');  // 'id' 대신 'pid'로 수정
-    
+    const postId = urlParams.get('pid');
+
     if (!postId) {
         alert('게시물 PID가 존재하지 않습니다.');
         window.location.href = 'findList.html';
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                     document.getElementById('post-author').textContent = '작성자 정보 없음';
                 }
-                
+
                 // 작성일 설정
                 const dateElement = document.getElementById('post-date');
                 dateElement.textContent = post.date || '작성일 없음';
@@ -92,11 +92,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         const commenterName = comment.commenterNickname || '익명';
                         const commentContent = comment.comment.replace(/\n/g, '<br>') || '내용 없음';
-                        const commentHTML = `<strong>${commenterName}:</strong> ${commentContent}`;
-                        
+                        const commentHTML = `
+                            <strong>${commenterName}:</strong> ${commentContent}
+                            <button class="report-button" data-comment-id="${childSnapshot.key}">신고하기</button>
+                        `;
+
                         commentElement.innerHTML = commentHTML;
                         commentContainer.appendChild(commentElement);
                     }
+                });
+
+                // 신고하기 버튼 이벤트 추가
+                document.querySelectorAll('.report-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const commentId = event.target.dataset.commentId;
+                        alert(`댓글 ID "${commentId}"을(를) 신고했습니다.`);
+                    });
                 });
             }
         } catch (error) {
@@ -184,6 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'add-comment-button': '댓글 작성 완료',
             'edit-post-button': '수정',
             'delete-post-button': '삭제',
+            'report-button': '신고하기',
             'login': '로그인',
             'signup': '회원가입',
             'mypage': '마이페이지',
@@ -198,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'add-comment-button': 'Add Comment',
             'edit-post-button': 'Edit',
             'delete-post-button': 'Delete',
+            'report-button': 'Report',
             'login': 'Login',
             'signup': 'Sign Up',
             'mypage': 'My Page',
@@ -233,4 +246,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
-
