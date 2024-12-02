@@ -1,5 +1,5 @@
 import { database } from "./DB.js";
-import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+import { ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
 document.addEventListener("DOMContentLoaded", async () => {
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <td>${index + 1}</td> <!-- 번호 -->
                         <td><a href="protectPost.html?pid=${post.postId}">${post.title}</a></td> <!-- 제목, 게시물 ID 추가 -->
                         <td>${post.authorNickname || '알 수 없음'}</td> <!-- 작성자 닉네임 -->
-                        <td>${post.date || 'N/A'}</td> <!-- 작성일 -->
+                        <td>${post.createdAt || 'N/A'}</td> <!-- 작성일 -->
                     </tr>
                 `;
                 myPostsTable.innerHTML += row;
