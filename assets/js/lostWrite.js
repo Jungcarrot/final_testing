@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 const post = snapshot.val();
 
-                // 기존 데이터로 폼 채우기
+                // 기존 데이터로 폼 채우기 (줄바꿈 처리 포함)
                 document.querySelector('.title-section input').value = post.title || '';
                 document.querySelector('.detail-section textarea').value = post.details.replace(/<br>/g, '\n') || '';
             } else {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function handleSubmit() {
     const title = document.querySelector('.title-section input').value.trim();
-    const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>'); // 줄바꿈 적용
+    const details = document.querySelector('.detail-section textarea').value.trim().replace(/\n/g, '<br>');
     const authorId = localStorage.getItem('uid'); // 사용자 ID 가져오기
     const date = new Date().toLocaleString(); // 작성일
 
@@ -55,16 +55,11 @@ async function handleSubmit() {
     }
 
     try {
-        // 작성자 닉네임 가져오기
-        const authorSnapshot = await get(ref(database, `UserData/${authorId}`));
-        if (!authorSnapshot.exists()) {
-            alert('사용자 정보를 찾을 수 없습니다.');
-            return;
-        }
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('pid');
+        const isEditMode = urlParams.get('edit') === 'true';
 
-        const nickName = authorSnapshot.val().nickName;
-
-        if (urlParams.get('edit') === 'true' && postId) {
+        if (isEditMode && postId) {
             // 수정 모드인 경우, 기존 게시물 업데이트
             const postRef = ref(database, `Post/${postId}`);
             await set(postRef, {
@@ -74,16 +69,24 @@ async function handleSubmit() {
                 postStatus: '작성됨',
                 details,
                 authorId,
-                nickName,
+                nickName: (await get(ref(database, `UserData/${authorId}`))).val().nickName,
                 date,
                 image: '', // 이미지 추가 부분은 빈 값으로 설정 (추후 구현 가능)
             });
 
             alert('게시물이 수정되었습니다!');
-            // 수정 후 해당 게시물 보기 페이지로 이동
             window.location.href = `lostPost.html?pid=${postId}`;
         } else {
             // 새 게시물 작성
+            const authorSnapshot = await get(ref(database, `UserData/${authorId}`));
+            if (!authorSnapshot.exists()) {
+                alert('사용자 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            const nickName = authorSnapshot.val().nickName;
+
+            // 게시물 데이터 구성
             const newPostRef = push(ref(database, 'Post')); // push를 사용하여 고유 ID 생성
             const pid = newPostRef.key; // 자동 생성된 키를 pid로 사용
 
