@@ -16,7 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const userData = Object.values(snapshot.val())[0];
 
                 if (userData.password === password) {
-                    setLoginState(userData);  // 로그인 상태 설정
+                    // 수정된 부분: nickName으로 저장
+                    localStorage.setItem("userLoggedIn", "true");
+                    localStorage.setItem("uid", userData.uid);  // UID 저장
+                    localStorage.setItem("nickName", userData.nickName);  // 닉네임 저장
 
                     alert("로그인 성공!");
                     window.location.href = "index.html";
