@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         myPostsTable.innerHTML = ''; // 기존 게시물 초기화
 
-        const myPosts = []; // 사용자 게시물을 저장할 배열 초기화
+        let myPosts = []; // 사용자 게시물을 저장할 배열 초기화
 
         // Firebase에서 가져온 데이터 순회
         snapshot.forEach((childSnapshot) => {
@@ -39,6 +39,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (post.authorId === uid) {
                 myPosts.push({ ...post, postId }); // 필터링된 게시물 배열에 추가
             }
+        });
+
+        // 작성일을 기준으로 게시물을 내림차순 정렬
+        myPosts.sort((a, b) => {
+            const dateA = parseKoreanDate(a.date);
+            const dateB = parseKoreanDate(b.date);
+            return dateB - dateA; // 최신순으로 정렬 (내림차순)
         });
 
         // 사용자가 작성한 게시물이 없을 경우
@@ -54,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // 게시물이 있을 경우 테이블에 추가
             for (const post of myPosts) {
                 const rowElement = document.createElement('tr'); // 행 요소 생성
-                
+
                 // 번호 셀 생성 및 추가
                 const numberCell = document.createElement('td');
                 numberCell.textContent = myPosts.indexOf(post) + 1; // 번호 설정 (1부터 시작)
@@ -108,3 +115,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         alert("게시물을 불러오는 중 오류가 발생했습니다."); // 오류 발생 시 사용자에게 알림
     }
 });
+
+// 작성일 파싱 함수
+function parseKoreanDate(koreanDateStr) {
+    // 예: "2024. 12. 3. 오전 2:13:12"
+    const regex = /(\d{4})\.\s(\d{1,2})\.\s(\d{1,2})\.\s(오전|오후)\s(\d{1,2}):(\d{2}):(\d{2})/;
+    const match = koreanDateStr.match(regex);
+    if (!match) return new Date(0); // 매칭되지 않으면 아주 이전 날짜로 반환하여 정렬에서 밀리게 함
+
+    let [_, year, month, day, meridiem, hour, minute, second] = match;
+    year = parseInt(year);
+    month = parseInt(month) - 1; // 월은 0부터 시작 (0 = 1월)
+    day = parseInt(day);
+    hour = parseInt(hour);
+    minute = parseInt(minute);
+    second = parseInt(second);
+
+    // 오전/오후 처리
+    if (meridiem === '오후' && hour !== 12) {
+        hour += 12;
+    } else if (meridiem === '오전' && hour === 12) {
+        hour = 0;
+    }
+
+    return new Date(year, month, day, hour, minute, second);
+}
