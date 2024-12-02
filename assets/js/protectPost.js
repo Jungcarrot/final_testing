@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (snapshot.exists()) {
                 snapshot.forEach(childSnapshot => {
                     const comment = childSnapshot.val();
-                    if (comment.postID === postId) {
+                    if (comment.pid === postId) {
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment';
 
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const newCommentRef = push(ref(database, 'Comment'));
             const newComment = {
-                postID: postId,
+                pid: postId, // postID 대신 pid로 수정
                 commenter: commenterId,
                 commenterNickname,
                 comment: commentContent,
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (commentsSnapshot.exists()) {
                 commentsSnapshot.forEach(async (childSnapshot) => {
                     const comment = childSnapshot.val();
-                    if (comment.postID === postId) {
+                    if (comment.pid === postId) {
                         const commentKey = childSnapshot.key;
                         await remove(ref(database, `Comment/${commentKey}`));
                     }
@@ -300,3 +300,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateLanguage('ko');
     document.getElementById('lang-ko').classList.add('active');
 });
+
