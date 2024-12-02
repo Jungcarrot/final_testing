@@ -2,7 +2,7 @@ import { database } from "./DB.js";
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
-const uid = localStorage.getItem("uid"); // 로그인 시 저장된 사용자 UID 가져오기
+const loginID = localStorage.getItem("loginID"); // 로그인 시 저장된 사용자 UID 가져오기
 
 document.addEventListener("DOMContentLoaded", () => {
     if (!uid) {
