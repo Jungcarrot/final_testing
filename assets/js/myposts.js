@@ -1,4 +1,4 @@
-import { database } from "./DB.js";
+import { database } from "./DB.js"; // Firebase 데이터베이스 객체 import
 import { ref, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 // 현재 로그인한 사용자의 UID 가져오기 (localStorage에서 가져옴)
@@ -14,9 +14,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 사용자의 게시물 가져오기
     try {
+        // 'Post' 경로에서 게시물 데이터 가져오기
         const postsRef = ref(database, "Post");
         const snapshot = await get(postsRef);
 
+        // HTML의 'myposts-list' 요소 가져오기
         const myPostsTable = document.getElementById("myposts-list");
         if (!myPostsTable) {
             console.error("게시물 목록을 표시할 요소를 찾을 수 없습니다.");
@@ -41,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // 게시물이 없으면 안내 메시지 표시
             const emptyRow = document.createElement('tr');
             const emptyCell = document.createElement('td');
-            emptyCell.colSpan = 4;
+            emptyCell.colSpan = 4; // 4개의 열을 차지하도록 설정
             emptyCell.textContent = "작성한 게시물이 없습니다.";
             emptyRow.appendChild(emptyCell);
             myPostsTable.appendChild(emptyRow);
@@ -58,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // 제목 셀
                 const titleCell = document.createElement('td');
                 const titleLink = document.createElement('a');
-                titleLink.href = `protectPost.html?pid=${post.postId}`;
+                titleLink.href = `protectPost.html?pid=${post.postId}`; // 게시물 링크 설정
                 titleLink.textContent = post.title;
                 titleCell.appendChild(titleLink);
                 rowElement.appendChild(titleCell);
