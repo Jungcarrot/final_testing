@@ -129,10 +129,10 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const postId = urlParams.get('id');
+            const postId = urlParams.get('pid');  // 'id'를 'pid'로 수정
             
             if (!postId) {
-                alert('게시물 ID가 존재하지 않습니다.');
+                alert('게시물 PID가 존재하지 않습니다.');
                 window.location.href = 'lostList.html';
                 return;
             }
@@ -167,7 +167,7 @@
                 document.getElementById('edit-buttons').style.display = 'block';
 
                 document.getElementById('edit-post').addEventListener('click', () => {
-                    window.location.href = `lostWrite.html?id=${postId}`;
+                    window.location.href = `lostWrite.html?pid=${postId}`;  // 'id'를 'pid'로 수정
                 });
 
                 document.getElementById('delete-post').addEventListener('click', async () => {
