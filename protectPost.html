@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-translate="page-title">임시보호 게시물 보기</title>
-    <link rel="stylesheet" href="assets/css/postDetail.css">
     <link rel="stylesheet" href="assets/css/postList.css">
     <link rel="stylesheet" href="assets/css/style_main.css">
+    <link rel="stylesheet" href="assets/css/postDetail.css?v=1.1"> <!-- 캐싱 방지 -->
     <link rel="stylesheet" href="assets/css/postLanguage.css">
     <link rel="stylesheet" href="assets/css/chat.css">
     <script src="assets/js/navigation.js" defer></script>
     <script src="assets/js/login_status.js" defer></script>
     <script src="assets/js/language_index.js" defer></script>
-    <script type="module" src="assets/js/protectPost.js" defer></script>
-    <script type="module" src="assets/js/chat.js" defer></script>
+    <script type="module" src="assets/js/protectPost.js" defer></script> <!-- 변경되지 않았음 -->
+    <script src="assets/js/chat.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
-    <script type="module" src="assets/js/DB.js"></script>
+    <script type="module" src="./assets/js/DB.js"></script> <!-- 경로 확인 -->
 </head>
 <body>
     <!-- 헤더 -->
@@ -38,13 +38,13 @@
     <main>
         <div class="post-container">
             <!-- 제목 -->
-            <h1 id="post-title" name="title" data-translate="post-title">제목</h1>
+            <h1 id="post-title" name="title" data-translate="post-title">제목 없음</h1>
         
             <!-- 사진 및 상세 내용 -->
             <div class="post-content">
-                <img id="post-image" name="image" alt="등록된 사진">
-                <div id="post-details" name="details"></div>
-                <div id="post-author" name="author" data-translate="post-author">작성자 정보 없음</div>
+                <img id="post-image" name="image" alt="등록된 사진" style="display: none;">
+                <div id="post-details" name="details" data-translate="post-details">상세 내용이 없습니다.</div>
+                <div id="post-author" name="author" data-author-id="" data-translate="post-author">작성자 정보 없음</div>
                 <div id="post-date" name="date" data-translate="post-date">작성일 없음</div>
             </div>
         
@@ -123,89 +123,120 @@
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const postId = urlParams.get('pid');
+    <script type="module">
+        import { database } from './assets/js/DB.js';
+        import { ref, get, push, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('pid'); // 'id'를 'pid'로 수정
+            
             if (!postId) {
                 alert('게시물 PID가 존재하지 않습니다.');
                 window.location.href = 'protectList.html';
                 return;
             }
 
-            const loggedInUserId = localStorage.getItem('uid');
-            const postAuthorId = document.getElementById('post-author').getAttribute('data-author-id');
+            // 게시물 데이터 가져오기
+            const postRef = ref(database, `Post/${postId}`);
+            const snapshot = await get(postRef);
 
-            // 게시물 작성자인 경우에만 수정/삭제 버튼을 표시합니다.
-            if (loggedInUserId && postAuthorId && loggedInUserId === postAuthorId) {
-                document.getElementById('edit-buttons').style.display = 'block';
+            if (!snapshot.exists()) {
+                alert('게시물이 존재하지 않습니다.');
+                window.location.href = 'protectList.html';
+                return;
             }
 
-            // 언어 설정 및 번역
-            const translations = {
-                ko: {
-                    'page-title': '임시보호 게시물 보기',
-                    'header-lost': '실종',
-                    'header-find': '발견',
-                    'header-protect': '임시보호',
-                    'header-vet': '동물병원',
-                    'comment-section-title': '댓글',
-                    'add-comment-button': '댓글 작성 완료',
-                    'edit-post-button': '수정',
-                    'delete-post-button': '삭제',
-                    'login': '로그인',
-                    'signup': '회원가입',
-                    'mypage': '마이페이지',
-                    'logout': '로그아웃',
-                    'chat-list-title': '채팅 목록',
-                    'chat-room-title': '채팅방',
-                    'chat-send-button': '전송',
-                },
-                en: {
-                    'page-title': 'View Temporary Protection Post',
-                    'header-lost': 'Lost',
-                    'header-find': 'Found',
-                    'header-protect': 'Temporary Protection',
-                    'header-vet': 'Vet',
-                    'comment-section-title': 'Comments',
-                    'add-comment-button': 'Add Comment',
-                    'edit-post-button': 'Edit',
-                    'delete-post-button': 'Delete',
-                    'login': 'Login',
-                    'signup': 'Sign Up',
-                    'mypage': 'My Page',
-                    'logout': 'Logout',
-                    'chat-list-title': 'Chat List',
-                    'chat-room-title': 'Chat Room',
-                    'chat-send-button': 'Send',
-                }
-            };
+            const post = snapshot.val();
+            document.getElementById('post-title').textContent = post.title || '제목 없음';
+            document.getElementById('post-details').innerHTML = post.details ? post.details.replace(/\n/g, '<br>') : '내용이 없습니다.';
+            const postImageElement = document.getElementById('post-image');
+            if (post.image) {
+                postImageElement.src = `assets/images/${post.image}`;
+                postImageElement.style.display = 'block';
+            }
 
-            function updateLanguage(lang) {
-                document.querySelectorAll('[data-translate]').forEach(element => {
-                    const key = element.getAttribute('data-translate');
-                    if (translations[lang][key]) {
-                        element.textContent = translations[lang][key];
+            // 작성자 및 작성일 설정
+            document.getElementById('post-author').setAttribute('data-author-id', post.authorId);
+            document.getElementById('post-author').textContent = post.nickName || '작성자 정보 없음';
+            document.getElementById('post-date').textContent = post.date || '작성일 없음';
+
+            // 본인 게시물인지 확인하여 수정/삭제 버튼 표시
+            const currentUserId = localStorage.getItem('uid');
+            if (currentUserId && post.authorId === currentUserId) {
+                document.getElementById('edit-buttons').style.display = 'block';
+
+                document.getElementById('edit-post').addEventListener('click', () => {
+                    const postDetails = document.getElementById('post-details').innerText.replace(/<br>/g, '\n');
+                    window.location.href = `protectWrite.html?pid=${postId}&edit=true&details=${encodeURIComponent(postDetails)}`;
+                });
+                document.getElementById('delete-post').addEventListener('click', async () => {
+                    if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+                        await remove(postRef);
+                        alert('게시물이 삭제되었습니다.');
+                        window.location.href = 'protectList.html';
+                    }
+                });
+            }
+
+            // 댓글 가져오기
+            const commentsRef = ref(database, 'Comment');
+            onValue(commentsRef, (commentsSnapshot) => {
+                const comments = [];
+                commentsSnapshot.forEach((childSnapshot) => {
+                    const comment = childSnapshot.val();
+                    if (comment.postID === postId) {
+                        comments.push(comment);
                     }
                 });
 
-                // 페이지 제목 번역
-                document.querySelector('title').textContent = translations[lang]['page-title'];
-            }
-
-            document.querySelectorAll('.post-language-selector button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const lang = button.id === 'lang-ko' ? 'ko' : 'en';
-                    updateLanguage(lang);
-                    document.querySelectorAll('.post-language-selector button').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+                // 댓글 표시
+                const commentContainer = document.getElementById('comments');
+                commentContainer.innerHTML = '';
+                comments.forEach((commentObj) => {
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment-item');
+                    commentElement.innerHTML = `
+                        <strong>${commentObj.nickName}</strong>: ${commentObj.comment.replace(/\n/g, '<br>')}
+                    `;
+                    commentContainer.appendChild(commentElement);
                 });
             });
 
-            // 초기 언어 설정
-            updateLanguage('ko');
-            document.getElementById('lang-ko').classList.add('active');
+            // 댓글 작성하기
+            document.getElementById('add-comment').addEventListener('click', async () => {
+                const commentInput = document.getElementById('comment-input');
+                const commentContent = commentInput.value.trim();
+                if (!commentContent) {
+                    alert('댓글 내용을 입력해주세요.');
+                    return;
+                }
+
+                if (!currentUserId) {
+                    alert('로그인 후 댓글을 작성할 수 있습니다.');
+                    return;
+                }
+
+                const authorSnapshot = await get(ref(database, `UserData/${currentUserId}`));
+                if (!authorSnapshot.exists()) {
+                    alert('사용자 정보를 찾을 수 없습니다.');
+                    return;
+                }
+
+                const nickName = authorSnapshot.val().nickName;
+
+                const newComment = {
+                    postID: postId,
+                    commenter: currentUserId,
+                    nickName,
+                    comment: commentContent,
+                    time: new Date().toLocaleString()
+                };
+
+                await push(ref(database, 'Comment'), newComment);
+                commentInput.value = '';
+                alert('댓글이 작성되었습니다.');
+            });
         });
     </script>
 </body>
