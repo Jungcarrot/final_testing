@@ -1,12 +1,90 @@
-<!-- chat-popup.html -->
-<div class="chat-popup hidden" id="chat-popup">
-    <div class="chat-header">
-        <h2 id="popup-chat-title" data-translate="chat-room-title">채팅방</h2>
-        <button onclick="closeChatPopup()">X</button>
-    </div>
-    <div id="popup-messages" class="messages">
-        <!-- 채팅 메시지가 여기에 추가됩니다 -->
-    </div>
-    <textarea id="popup-message-input" name="messageContent" data-db-field="messageContent" placeholder="메시지를 입력하세요"></textarea>
-    <button class="chat-send-button" onclick="sendPopupMessage()" data-translate="chat-send-button">전송</button>
-</div>
+<script type="module">
+    import { database } from './DB.js';  // DB 설정 import
+    import { ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatPopup = document.getElementById('chat-popup');
+        const chatMessagesContainer = document.getElementById('popup-messages');
+        const messageInput = document.getElementById('popup-message-input');
+        const sendButton = document.querySelector('.chat-send-button');
+        const loggedUserId = localStorage.getItem('uid'); // 로그인한 사용자 ID
+        const receiverId = "admin"; // 기본적으로 관리자와의 채팅이라고 가정
+
+        // 메시지 보내기 함수
+        async function sendPopupMessage() {
+            const messageContent = messageInput.value.trim();
+            if (messageContent === '') {
+                alert('메시지를 입력해주세요.');
+                return;
+            }
+
+            if (!loggedUserId) {
+                alert('로그인 후 메시지를 보낼 수 있습니다.');
+                return;
+            }
+
+            try {
+                // 새로운 메시지 데이터베이스에 저장
+                const chatID = `${loggedUserId}_${receiverId}`; // 사용자가 관리자와의 채팅임을 구분하기 위해 구성한 chatID
+
+                const newMessageRef = push(ref(database, 'Message'));
+                const messageData = {
+                    chatID,
+                    senderID: loggedUserId,
+                    receiverID,
+                    messageContent,
+                    timeStamp: new Date().toISOString(),
+                };
+
+                await set(newMessageRef, messageData);
+                messageInput.value = ''; // 메시지 입력 필드 초기화
+            } catch (error) {
+                console.error('메시지 전송 중 오류 발생:', error);
+                alert('메시지 전송 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 채팅 메시지 보내기 버튼 클릭 이벤트 추가
+        sendButton.addEventListener('click', sendPopupMessage);
+
+        // Enter 키를 눌러 메시지 전송
+        messageInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                sendPopupMessage();
+            }
+        });
+
+        // 채팅 메시지 로드하기
+        function loadChatMessages() {
+            const chatID = `${loggedUserId}_${receiverId}`;
+            const chatMessagesRef = ref(database, 'Message');
+
+            onValue(chatMessagesRef, (snapshot) => {
+                chatMessagesContainer.innerHTML = ''; // 기존 메시지 초기화
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const messageData = childSnapshot.val();
+                        if (messageData.chatID === chatID) {
+                            const messageElement = document.createElement('div');
+                            messageElement.classList.add('message');
+
+                            const senderName = (messageData.senderID === loggedUserId) ? '나' : '관리자';
+                            messageElement.innerHTML = `<strong>${senderName}:</strong> ${messageData.messageContent}`;
+                            chatMessagesContainer.appendChild(messageElement);
+                        }
+                    });
+
+                    // 최신 메시지로 스크롤 이동
+                    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+                }
+            });
+        }
+
+        // 채팅 메시지 로드 호출
+        if (loggedUserId) {
+            loadChatMessages();
+        } else {
+            alert('로그인 후 채팅을 사용할 수 있습니다.');
+        }
+    });
+</script>
