@@ -144,49 +144,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // 댓글 신고 처리 함수
-        window.reportComment = async function (commentId) {
-            if (!confirm('정말로 이 댓글을 신고하시겠습니까?')) {
-                return;
-            }
+       // 댓글 신고 처리 함수
+window.reportComment = async function (commentId) {
+    if (!confirm('정말로 이 댓글을 신고하시겠습니까?')) {
+        return;
+    }
 
-            const reportReason = prompt('신고 사유를 입력해주세요:');
-            if (!reportReason) {
-                alert('신고 사유를 입력하지 않았습니다.');
-                return;
-            }
+    const reportReason = prompt('신고 사유를 입력해주세요:');
+    if (!reportReason) {
+        alert('신고 사유를 입력하지 않았습니다.');
+        return;
+    }
 
-            try {
-                // 신고 데이터를 CommentReport에 저장
-                const newReportRef = push(ref(database, 'CommentReport'));
-                const commentRef = ref(database, `Comment/${commentId}`);
-                const commentSnapshot = await get(commentRef);
+    try {
+        // 신고 데이터를 CommentReport에 저장
+        const newReportRef = push(ref(database, 'CommentReport'));
+        const commentRef = ref(database, `Comment/${commentId}`);
+        const commentSnapshot = await get(commentRef);
 
-                if (commentSnapshot.exists()) {
-                    const commentData = commentSnapshot.val();
-                    const reportedUserID = commentData.commenter;
+        if (commentSnapshot.exists()) {
+            const commentData = commentSnapshot.val();
+            const reportedUserID = commentData.commenter;  // 신고당한 사람의 UID
 
-                    const reportData = {
-                        commentID: commentId,
-                        reporterID: loggedUserId,
-                        reportedUserID,
-                        reportReason,
-                        reportDate: new Date().toLocaleString(),
-                        status: 0, // 신고 상태 (0: 미처리)
-                        systemAction: '', // 시스템 조치 내용 (향후 추가 가능)
-                        reportCount: 1
-                    };
+            // 신고 데이터 생성
+            const reportData = {
+                commentID: commentId,
+                reporterID: loggedUserId,  // 신고한 사람의 UID
+                reportedUserID: reportedUserID,  // 신고당한 사람의 UID
+                reportReason,
+                reportDate: new Date().toLocaleString(),
+                status: 0,  // 신고 상태 (0: 미처리)
+                systemAction: '',  // 시스템 조치 내용 (향후 추가 가능)
+                reportCount: 1
+            };
 
-                    await set(newReportRef, reportData);
-                    await remove(commentRef); // 신고된 댓글 삭제
-                    alert('댓글이 신고되었습니다.');
-                    await fetchComments(postId); // 댓글 목록 업데이트
-                }
-            } catch (error) {
-                console.error('댓글 신고 중 오류 발생:', error);
-                alert('댓글 신고 중 오류가 발생했습니다.');
-            }
-        };
+            // 신고 데이터 CommentReport 테이블에 저장
+            await set(newReportRef, reportData);
+
+            // 신고된 댓글 삭제
+            await remove(commentRef);
+            alert('댓글이 신고되었습니다.');
+            await fetchComments(postId);  // 댓글 목록 업데이트
+        }
+    } catch (error) {
+        console.error('댓글 신고 중 오류 발생:', error);
+        alert('댓글 신고 중 오류가 발생했습니다.');
+    }
+};
 
         // 게시물 삭제 처리 함수
         async function deletePost() {
