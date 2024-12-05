@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 언어 선택과 관련된 부분
     const translations = {
         ko: {
-            'page-title': '실종 게시물',
+            'page-title': '발견 게시물',
             'header-lost': '실종',
             'header-find': '발견',
             'header-protect': '임시보호',
@@ -95,6 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': '작성된 게시물이 없습니다.',
             'login': '로그인',
             'signup': '회원가입',
+            'manual-title': 'MANUAL',
+            'manual-item1': '매뉴얼 내용',
+            'chat-list-title': '채팅 목록',
+            'mypage': '마이페이지',
+            'logout': '로그아웃',
             'manual-title': '매뉴얼',
             'manual-item1': '발자국 탐정은 대구를 중심으로 사용자가 실종 및 발견된 동물 정보를 공유하고 관리할 수 있는 게시판 중심의 웹사이트입니다.',
             'manual-item2': '주요 목적은 실종 동물 찾기, 발견 동물 보호, 동물병원 정보 공유, 임시보호 동물 관리 등을 돕는 것입니다.',
@@ -102,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
         },
         en: {
-            'page-title': 'Lost Posts',
+            'page-title': 'Found Posts',
             'header-lost': 'Lost',
             'header-find': 'Found',
             'header-protect': 'Temporary Protection',
@@ -117,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
             'no-posts-message': 'No posts available.',
             'login': 'Login',
             'signup': 'Sign Up',
+            'manual-title': 'MANUAL',
+            'manual-item1': 'Manual Content',
+            'chat-list-title': 'Chat List',
+            'mypage': 'My Page',
+            'logout': 'Logout',
             'manual-title': 'MANUAL',
             'manual-item1': 'Footprint Detective is a board-based website where users can share and manage information about lost and found animals, mainly in Daegu.',
             'manual-item2': 'Its primary purpose is to help find lost animals, protect found animals, share veterinary information, and manage temporarily sheltered animals.',
