@@ -1,6 +1,7 @@
 const translations = {
     ko: {
         logo: "발자국 <br> 탐정",
+        pageTitle: "발자국 탐정",
         login: "로그인",
         signup: "회원가입",
         manualTitle: "메뉴얼",
@@ -17,6 +18,7 @@ const translations = {
     },
     en: {
         logo: "Pawprint <br> Detective",
+        pageTitle: "Pawprint Detective",
         login: "Login",
         signup: "Sign Up",
         manualTitle: "MANUAL",
