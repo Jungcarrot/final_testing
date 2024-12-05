@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 언어 설정 및 번역
         const translations = {
             ko: {
-            'page-title': '발견 게시물 보기',
+            'page-title': '임시보호 게시물 보기',
             'header-lost': '실종',
             'header-find': '발견',
             'header-protect': '임시보호',
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
 
         en: {
-            'page-title': 'View Found Post',
+            'page-title': 'View Temporary Protection Post',
             'header-lost': 'Lost',
             'header-find': 'Found',
             'header-protect': 'Temporary Protection',
