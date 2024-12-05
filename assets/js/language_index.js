@@ -1,6 +1,6 @@
 const translations = {
     ko: {
-        pageTitle: "발자국 <br> 탐정",
+        logo: "발자국 <br> 탐정",
         login: "로그인",
         signup: "회원가입",
         manualTitle: "매뉴얼",
@@ -16,7 +16,7 @@ const translations = {
         categoryTexts: ["찾아주세요..", "발견했어요!", "병원이 어딘가요?", "임시보호 중이에요!"]
     },
     en: {
-        pageTitle: "Pawprint <br> Detective",
+        logo: "Pawprint <br> Detective",
         login: "Login",
         signup: "Sign Up",
         manualTitle: "MANUAL",
