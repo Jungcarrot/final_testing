@@ -93,7 +93,7 @@ async function handleSubmit() {
             const postData = {
                 pid,
                 title,
-                category: '실종',
+                category: '발견',
                 postStatus: '작성됨',
                 details,
                 authorId,
