@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const postRef = ref(database, `Post/${postId}`);
                 await remove(postRef);
 
-                alert('게시물이 삭제되었습니다.(js)');
+                alert('게시물이 삭제되었습니다.');
                 window.location.href = 'findList.html';
             } catch (error) {
                 console.error('게시물 삭제 중 오류 발생:', error);
