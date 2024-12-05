@@ -13,9 +13,9 @@ const translations = {
         pageTitle: "Login",
         loginTitle: "Login",
         usernameLabel: "Username",
-        usernamePlaceholder: "Enter your username",
+        usernamePlaceholder: "Enter your ID",
         passwordLabel: "Password",
-        passwordPlaceholder: "Enter your password",
+        passwordPlaceholder: "Enter your PASSWORD",
         loginButton: "Login",
         signupLink: "Sign Up"
     }
