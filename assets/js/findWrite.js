@@ -65,7 +65,7 @@ async function handleSubmit() {
             await set(postRef, {
                 pid: postId,
                 title,
-                category: '실종',
+                category: '발견',
                 postStatus: '작성됨',
                 details,
                 authorId,
