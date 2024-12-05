@@ -1,6 +1,8 @@
 const translations = {
     ko: {
         logo: "발자국\n탐정",
+        pageTitle: "로그인",
+        loginTitle: "로그인",
         usernameLabel: "아이디",
         usernamePlaceholder: "아이디를 입력하세요",
         passwordLabel: "비밀번호",
@@ -10,6 +12,8 @@ const translations = {
     },
     en: {
         logo: "Pawprint\nDetective",
+        pageTitle: "login",
+        loginTitle: "login",
         usernameLabel: "Username",
         usernamePlaceholder: "Enter your ID",
         passwordLabel: "Password",
