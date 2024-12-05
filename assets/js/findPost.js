@@ -195,7 +195,7 @@ window.reportComment = async function (commentId) {
 
         // 게시물 삭제 처리 함수
         async function deletePost() {
-            if (!confirm('정말로 이 게시물을 삭제하시겠습니까?(js)')) {
+            if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
                 return;
             }
 
