@@ -1,44 +1,60 @@
-function changeLanguage(lang) {
-    const translations = {
-        ko: {
-            logo: "발자국\n탐정",
-            pageTitle: "마이페이지",
-            labels: ["아이디", "닉네임"],
-            myPostsButton: "내가 작성한 게시글 보기",
-        },
-        en: {
-            logo: "Pawprint\nDetective",
-            pageTitle: "MYPAGE",
-            labels: ["loginID", "NickName"],
-            myPostsButton: "View My Posts",
-        },
-    };
-
-    const elements = {
-        langKoButton: document.getElementById('lang-ko'),
-        langEnButton: document.getElementById('lang-en'),
-        logo: document.querySelector('.logo h1'),
-        pageTitle: document.querySelector('.mypage-section h2'),
-        labels: document.querySelectorAll('.mypage-section .form-group label'),
-        myPostsButton: document.getElementById('myPostsButton'),
-    };
-
-    if (translations[lang]) {
-        // 언어 버튼 활성화/비활성화
-        elements.langKoButton.classList.toggle('active', lang === 'ko');
-        elements.langEnButton.classList.toggle('active', lang === 'en');
-
-        // 텍스트 변경
-        if (elements.logo) elements.logo.innerText = translations[lang].logo;
-        if (elements.pageTitle) elements.pageTitle.innerText = translations[lang].pageTitle;
-        if (elements.labels.length === 2) {
-            elements.labels[0].innerText = translations[lang].labels[0];
-            elements.labels[1].innerText = translations[lang].labels[1];
-        }
-        if (elements.myPostsButton) {
-            elements.myPostsButton.innerText = translations[lang].myPostsButton;
-        }
-    } else {
-        console.error("Translation or element is missing.");
+const translations = {
+    ko: {
+        pageTitle: "마이페이지",
+        myPageTitle: "마이페이지",
+        loginIDLabel: "아이디",
+        nickNameLabel: "닉네임",
+        editNicknameLabel: "닉네임 변경",
+        editNicknamePlaceholder: "새로운 닉네임을 입력하세요",
+        myPostsButton: "내가 작성한 게시물 보기",
+        saveNicknameButton: "닉네임 변경"
+    },
+    en: {
+        pageTitle: "My Page",
+        myPageTitle: "My Page",
+        loginIDLabel: "Login ID",
+        nickNameLabel: "Nickname",
+        editNicknameLabel: "Change Nickname",
+        editNicknamePlaceholder: "Enter a new nickname",
+        myPostsButton: "View My Posts",
+        saveNicknameButton: "Change Nickname"
     }
+};
+
+// 현재 언어 설정
+let currentLanguage = "ko";
+
+// 언어 변경 함수
+function changeLanguage(lang) {
+    if (!translations[lang]) return;
+
+    currentLanguage = lang;
+
+    // 페이지 제목 변경
+    document.title = translations[lang].pageTitle;
+
+    // 마이페이지 제목 변경
+    document.querySelector(".mypage-section h2").textContent = translations[lang].myPageTitle;
+
+    // 폼 필드 레이블 변경
+    document.querySelector("label[for='mypage-loginID']").textContent = translations[lang].loginIDLabel;
+    document.querySelector("label[for='mypage-nickName']").textContent = translations[lang].nickNameLabel;
+    document.querySelector("label[for='edit-nickname']").textContent = translations[lang].editNicknameLabel;
+
+    // 입력 필드 플레이스홀더 변경
+    document.getElementById("edit-nickname").placeholder = translations[lang].editNicknamePlaceholder;
+
+    // 버튼 텍스트 변경
+    document.getElementById("myPostsButton").textContent = translations[lang].myPostsButton;
+    document.getElementById("save-nickname-button").textContent = translations[lang].saveNicknameButton;
+
+    // 언어 선택 버튼 스타일 업데이트
+    document.querySelectorAll(".language-selector button").forEach(button => {
+        button.classList.toggle("active", button.id === `lang-${lang}`);
+    });
 }
+
+// 초기화
+document.addEventListener("DOMContentLoaded", () => {
+    changeLanguage(currentLanguage);
+});
