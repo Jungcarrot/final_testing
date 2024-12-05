@@ -27,6 +27,34 @@ function checkPasswordMatch() {
     toggleSignupButton(); // 버튼 상태 업데이트
 }
 
+// 회원가입 유효성 검사 함수
+async function validateSignup(event) {
+    event.preventDefault(); // 폼 기본 제출 동작 방지
+
+    const loginID = document.getElementById('loginID').value;
+    const nickName = document.getElementById('nickName').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // 중복 검사 확인
+    if (!isLoginIDChecked) {
+        alert("아이디 중복 검사를 진행해주세요.");
+        return false;
+    }
+    if (!isNickNameChecked) {
+        alert("닉네임 중복 검사를 진행해주세요.");
+        return false;
+    }
+
+    // 모든 필드 입력 확인
+    if (!loginID || !nickName || !password || !confirmPassword) {
+        alert("모든 필드를 입력해주세요.");
+        return false;
+    }
+
+    // 중복 검사와 유효성 검사가 완료되었으므로 회원가입 함수 호출
+    signupUser(loginID, nickName, password);
+}
 
 // 회원가입 처리 함수
 async function signupUser(loginID, nickName, password) {
