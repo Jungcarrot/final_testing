@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 언어 선택과 관련된 부분
     const translations = {
         ko: {
-            'page-title': '발견 게시물',
+            'page-title': '실종 게시물',
             'header-lost': '실종',
             'header-find': '발견',
             'header-protect': '임시보호',
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'manual-item4': '여러분이 궁금한 발자국에 대하여 게시글을 작성하고 여러 사용자들과 정보를 공유해주세요!'
         },
         en: {
-            'page-title': 'Found Posts',
+            'page-title': 'Lost Posts',
             'header-lost': 'Lost',
             'header-find': 'Found',
             'header-protect': 'Temporary Protection',
