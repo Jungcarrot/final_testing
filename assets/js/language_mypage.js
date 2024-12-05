@@ -1,5 +1,6 @@
 const translations = {
     ko: {
+        logo: "발자국\n탐정",
         pageTitle: "마이페이지",
         myPageTitle: "마이페이지",
         loginIDLabel: "아이디",
@@ -10,6 +11,7 @@ const translations = {
         saveNicknameButton: "닉네임 변경"
     },
     en: {
+        logo: "Pawprint\nDetective",
         pageTitle: "My Page",
         myPageTitle: "My Page",
         loginIDLabel: "Login ID",
