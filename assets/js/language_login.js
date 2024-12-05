@@ -12,8 +12,8 @@ const translations = {
     },
     en: {
         logo: "Pawprint\nDetective",
-        pageTitle: "login",
-        loginTitle: "login",
+        pageTitle: "LOGIN",
+        loginTitle: "LOGIN",
         usernameLabel: "Username",
         usernamePlaceholder: "Enter your ID",
         passwordLabel: "Password",
