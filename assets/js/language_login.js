@@ -1,26 +1,61 @@
+const translations = {
+    ko: {
+        pageTitle: "로그인",
+        loginTitle: "로그인",
+        usernameLabel: "아이디",
+        usernamePlaceholder: "아이디를 입력하세요",
+        passwordLabel: "비밀번호",
+        passwordPlaceholder: "비밀번호를 입력하세요",
+        loginButton: "로그인",
+        signupLink: "회원가입"
+    },
+    en: {
+        pageTitle: "Login",
+        loginTitle: "Login",
+        usernameLabel: "Username",
+        usernamePlaceholder: "Enter your username",
+        passwordLabel: "Password",
+        passwordPlaceholder: "Enter your password",
+        loginButton: "Login",
+        signupLink: "Sign Up"
+    }
+};
+
+// 현재 언어 설정
+let currentLanguage = "ko";
+
+// 언어 변경 함수
 function changeLanguage(lang) {
-    if (lang === 'ko') {
-        document.getElementById('lang-ko').classList.add('active');
-        document.getElementById('lang-en').classList.remove('active');
-        document.querySelector('.logo h1').innerText = "발자국\n탐정";
-        document.getElementById('login-title').innerText = "로그인";
-        document.querySelector('.form-group label[for="login-username"]').innerText = "아이디";
-        document.querySelector('.form-group label[for="login-password"]').innerText = "비밀번호";
-        document.querySelector('.form-actions button').innerText = "로그인";
-        document.querySelector('.additional-links a').innerText = "회원가입";
-        document.getElementById('login-username').placeholder = "아이디를 입력하세요";
-        document.getElementById('login-password').placeholder = "비밀번호를 입력하세요";
-    }
-    else if (lang === 'en') {
-        document.getElementById('lang-en').classList.add('active');
-        document.getElementById('lang-ko').classList.remove('active');
-        document.querySelector('.logo h1').innerText = "Pawprint\nDetective";
-        document.getElementById('login-title').innerText = "LOGIN";
-        document.querySelector('.form-group label[for="login-username"]').innerText = "Username";
-        document.querySelector('.form-group label[for="login-password"]').innerText = "Password";
-        document.querySelector('.form-actions button').innerText = "Login";
-        document.querySelector('.additional-links a').innerText = "Sign Up";
-        document.getElementById('login-username').placeholder = "Enter your username";
-        document.getElementById('login-password').placeholder = "Enter your password";
-    }
+    if (!translations[lang]) return;
+
+    currentLanguage = lang;
+
+    // 페이지 제목 변경
+    document.title = translations[lang].pageTitle;
+
+    // 로그인 제목 변경
+    document.getElementById("login-title").textContent = translations[lang].loginTitle;
+
+    // 폼 필드 레이블 및 플레이스홀더 변경
+    document.getElementById("username-label").textContent = translations[lang].usernameLabel;
+    document.getElementById("login-loginID").placeholder = translations[lang].usernamePlaceholder;
+
+    document.getElementById("password-label").textContent = translations[lang].passwordLabel;
+    document.getElementById("login-password").placeholder = translations[lang].passwordPlaceholder;
+
+    // 버튼 텍스트 변경
+    document.getElementById("login-button").textContent = translations[lang].loginButton;
+
+    // 추가 링크 텍스트 변경
+    document.querySelector(".additional-links a").textContent = translations[lang].signupLink;
+
+    // 언어 선택 버튼 스타일 업데이트
+    document.querySelectorAll(".language-selector button").forEach(button => {
+        button.classList.toggle("active", button.id === `lang-${lang}`);
+    });
 }
+
+// 초기화
+document.addEventListener("DOMContentLoaded", () => {
+    changeLanguage(currentLanguage);
+});
