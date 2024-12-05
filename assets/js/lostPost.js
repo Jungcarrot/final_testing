@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 게시물 삭제 처리 함수
         async function deletePost() {
-            if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+            if (!confirm('정말로 이 게시물을 삭제하시겠습니까?(js)')) {
                 return;
             }
 
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const postRef = ref(database, `Post/${postId}`);
                 await remove(postRef);
 
-                alert('게시물이 삭제되었습니다.');
+                alert('게시물이 삭제되었습니다.(js)');
                 window.location.href = 'lostList.html';
             } catch (error) {
                 console.error('게시물 삭제 중 오류 발생:', error);
