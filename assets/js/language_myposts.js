@@ -6,7 +6,7 @@ function changeLanguage(lang) {
             tableHeaders: ["번호", "제목", "작성자", "작성일"],
         },
         en: {
-            logo: "Pawprint\nDetective",
+            logo: "발자국\n탐정",
             pageTitle: "My Posts",
             tableHeaders: ["No.", "Title", "Author", "Date"],
         },
