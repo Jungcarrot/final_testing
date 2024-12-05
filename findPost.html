@@ -171,9 +171,9 @@
                     window.location.href = `findWrite.html?pid=${postId}&edit=true&details=${encodeURIComponent(postDetails)}`;
                 });
                 document.getElementById('delete-post').addEventListener('click', async () => {
-                    if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+                    if (confirm('정말로 이 게시물을 삭제하시겠습니까?(html)')) {
                         await remove(postRef);
-                        alert('게시물이 삭제되었습니다.');
+                        alert('게시물이 삭제되었습니다.(html)');
                         window.location.href = 'findList.html';
                     }
                 });
