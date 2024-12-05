@@ -8,9 +8,6 @@ function changeLanguage(lang) {
         document.querySelector('.form-group label[for="login-password"]').innerText = "비밀번호";
         document.querySelector('.form-actions button').innerText = "로그인";
         document.querySelector('.additional-links a').innerText = "회원가입";
-        document.querySelector('.social-login .naver-login').innerText = "네이버 로그인";
-        document.querySelector('.social-login .kakao-login').innerText = "카카오 로그인";
-
         document.getElementById('login-username').placeholder = "아이디를 입력하세요";
         document.getElementById('login-password').placeholder = "비밀번호를 입력하세요";
     }
@@ -23,9 +20,6 @@ function changeLanguage(lang) {
         document.querySelector('.form-group label[for="login-password"]').innerText = "Password";
         document.querySelector('.form-actions button').innerText = "Login";
         document.querySelector('.additional-links a').innerText = "Sign Up";
-        document.querySelector('.social-login .naver-login').innerText = "Login with Naver";
-        document.querySelector('.social-login .kakao-login').innerText = "Login with Kakao";
-
         document.getElementById('login-username').placeholder = "Enter your username";
         document.getElementById('login-password').placeholder = "Enter your password";
     }
