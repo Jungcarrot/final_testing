@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             'login': 'Login',
             'signup': 'Sign Up',
             'header-number': 'No.',
-            'header-name': 'Name',
+            'header-name': 'veterinary',
             'header-address' 'Address',
             'manual-title': 'MANUAL',
             'manual-item1': 'Manual Content',
