@@ -1,4 +1,10 @@
-const translations = {
+// 현재 언어 설정
+let currentLanguage = "ko";
+
+// 언어 변경 함수
+function changeLanguage(lang) {
+
+    const translations = {
     ko: {
         logo: "발자국\n탐정",
         pageTitle: "마이페이지",
@@ -22,12 +28,7 @@ const translations = {
         saveNicknameButton: "Change Nickname"
     }
 };
-
-// 현재 언어 설정
-let currentLanguage = "ko";
-
-// 언어 변경 함수
-function changeLanguage(lang) {
+    
     if (!translations[lang]) return;
 
     currentLanguage = lang;
