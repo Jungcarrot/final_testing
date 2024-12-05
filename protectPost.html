@@ -161,23 +161,7 @@
             document.getElementById('post-author').textContent = post.nickName || '작성자 정보 없음';
             document.getElementById('post-date').textContent = post.date || '작성일 없음';
 
-            // 본인 게시물인지 확인하여 수정/삭제 버튼 표시
-            const currentUserId = localStorage.getItem('uid');
-            if (currentUserId && post.authorId === currentUserId) {
-                document.getElementById('edit-buttons').style.display = 'block';
 
-                document.getElementById('edit-post').addEventListener('click', () => {
-                    const postDetails = document.getElementById('post-details').innerText.replace(/<br>/g, '\n');
-                    window.location.href = `protectWrite.html?pid=${postId}&edit=true&details=${encodeURIComponent(postDetails)}`;
-                });
-                document.getElementById('delete-post').addEventListener('click', async () => {
-                    if (confirm('정말로 이 게시물을 삭제하시겠습니까?(html)')) {
-                        await remove(postRef);
-                        alert('게시물이 삭제되었습니다.(html)');
-                        window.location.href = 'protectList.html';
-                    }
-                });
-            }
 
             // 댓글 가져오기
             const commentsRef = ref(database, 'Comment');
